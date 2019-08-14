@@ -1,14 +1,15 @@
 <?php
 
-namespace RFC\Component\Csv\Reader;
+namespace Component\Csv\Reader;
 
-use RFC\Component\Csv\Cache\CacheCollector;
+use Component\Csv\Cache\CacheCollector;
+use Component\Csv\Exception\InvalidCsvElementSizeException;
 
 class CsvParser implements \Countable, \SeekableIterator
 {
-    public const DEFAULT_DELIMITER = ',';
-    public const DEFAULT_ENCLOSURE = '"';
-    public const DEFAULT_ESCAPE = '\\';
+    public const DELIMITER = ';';
+    public const ENCLOSURE = '"';
+    public const ESCAPE = '\\';
 
     private $headers;
     private $file;
@@ -18,11 +19,12 @@ class CsvParser implements \Countable, \SeekableIterator
 
     public function __construct(
         \SplFileObject $file,
-        $delimiter = self::DEFAULT_DELIMITER,
-        $enclosure = self::DEFAULT_ENCLOSURE,
-        $escapeChar = self::DEFAULT_ESCAPE
+        $delimiter = self::DELIMITER,
+        $enclosure = self::ENCLOSURE,
+        $escapeChar = self::ESCAPE
     ) {
         ini_set('auto_detect_line_endings', true);
+
         $file->setFlags(
             \SplFileObject::READ_CSV |
             \SplFileObject::SKIP_EMPTY |
@@ -33,7 +35,7 @@ class CsvParser implements \Countable, \SeekableIterator
         $file->setCsvControl($delimiter, $enclosure, $escapeChar);
 
         $this->delimiter = $delimiter;
-        $this->headers = (array) $file->current();
+        $this->headers = $file->current();
 
         $this->cache = new CacheCollector();
 
@@ -44,9 +46,9 @@ class CsvParser implements \Countable, \SeekableIterator
 
     public static function create(
         string $filename,
-        $delimiter = self::DEFAULT_DELIMITER,
-        $enclosure = self::DEFAULT_ENCLOSURE,
-        $escapeChar = self::DEFAULT_ESCAPE
+        $delimiter = self::DELIMITER,
+        $enclosure = self::ENCLOSURE,
+        $escapeChar = self::ESCAPE
     ): self {
         return new self(new \SplFileObject($filename), $delimiter, $enclosure, $escapeChar);
     }
@@ -71,14 +73,23 @@ class CsvParser implements \Countable, \SeekableIterator
     }
 
     /* @todo the default method is much slower then the hacky file() method */
-    public function getRow(int $line)
+    public function getRow(int $line): array
     {
-        $line = @file($this->file->getRealPath())[$line] ?? false;
-        $line = str_replace(array("\n", "\r"), '', $line);
-        $current = explode($this->delimiter, $line);
-        $row = @array_combine($this->headers, $current);
+        $columnValues = [];
+        $this->loop(function ($row) use (&$columnValues, $line) {
+            if ($this->file->key() === $line) {
+                $columnValues = $row;
+            }
+        });
 
-        return $row;
+        return $columnValues;
+    }
+
+    private function getRows(array $lines): array
+    {
+        return array_map(function ($line) {
+            return $this->getRow($line);
+        }, $lines);
     }
 
     /**
@@ -120,7 +131,7 @@ class CsvParser implements \Countable, \SeekableIterator
         return current($this->findBy($filter));
     }
 
-    public function findBy(array $filter)
+    public function findBy(array $filter): array
     {
         $columnName = key($filter);
 
@@ -132,10 +143,7 @@ class CsvParser implements \Countable, \SeekableIterator
             });
 
             // fetch the values for these line numbers
-            return array_values(array_map(function ($line) {
-                $a = $this->get($line);
-                return $a;
-            }, $lines));
+            return array_values($this->getRows($lines));
         }
 
         return $this->filter(function ($item) use ($filter, $columnName) {
@@ -158,21 +166,20 @@ class CsvParser implements \Countable, \SeekableIterator
     /**
      * {@inheritdoc}
      */
-    public function current(): array
+    public function current()
     {
         $current = $this->file->current();
         if (!$current || !$this->hasHeaders()) {
             return $current;
         }
 
+        // here we need to use the filter
         $row = @array_combine($this->headers, $current);
         if (false === $row) {
             throw new InvalidCsvElementSizeException($this->file->getFilename(), $this->key());
         }
 
-        return array_map(function ($val) {
-            return '' === $val ? null : $val;
-        }, $row);
+        return $row;
     }
 
     /**

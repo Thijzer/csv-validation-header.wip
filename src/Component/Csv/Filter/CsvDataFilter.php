@@ -1,11 +1,11 @@
 <?php
 
-namespace RFC\Component\Csv\Filter;
+namespace Component\Csv\Filter;
 
 class CsvDataFilter
 {
-    public function filter($dataStream, $reference, $cellValue): array
+    public function filter($dataStream, string $columnName, $reference): array
     {
-        return $dataStream->findBy([$reference => $cellValue]);
+        return $dataStream->findBy([$columnName => $reference]);
     }
 }

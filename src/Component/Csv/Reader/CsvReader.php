@@ -1,6 +1,6 @@
 <?php
 
-namespace RFC\Component\Csv\Reader;
+namespace Component\Csv\Reader;
 
 class CsvReader implements ReaderInterface
 {

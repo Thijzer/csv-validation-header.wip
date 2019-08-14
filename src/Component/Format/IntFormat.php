@@ -1,6 +1,6 @@
 <?php
 
-namespace RFC\Component\Format;
+namespace Component\Format;
 
 class IntFormat
 {

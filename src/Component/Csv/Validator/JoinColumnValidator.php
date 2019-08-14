@@ -1,6 +1,6 @@
 <?php
 
-namespace RFC\Component\Csv\Filter;
+namespace Component\Csv\Filter;
 
 class JoinColumnValidator
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace RFC\Component\Csv\Fetcher;
+namespace Component\Csv\Fetcher;
 
-use RFC\Component\Csv\Filter\CsvDataFilter;
-use RFC\Component\Csv\Reader\ReaderInterface;
+use Component\Csv\Filter\CsvDataFilter;
+use Component\Csv\Reader\ReaderInterface;
 
 class CellDataFetcher
 {
@@ -16,10 +16,12 @@ class CellDataFetcher
         $this->dataFilter = $dataFilter;
     }
 
-    public function fetch(string $filename, string $reference, string $cellValue)
+    public function fetch(string $filename, string $columnName, $reference)
     {
-        return $this->dataFilter->filter($this->reader->read($filename), $reference, $cellValue);
+        return $this->dataFilter->filter($this->reader->read($filename), $columnName, $reference);
     }
 }
 
 // join(code, catalog_brand)
+
+// example :: fetch('catalog_brand', 'code', 'nike') => brand nike his properties

@@ -1,17 +1,18 @@
 <?php
 
-namespace RFC\Component\Validator;
+namespace Component\Validator;
 
-use RFC\Component\Format\SnakeCaseFormat;
+use Component\Validator\Constraint\SnakeCaseConstraint;
+use Component\Format\SnakeCaseFormat;
 
-class SnakeCaseValidator
+class SnakeCaseValidator extends AbstractValidator
 {
-    public function validate($value)
+    public function validate($value): void
     {
         $formatter = new SnakeCaseFormat();
         if ($formatter->format($value) !== $value) {
             // constraint
-
+            $this->getCollector()->collect(new SnakeCaseConstraint(), SnakeCaseConstraint::INVALID_FORMAT);
         }
     }
 }

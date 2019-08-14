@@ -1,0 +1,8 @@
+version: '2'
+
+services:
+  php:
+    image: thijs/php:akeneo-fpm-7.3
+    volumes:
+      - './:/app'
+    working_dir: '/app'

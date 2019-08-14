@@ -1,6 +1,6 @@
 <?php
 
-namespace RFC\Component\Filter;
+namespace Component\Filter;
 
 class BoolFormat
 {

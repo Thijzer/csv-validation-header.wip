@@ -1,0 +1,17 @@
+{
+    "name": "thijsdp/csv-file-format",
+    "authors": [
+        {
+            "name": "Thijs De Paepe",
+            "email": "Thijs.dp@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.3.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    }
+}

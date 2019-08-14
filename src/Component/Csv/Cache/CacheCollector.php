@@ -1,6 +1,6 @@
 <?php
 
-namespace RFC\Component\Csv\Cache;
+namespace Component\Csv\Cache;
 
 class CacheCollector
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace RFC\Component\Validator;
+namespace Component\Validator;
 
 class IntegerValidator
 {
