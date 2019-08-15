@@ -16,5 +16,5 @@ abstract class AbstractValidator
         return $this->collector;
     }
 
-    abstract function validate($value): void;
+    abstract function validate($value, array $options = []): void;
 }

@@ -5,7 +5,7 @@ namespace Component\Csv\Reader;
 use Component\Csv\Cache\CacheCollector;
 use Component\Csv\Exception\InvalidCsvElementSizeException;
 
-class CsvParser implements \Countable, \SeekableIterator
+class CsvParser implements CsvParserInterface
 {
     public const DELIMITER = ';';
     public const ENCLOSURE = '"';
@@ -14,15 +14,16 @@ class CsvParser implements \Countable, \SeekableIterator
     private $headers;
     private $file;
     private $count;
-    private $delimiter;
     private $cache;
 
     public function __construct(
         \SplFileObject $file,
-        $delimiter = self::DELIMITER,
-        $enclosure = self::ENCLOSURE,
-        $escapeChar = self::ESCAPE
+        string $delimiter = self::DELIMITER,
+        string $enclosure = self::ENCLOSURE,
+        string $escapeChar = self::ESCAPE
     ) {
+        $this->file = $file;
+        $this->cache = new CacheCollector();
         ini_set('auto_detect_line_endings', true);
 
         $file->setFlags(
@@ -31,24 +32,18 @@ class CsvParser implements \Countable, \SeekableIterator
             \SplFileObject::READ_AHEAD |
             \SplFileObject::DROP_NEW_LINE
         );
-
         $file->setCsvControl($delimiter, $enclosure, $escapeChar);
 
-        $this->delimiter = $delimiter;
+        // set headers
         $this->headers = $file->current();
-
-        $this->cache = new CacheCollector();
-
-        // allow headers
         $file->next();
-        $this->file = $file;
     }
 
     public static function create(
         string $filename,
-        $delimiter = self::DELIMITER,
-        $enclosure = self::ENCLOSURE,
-        $escapeChar = self::ESCAPE
+        string $delimiter = self::DELIMITER,
+        string $enclosure = self::ENCLOSURE,
+        string $escapeChar = self::ESCAPE
     ): self {
         return new self(new \SplFileObject($filename), $delimiter, $enclosure, $escapeChar);
     }
@@ -60,7 +55,7 @@ class CsvParser implements \Countable, \SeekableIterator
 
     public function hasHeaders(): bool
     {
-        return !empty($this->headers);
+        return null !== $this->headers;
     }
 
     public function loop(callable $callable): void
@@ -72,7 +67,6 @@ class CsvParser implements \Countable, \SeekableIterator
         $this->rewind();
     }
 
-    /* @todo the default method is much slower then the hacky file() method */
     public function getRow(int $line): array
     {
         $columnValues = [];
@@ -85,22 +79,9 @@ class CsvParser implements \Countable, \SeekableIterator
         return $columnValues;
     }
 
-    private function getRows(array $lines): array
-    {
-        return array_map(function ($line) {
-            return $this->getRow($line);
-        }, $lines);
-    }
-
-    /**
-     * Returns the Column values of any given columnName
-     *
-     * @param string $columnName
-     * @return array
-     */
     public function getColumn(string $columnName): array
     {
-        if (!$this->cache->hasCache($columnName)) {
+        if (false === $this->cache->hasCache($columnName)) {
             $columnValues = [];
             $this->loop(function ($row) use (&$columnValues, $columnName) {
                 $columnValues[$this->file->key()] = $row[$columnName];
@@ -111,22 +92,22 @@ class CsvParser implements \Countable, \SeekableIterator
             return $columnValues;
         }
 
-        $this->cache->getCache($columnName);
+        return $this->cache->getCache($columnName) ?? [];
     }
 
-    public function addSearchableColumns(array $columnNames): void
+    public function indexColumns(string ...$columnNames): void
     {
         foreach ($columnNames as $columnName) {
-            $this->addSearchableColumn($columnName);
+            $this->indexColumn($columnName);
         }
     }
 
-    public function addSearchableColumn(string $columnName): void
+    public function indexColumn(string $columnName): void
     {
         $this->cache->setCache($columnName, $this->getColumn($columnName));
     }
 
-    public function findOneBy(array $filter)
+    public function findOneBy(array $filter): array
     {
         return current($this->findBy($filter));
     }
@@ -138,7 +119,7 @@ class CsvParser implements \Countable, \SeekableIterator
         if ($this->cache->hasCache($columnName)) {
 
             // fetch the correct line numbers
-            $lines = $this->cache->filterCache($columnName, function ($item) use ($filter) {
+            $lines = $this->cache->filterCache($columnName, static function ($item) use ($filter) {
                 return $filter[key($filter)] === $item;
             });
 
@@ -146,15 +127,15 @@ class CsvParser implements \Countable, \SeekableIterator
             return array_values($this->getRows($lines));
         }
 
-        return $this->filter(function ($item) use ($filter, $columnName) {
+        return $this->filter(static function ($item) use ($filter, $columnName) {
             return $item[$columnName] === $filter[$columnName];
         });
     }
 
-    public function filter(callable $callable): array
+    private function filter(callable $callable): array
     {
         $values = [];
-        $this->loop(function ($row) use (&$values, $callable) {
+        $this->loop(static function ($row) use (&$values, $callable) {
             if (true === $callable($row)) {
                 $values[] = $row;
             }
@@ -163,8 +144,15 @@ class CsvParser implements \Countable, \SeekableIterator
         return $values;
     }
 
+    private function getRows(array $lines): array
+    {
+        return array_map(function ($line) {
+            return $this->getRow($line);
+        }, $lines);
+    }
+
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function current()
     {
@@ -183,15 +171,15 @@ class CsvParser implements \Countable, \SeekableIterator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function next()
+    public function next(): void
     {
         $this->file->next();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function key()
     {
@@ -199,36 +187,39 @@ class CsvParser implements \Countable, \SeekableIterator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->file->valid();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function rewind(): void
     {
         $this->file->rewind();
         // allow headers
-        $this->next();
+        $this->hasHeaders()? $this->next(): null;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function seek($pointer)
+    public function seek($pointer): void
     {
         $this->file->seek($pointer);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function count(): int
     {
         if (null === $this->count) {
             $position = $this->key();
-            $this->count = iterator_count($this) - (int) $this->hasHeaders();
+            $this->count = iterator_count($this);
             $this->seek($position);
         }
 

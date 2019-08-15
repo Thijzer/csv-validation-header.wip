@@ -6,40 +6,40 @@ class CacheCollector
 {
     private $cache = [];
 
-    public function setkey($cachekey, callable $data): void
+    public function setkey($cacheKey, callable $data): void
     {
         // @todo set cacheKey with lazy promise if possible
     }
 
-    public function setCache($cachekey, array $data): void
+    public function setCache($cacheKey, array $data): void
     {
-        $this->cache[$cachekey] = $data;
+        $this->cache[$cacheKey] = $data;
     }
 
-    public function hasCache($cachekey): bool
+    public function hasCache($cacheKey): bool
     {
-        return in_array($cachekey, \array_keys($this->cache));
+        return array_key_exists($cacheKey, $this->cache);
     }
 
-    public function filterCache(string $cacheKey, callable $callable)
+    public function filterCache(string $cacheKey, callable $callable): array
     {
-        return array_keys(array_filter($this->cache[$cacheKey], function ($row) use ($callable) {
+        return array_keys(array_filter($this->cache[$cacheKey],static function ($row) use ($callable) {
             return $callable($row);
         }));
     }
 
-    public function getCache($cachekey)
+    public function getCache($cacheKey)
     {
-        return $this->cache[$cachekey] ?? null;
+        return $this->cache[$cacheKey] ?? null;
     }
 
-    public function clear($cachekey = null): void
+    public function clear($cacheKey = null): void
     {
-        if ($cachekey === null) {
+        if ($cacheKey === null) {
             $this->cache = [];
             return;
         }
 
-        unset($this->cache[$cachekey]);
+        unset($this->cache[$cacheKey]);
     }
 }

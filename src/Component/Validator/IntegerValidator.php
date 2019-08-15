@@ -2,13 +2,15 @@
 
 namespace Component\Validator;
 
-class IntegerValidator
+class IntegerValidator extends AbstractValidator
 {
-    public function validate($value)
+    public function validate($value, array $options = []): void
     {
         if (filter_var($value, FILTER_VALIDATE_INT) === false) {
-            // contraint
-            // echo "Variable %s is not an integer";
+            $this->getCollector()->collect(
+                new Constraint\IntegerConstraint(),
+                Constraint\IntegerConstraint::INVALID_VALUE
+            );
         }
     }
 }

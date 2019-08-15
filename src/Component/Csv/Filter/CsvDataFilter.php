@@ -6,6 +6,6 @@ class CsvDataFilter
 {
     public function filter($dataStream, string $columnName, $reference): array
     {
-        return $dataStream->findBy([$columnName => $reference]);
+        return $dataStream->findOneBy([$columnName => $reference]);
     }
 }

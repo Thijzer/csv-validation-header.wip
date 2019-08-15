@@ -4,8 +4,9 @@ namespace Component\Csv\Fetcher;
 
 use Component\Csv\Filter\CsvDataFilter;
 use Component\Csv\Reader\ReaderInterface;
+use phpDocumentor\Reflection\Types\Array_;
 
-class CellDataFetcher
+class CsvDataFetcher
 {
     private $reader;
     private $dataFilter;
@@ -16,7 +17,7 @@ class CellDataFetcher
         $this->dataFilter = $dataFilter;
     }
 
-    public function fetch(string $filename, string $columnName, $reference)
+    public function fetchRow(string $filename, string $columnName, $reference): array
     {
         return $this->dataFilter->filter($this->reader->read($filename), $columnName, $reference);
     }

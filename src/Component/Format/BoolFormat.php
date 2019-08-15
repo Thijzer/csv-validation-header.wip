@@ -1,10 +1,10 @@
 <?php
 
-namespace Component\Filter;
+namespace Component\Format;
 
 class BoolFormat
 {
-    public function filter(string $value, string $true, string $false):? bool
+    public function format(string $value, string $true, string $false):? bool
     {
         if ($value === $true) {
             return true;

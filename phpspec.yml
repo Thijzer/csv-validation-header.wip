@@ -1,0 +1,6 @@
+suites:
+  main:
+    src_path: "%paths.config%/src"
+    spec_path: "%paths.config%/tests"
+
+formatter.name: pretty

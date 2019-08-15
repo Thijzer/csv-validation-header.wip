@@ -4,8 +4,8 @@ namespace Component\Format;
 
 class ListFormat
 {
-    public function format(string $separtor, $value): array
+    public function format(string $separator, $value): array
     {
-        return explode($separtor, $value);
+        return explode($separator, $value);
     }
 }
