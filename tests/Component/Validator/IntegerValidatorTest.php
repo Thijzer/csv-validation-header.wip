@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Component\Validator;
+namespace Tests\Misery\Component\Component\Validator;
 
-use Component\Validator\Constraint\IntegerConstraint;
-use Component\Validator\IntegerValidator;
-use Component\Validator\SnakeCaseValidator;
-use Component\Validator\ValidationCollector;
+use Misery\Component\Validator\Constraint\IntegerConstraint;
+use Misery\Component\Validator\IntegerValidator;
+use Misery\Component\Validator\SnakeCaseValidator;
+use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
 
 class IntegerValidatorTest extends TestCase

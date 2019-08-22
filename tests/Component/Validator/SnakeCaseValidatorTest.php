@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Component\Validator;
+namespace Tests\Misery\Component\Component\Validator;
 
-use Component\Validator\Constraint\SnakeCaseConstraint;
-use Component\Validator\SnakeCaseValidator;
-use Component\Validator\ValidationCollector;
+use Misery\Component\Validator\Constraint\SnakeCaseConstraint;
+use Misery\Component\Validator\SnakeCaseValidator;
+use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
 
 class SnakeCaseValidatorTest extends TestCase

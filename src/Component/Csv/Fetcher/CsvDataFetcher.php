@@ -1,10 +1,9 @@
 <?php
 
-namespace Component\Csv\Fetcher;
+namespace Misery\Component\Csv\Fetcher;
 
-use Component\Csv\Filter\CsvDataFilter;
-use Component\Csv\Reader\ReaderInterface;
-use phpDocumentor\Reflection\Types\Array_;
+use Misery\Component\Csv\Filter\CsvDataFilter;
+use Misery\Component\Csv\Reader\ReaderInterface;
 
 class CsvDataFetcher
 {
@@ -17,9 +16,9 @@ class CsvDataFetcher
         $this->dataFilter = $dataFilter;
     }
 
-    public function fetchRow(string $filename, string $columnName, $reference): array
+    public function fetchRow( string $columnName, $reference): array
     {
-        return $this->dataFilter->filter($this->reader->read($filename), $columnName, $reference);
+        return $this->dataFilter->filter($this->reader, $columnName, $reference);
     }
 }
 

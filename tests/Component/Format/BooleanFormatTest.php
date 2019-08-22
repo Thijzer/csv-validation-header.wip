@@ -1,20 +1,23 @@
 <?php
 
-namespace Tests\Component\Format;
+namespace Tests\Misery\Component\Component\Format;
 
-use Component\Format\BoolFormat;
+use Misery\Component\Format\BooleanFormat;
 use PHPUnit\Framework\TestCase;
 
 class BooleanFormatTest extends TestCase
 {
     public function test_it_should_boolean_type_a_value(): void
     {
-        $format = new BoolFormat();
+        $format = new BooleanFormat();
 
-        $boolType = explode('/', 'YES/NO');
+        $format->setOptions([
+            'true' => 'YES',
+            'false' => 'NO',
+        ]);
 
-        $this->assertTrue($format->format('YES', ...$boolType));
-        $this->assertFalse($format->format('NO', ...$boolType));
-        $this->assertNull($format->format('JA', ...$boolType));
+        $this->assertTrue($format->format('YES'));
+        $this->assertFalse($format->format('NO'));
+        $this->assertNull($format->format('JA'));
     }
 }

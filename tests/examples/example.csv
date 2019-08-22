@@ -1,5 +1,5 @@
 id;code;is_active;advantages-nl_BE;application_textual-fr_BE;application_textual-nl_BE;barcode;brand;categories;certificate;certificate_textual-fr_BE;certificate_textual-nl_BE
-unique(int(5-7));snake_case(unique(string(20)));bool(0/1);array(-,text());array(-,text());array(-,text());int(10);join(code, catalog_brand);list(',',join(code, catalog_brand));string(20);array(-,text());array(-,text())
+unique(int(5-7));snake_case(unique(string(20)));bool(TRUE,);array(-,text());array(-,text());array(-,text());int(10);join(code, catalog_brand);list(',',join(code, catalog_brand));string(20);array(-,text());array(-,text())
 1;induxxtest;1;"<p>Voor pvc rioleringsbuizen bestaan er verschillende
 wanddiktes per diameter vanaf ø110mm, welke de
 stijfheid van de buis beïnvloeden. In de Europese normering staat SN voor nominale ringstijfheid (kN/m²),

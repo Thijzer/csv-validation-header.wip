@@ -1,10 +1,11 @@
 <?php
 
-namespace Tests\Component\Csv\Fetcher;
+namespace Tests\Misery\Component\Component\Csv\Fetcher;
 
-use Component\Csv\Fetcher\CsvDataFetcher;
-use Component\Csv\Filter\CsvDataFilter;
-use Component\Csv\Reader\CsvReader;
+use Misery\Component\Csv\Fetcher\CsvDataFetcher;
+use Misery\Component\Csv\Filter\CsvDataFilter;
+use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Csv\Reader\CsvReader;
 use PHPUnit\Framework\TestCase;
 
 class CsvDataFetcherTest extends TestCase
@@ -14,11 +15,11 @@ class CsvDataFetcherTest extends TestCase
     {
         $exampleFile = __DIR__ . '/../../../examples/example_no_format_row.csv';
 
-        $reader = new CsvReader();
+        $reader = new CsvReader(CsvParser::create($exampleFile));
         $filter = new CsvDataFilter();
         $fetcher = new CsvDataFetcher($reader, $filter);
 
-        $row = $fetcher->fetchRow($exampleFile, $code = 'brand', $x = 'puma');
+        $row = $fetcher->fetchRow($code = 'brand', $x = 'puma');
 
         $this->assertSame($row['brand'], 'puma');
         $this->assertSame($row['code'], 'Test-3');

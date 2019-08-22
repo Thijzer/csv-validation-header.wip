@@ -1,6 +1,6 @@
 <?php
 
-namespace Component\Validator\Constraint;
+namespace Misery\Component\Validator\Constraint;
 
 class SnakeCaseConstraint implements Constraint
 {

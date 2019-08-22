@@ -1,6 +1,6 @@
 <?php
 
-namespace Component\Csv\Cache;
+namespace Misery\Component\Csv\Cache;
 
 class CacheCollector
 {

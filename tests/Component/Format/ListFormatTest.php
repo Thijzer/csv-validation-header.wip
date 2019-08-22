@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Component\Format;
+namespace Tests\Misery\Component\Component\Format;
 
-use Component\Format\ListFormat;
+use Misery\Component\Format\ListFormat;
 use PHPUnit\Framework\TestCase;
 
 class ListFormatTest extends TestCase
@@ -11,6 +11,10 @@ class ListFormatTest extends TestCase
     {
         $format = new ListFormat();
 
-        $this->assertSame($format->format(',', 'a,b,c'), ['a', 'b', 'c']);
+        $format->setOptions([
+            'separator' => ',',
+        ]);
+
+        $this->assertSame($format->format('a,b,c'), ['a', 'b', 'c']);
     }
 }

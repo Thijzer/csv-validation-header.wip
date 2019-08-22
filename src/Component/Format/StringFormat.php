@@ -1,11 +1,20 @@
 <?php
 
-namespace Component\Format;
+namespace Misery\Component\Format;
 
-class StringFormat
+use Misery\Component\Common\Format\Format;
+
+class StringFormat implements Format
 {
+    public const NAME = 'string';
+
     public function format($value): string
     {
-        return (string) $value;
+        return $value;
+    }
+
+    public function reverseFormat($value)
+    {
+        return $value;
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Component\Csv\Validator\Constraint;
+namespace Misery\Component\Csv\Validator\Constraint;
 
-use Component\Validator\Constraint\Constraint;
+use Misery\Component\Validator\Constraint\Constraint;
 
 class ReferencedColumnConstraint implements Constraint
 {

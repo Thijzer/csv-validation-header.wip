@@ -1,16 +1,16 @@
 <?php
 
-namespace Component\Csv\Validator;
+namespace Misery\Component\Csv\Validator;
 
-use Component\Csv\Reader\CsvParserInterface;
-use Component\Validator\AbstractValidator;
-use Component\Validator\ValidationCollector;
+use Misery\Component\Csv\Reader\ReaderInterface;
+use Misery\Component\Validator\AbstractValidator;
+use Misery\Component\Validator\ValidationCollector;
 
 class ReferencedColumnValidator extends AbstractValidator
 {
     private $dataStream;
 
-    public function __construct(ValidationCollector $collector, CsvParserInterface $dataStream)
+    public function __construct(ValidationCollector $collector, ReaderInterface $dataStream)
     {
         parent::__construct($collector);
         $this->dataStream = $dataStream;

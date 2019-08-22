@@ -1,6 +1,6 @@
 <?php
 
-namespace Component\Validator;
+namespace Misery\Component\Validator;
 
 class IntegerValidator extends AbstractValidator
 {

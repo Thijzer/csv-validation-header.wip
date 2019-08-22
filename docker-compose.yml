@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  php:
+  fpm:
     image: thijs/php:akeneo-fpm-7.3
     volumes:
       - './:/app'

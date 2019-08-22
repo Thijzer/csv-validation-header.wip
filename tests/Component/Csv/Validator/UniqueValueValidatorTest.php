@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Component\Csv\Validator;
+namespace Tests\Misery\Component\Component\Csv\Validator;
 
-use Component\Csv\Validator\Constraint\UniqueValueConstraint;
-use Component\Csv\Validator\ReferencedColumnValidator;
-use Component\Csv\Reader\CsvParser;
-use Component\Csv\Validator\UniqueValueValidator;
-use Component\Validator\ValidationCollector;
+use Misery\Component\Csv\Reader\CsvReader;
+use Misery\Component\Csv\Validator\Constraint\UniqueValueConstraint;
+use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Csv\Validator\UniqueValueValidator;
+use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
 
 class UniqueValueValidatorTest extends TestCase
@@ -18,7 +18,7 @@ class UniqueValueValidatorTest extends TestCase
 
         $parser = CsvParser::create($exampleFile);
         $collector = new ValidationCollector();
-        $validator = new UniqueValueValidator($collector, $parser);
+        $validator = new UniqueValueValidator($collector, new CsvReader($parser));
 
         $validator->validate('code');
 
@@ -31,7 +31,7 @@ class UniqueValueValidatorTest extends TestCase
 
         $parser = CsvParser::create($exampleFile);
         $collector = new ValidationCollector();
-        $validator = new UniqueValueValidator($collector, $parser);
+        $validator = new UniqueValueValidator($collector, new CsvReader($parser));
 
         $validator->validate('id');
 

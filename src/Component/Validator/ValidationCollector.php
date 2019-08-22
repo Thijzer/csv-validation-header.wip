@@ -1,8 +1,8 @@
 <?php
 
-namespace Component\Validator;
+namespace Misery\Component\Validator;
 
-use Component\Validator\Constraint\Constraint;
+use Misery\Component\Validator\Constraint\Constraint;
 
 class ValidationCollector
 {

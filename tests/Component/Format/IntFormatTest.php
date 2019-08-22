@@ -1,9 +1,8 @@
 <?php
 
-namespace Tests\Component\Format;
+namespace Tests\Misery\Component\Component\Format;
 
-use Component\Format\BoolFormat;
-use Component\Format\IntFormat;
+use Misery\Component\Format\IntFormat;
 use PHPUnit\Framework\TestCase;
 
 class IntFormatTest extends TestCase

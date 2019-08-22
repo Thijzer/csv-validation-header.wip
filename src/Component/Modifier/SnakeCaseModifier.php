@@ -1,9 +1,13 @@
 <?php
 
-namespace Component\Format;
+namespace Misery\Component\Modifier;
 
-class SnakeCaseFormat
+use Misery\Component\Common\Modifier\CellModifier;
+
+class SnakeCaseModifier implements CellModifier
 {
+    public const NAME = 'snake_case';
+
     /**
      * badly converts
      * @Abc to @_abc
@@ -13,7 +17,7 @@ class SnakeCaseFormat
      * @param string $value
      * @return string
      */
-    public function format(string $value): string
+    public function modify(string $value): string
     {
         $delimiter = '_';
 

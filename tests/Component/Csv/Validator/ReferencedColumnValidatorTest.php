@@ -1,10 +1,11 @@
 <?php
 
-namespace Tests\Component\Csv\Validator;
+namespace Tests\Misery\Component\Component\Csv\Validator;
 
-use Component\Csv\Validator\ReferencedColumnValidator;
-use Component\Csv\Reader\CsvParser;
-use Component\Validator\ValidationCollector;
+use Misery\Component\Csv\Reader\CsvReader;
+use Misery\Component\Csv\Validator\ReferencedColumnValidator;
+use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
 
 class ReferencedColumnValidatorTest extends TestCase
@@ -16,7 +17,7 @@ class ReferencedColumnValidatorTest extends TestCase
 
         $parser = CsvParser::create($exampleFile);
         $collector = new ValidationCollector();
-        $validator = new ReferencedColumnValidator($collector, $parser);
+        $validator = new ReferencedColumnValidator($collector, new CsvReader($parser));
 
         $validator->validate('puma', ['column' => 'brand']);
 
@@ -29,7 +30,7 @@ class ReferencedColumnValidatorTest extends TestCase
 
         $parser = CsvParser::create($exampleFile);
         $collector = new ValidationCollector();
-        $validator = new ReferencedColumnValidator($collector, $parser);
+        $validator = new ReferencedColumnValidator($collector, new CsvReader($parser));
 
         $validator->validate('reebok', ['column' => 'brand']);
 

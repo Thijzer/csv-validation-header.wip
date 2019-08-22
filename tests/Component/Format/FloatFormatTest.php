@@ -1,10 +1,8 @@
 <?php
 
-namespace Tests\Component\Format;
+namespace Tests\Misery\Component\Component\Format;
 
-use Component\Format\BoolFormat;
-use Component\Format\IntFormat;
-use Component\Format\FloatFormat;
+use Misery\Component\Format\FloatFormat;
 use PHPUnit\Framework\TestCase;
 
 class FloatFormatTest extends TestCase

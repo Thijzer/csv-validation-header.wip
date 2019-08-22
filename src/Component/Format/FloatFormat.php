@@ -1,11 +1,20 @@
 <?php
 
-namespace Component\Format;
+namespace Misery\Component\Format;
 
-class FloatFormat
+use Misery\Component\Common\Format\Format;
+
+class FloatFormat implements Format
 {
+    public const NAME = 'float';
+
     public function format($value): float
     {
         return (float) $value;
+    }
+
+    public function reverseFormat($value): string
+    {
+        return (string) $value;
     }
 }
