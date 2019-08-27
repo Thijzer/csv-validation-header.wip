@@ -23,6 +23,11 @@ class CsvReader implements ReaderInterface
         return $this->cursor;
     }
 
+    public function line(): int
+    {
+        return $this->cursor->key();
+    }
+
     public function loop(callable $callable): void
     {
         while ($row = $this->cursor->current()) {

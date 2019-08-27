@@ -2,30 +2,45 @@
 
 namespace Misery\Component\Csv\Validator;
 
+use Misery\Component\Common\Options\OptionsInterface;
+use Misery\Component\Common\Options\OptionsTrait;
+use Misery\Component\Csv\Reader\ReaderAwareInterface;
+use Misery\Component\Csv\Reader\ReaderAwareTrait;
 use Misery\Component\Csv\Reader\ReaderInterface;
 use Misery\Component\Validator\AbstractValidator;
-use Misery\Component\Validator\ValidationCollector;
 
-class ReferencedColumnValidator extends AbstractValidator
+class ReferencedColumnValidator extends AbstractValidator implements ReaderAwareInterface,  OptionsInterface
 {
-    private $dataStream;
+    use OptionsTrait;
+    use ReaderAwareTrait;
 
-    public function __construct(ValidationCollector $collector, ReaderInterface $dataStream)
+    public const NAME = 'reference_exist';
+
+    private $options = [
+        'reader' => null,
+        'file' => null,
+        'id' => null,
+    ];
+
+    public function validate($cellValue, array $context = []): void
     {
-        parent::__construct($collector);
-        $this->dataStream = $dataStream;
-    }
+        if (empty($cellValue)) {
+            return;
+        }
 
-    public function validate($cellValue, array $options = []): void
-    {
-        $columnName = $options['column'];
+        /** @var ReaderInterface $reader */
+        $reader = $this->getReader();
 
-        $this->dataStream->indexColumn($columnName);
-
-        if (!\in_array($cellValue, $this->dataStream->getColumn($columnName), true)) {
+        if (!\in_array($cellValue, $reader->getColumn($this->options['id']), true)) {
             $this->getCollector()->collect(
                 new Constraint\ReferencedColumnConstraint(),
-                Constraint\ReferencedColumnConstraint::UNKNOWN_REFERENCE
+                sprintf(
+                    Constraint\ReferencedColumnConstraint::UNKNOWN_REFERENCE,
+                    $this->options['id'],
+                    $cellValue,
+                    $this->options['file']
+                ),
+                $context
             );
         }
     }

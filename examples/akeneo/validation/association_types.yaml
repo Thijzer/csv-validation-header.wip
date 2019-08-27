@@ -1,0 +1,16 @@
+columns:
+  code:
+    string:
+
+rows:
+  unflatten:
+    separator: '-'
+  nullify: ~
+
+index:
+  code:
+
+validations:
+  property:
+    code:
+      unique:

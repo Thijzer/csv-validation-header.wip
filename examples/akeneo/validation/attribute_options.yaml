@@ -1,0 +1,25 @@
+columns:
+  code:
+    string:
+  attribute:
+    string:
+  sort_order:
+    integer:
+
+rows:
+  unflatten:
+    separator: '-'
+  nullify: ~
+
+index:
+  code:
+
+validations:
+  property:
+    attribute:
+      reference_exist:
+        file: attributes
+        id: code
+    sort_order:
+      required:
+      is_integer:

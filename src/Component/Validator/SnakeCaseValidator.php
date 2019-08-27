@@ -6,6 +6,8 @@ use Misery\Component\Modifier\SnakeCaseModifier;
 
 class SnakeCaseValidator extends AbstractValidator
 {
+    public const NAME = 'snake_case';
+
     public function validate($value, array $options = []): void
     {
         $formatter = new SnakeCaseModifier();

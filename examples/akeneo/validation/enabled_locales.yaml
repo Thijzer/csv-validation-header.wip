@@ -1,0 +1,13 @@
+columns:
+  code:
+    string:
+
+rows:
+
+index:
+  code:
+
+validations:
+  property:
+    code:
+      unique:

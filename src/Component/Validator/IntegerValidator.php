@@ -4,12 +4,19 @@ namespace Misery\Component\Validator;
 
 class IntegerValidator extends AbstractValidator
 {
-    public function validate($value, array $options = []): void
+    public const NAME = 'is_integer';
+
+    public function validate($value, array $context = []): void
     {
+        if (empty($value)) {
+            return;
+        }
+
         if (filter_var($value, FILTER_VALIDATE_INT) === false) {
             $this->getCollector()->collect(
                 new Constraint\IntegerConstraint(),
-                Constraint\IntegerConstraint::INVALID_VALUE
+                sprintf(Constraint\IntegerConstraint::INVALID_VALUE, $value),
+                $context
             );
         }
     }

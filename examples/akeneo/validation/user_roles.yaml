@@ -1,0 +1,16 @@
+columns:
+  role:
+    string:
+  label:
+
+rows:
+
+index:
+  role:
+
+validations:
+  property:
+    role:
+      unique:
+    label:
+      required:

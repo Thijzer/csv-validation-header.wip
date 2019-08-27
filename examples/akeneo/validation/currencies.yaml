@@ -1,0 +1,17 @@
+columns:
+  code:
+    string:
+  activated:
+    bool:
+
+rows:
+
+index:
+  code:
+
+validations:
+  property:
+    code:
+      unique:
+    activated:
+      required:

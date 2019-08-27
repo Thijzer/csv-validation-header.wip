@@ -10,7 +10,8 @@
     "require": {
         "php": ">=7.3.0",
         "symfony/var-dumper": "^4.3",
-        "symfony/yaml": "^4.3"
+        "symfony/yaml": "^4.3",
+        "ext-json": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",

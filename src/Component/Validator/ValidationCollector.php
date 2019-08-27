@@ -8,9 +8,13 @@ class ValidationCollector
 {
     private $constraints = [];
 
-    public function collect(Constraint $constraint, string $message = null): void
+    public function collect(Constraint $constraint, string $message = null, array $context = []): void
     {
-        $this->constraints[\get_class($constraint)] = $message;
+        $this->constraints[] = [
+            'message' => $message,
+            'constraint' => \get_class($constraint),
+            'context' => $context,
+        ];
     }
 
     public function hasConstraints(): bool
@@ -18,9 +22,12 @@ class ValidationCollector
         return \count($this->constraints) > 0;
     }
 
-    public function getMessages(): array
+    public function getErrors(): array
     {
-        $messages = array_values($this->constraints);
+        $messages = [];
+        foreach ($this->constraints as $constraint) {
+            $messages[] = implode(' ', [$constraint['message'], json_encode($constraint['context'])]);
+        }
 
         $this->constraints = [];
 

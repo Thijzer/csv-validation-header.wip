@@ -2,30 +2,39 @@
 
 namespace Misery\Component\Csv\Validator;
 
+use Misery\Component\Common\Options\OptionsInterface;
+use Misery\Component\Common\Options\OptionsTrait;
+use Misery\Component\Csv\Reader\ReaderAwareInterface;
+use Misery\Component\Csv\Reader\ReaderAwareTrait;
 use Misery\Component\Csv\Reader\ReaderInterface;
 use Misery\Component\Validator\AbstractValidator;
-use Misery\Component\Validator\ValidationCollector;
 
-class UniqueValueValidator extends AbstractValidator
+class UniqueValueValidator extends AbstractValidator implements OptionsInterface, ReaderAwareInterface
 {
-    private $dataStream;
+    use OptionsTrait;
+    use ReaderAwareTrait;
 
-    public function __construct(ValidationCollector $collector, ReaderInterface $dataStream)
+    public const NAME = 'unique';
+
+    private $options = [];
+
+    public function validate($columnName, array $context = []): void
     {
-        parent::__construct($collector);
-        $this->dataStream = $dataStream;
-    }
+        /** @var ReaderInterface $reader */
+        $reader = $this->getReader();
+        $reader->indexColumn($columnName);
 
-    public function validate($columnName, array $options = []): void
-    {
-        $this->dataStream->indexColumn($columnName);
+        $columnData = array_filter($reader->getColumn($columnName));
 
-        $columnData = $this->dataStream->getColumn($columnName);
-
-        if (\count($columnData) !== \count(array_unique($columnData))) {
+        $duplicates = array_unique($columnData);
+        if (\count($columnData) !== \count($duplicates)) {
             $this->getCollector()->collect(
                 new Constraint\UniqueValueConstraint(),
-                Constraint\UniqueValueConstraint::UNIQUE_VALUE
+                sprintf(
+                    Constraint\UniqueValueConstraint::UNIQUE_VALUE,
+                    implode(', ', $duplicates)
+                ),
+                $context
             );
         }
     }

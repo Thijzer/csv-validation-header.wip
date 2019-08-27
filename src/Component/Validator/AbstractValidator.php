@@ -2,7 +2,9 @@
 
 namespace Misery\Component\Validator;
 
-abstract class AbstractValidator
+use Misery\src\Component\Validator\ValidatorInterface;
+
+abstract class AbstractValidator implements ValidatorInterface
 {
     private $collector;
 
@@ -16,5 +18,5 @@ abstract class AbstractValidator
         return $this->collector;
     }
 
-    abstract function validate($value, array $options = []): void;
+    abstract function validate($value, array $context = []): void;
 }

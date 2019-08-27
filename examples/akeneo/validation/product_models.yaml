@@ -1,0 +1,30 @@
+columns:
+  code:
+    int:
+  family_variant:
+    string:
+  parent:
+    string:
+  categories:
+    list:
+
+rows:
+  unflatten:
+    separator: '-'
+  nullify: ~
+
+index:
+  code:
+
+validations:
+  property:
+    code:
+      unique:
+    parent:
+      reference_exist:
+        file: product_models
+        id: code
+    family_variant:
+      reference_exist:
+        file: family_variants
+        id: code

@@ -1,0 +1,21 @@
+columns:
+  code:
+    string:
+  sort_order:
+    integer:
+
+rows:
+  unflatten:
+    separator: '-'
+  nullify: ~
+
+index:
+  code:
+
+validations:
+  property:
+    code:
+      unique:
+    sort_order:
+      required:
+      is_integer:

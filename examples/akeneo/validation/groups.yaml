@@ -1,0 +1,27 @@
+columns:
+  code:
+    string:
+  type:
+    string:
+
+rows:
+  unflatten:
+    separator: '-'
+  nullify: ~
+
+index:
+  code:
+
+validations:
+  property:
+    code:
+      unique:
+    type:
+      required:
+      reference_exist:
+        file: group_types
+        id: code
+    label:
+      elem_exist:
+        file: enabled_locales
+        id: code

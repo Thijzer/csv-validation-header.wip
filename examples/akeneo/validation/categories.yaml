@@ -1,0 +1,22 @@
+columns:
+  code:
+    string:
+  parent:
+    string:
+
+rows:
+  unflatten:
+    separator: '-'
+  nullify: ~
+
+index:
+  code:
+
+validations:
+  property:
+    code:
+      unique:
+    parent:
+      reference_exist:
+        file: categories
+        id: code
