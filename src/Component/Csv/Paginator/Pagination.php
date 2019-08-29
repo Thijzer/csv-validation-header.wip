@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Csv\Paginator;
 
-use Misery\Component\Csv\Reader\CsvCursorInterface;
+use Misery\Component\Common\Cursor\CursorInterface;
 
 class Pagination
 {
@@ -10,7 +10,7 @@ class Pagination
     private $pageId = 0;
     private $limit = 0;
 
-    public static function calculate(CsvCursorInterface $cursor, int $pageId, int $limit): Pagination
+    public static function calculate(CursorInterface $cursor, int $pageId, int $limit): Pagination
     {
         $self = new self();
         $self->nbResults = $cursor->count();
