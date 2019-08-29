@@ -46,18 +46,28 @@ class CachedCursor implements CursorInterface
      */
     public function current()
     {
-        $i = $this->position;
+        $position = $this->position;
 
-        if (!in_array($i, $this->range)) {
-            $this->range = range($i,$i+$this->options['cache_size']);
-            $this->cursor->loop(function (array $row) {
-                if (\in_array($this->cursor->key(), $this->range, true)) {
+        $this->prefetch($position);
+
+        return $this->items[$position] ?? false;
+    }
+
+    private function prefetch(int $i): void
+    {
+        if (!isset($this->range[$i])) {
+            $this->range = range($i,$i + $this->options['cache_size']);
+            $this->items = [];
+            while ($row = $this->cursor->current()) {
+                if (isset($this->range[$this->cursor->key()])) {
                     $this->items[$this->cursor->key()] = $row;
+                    if ($this->count() === $this->options['cache_size']) {
+                        break;
+                    }
                 }
-            });
+                $this->cursor->next();
+            }
         }
-
-        return $this->items[$i] ?? false;
     }
 
     /**

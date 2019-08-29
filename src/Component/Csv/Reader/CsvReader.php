@@ -4,19 +4,31 @@ namespace Misery\Component\Csv\Reader;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Processor\CsvDataProcessor;
+use Misery\Component\Common\Processor\NullDataProcessor;
 use Misery\Component\Csv\Cache\CacheCollector;
 
 class CsvReader implements ReaderInterface
 {
+    public const FETCH_NO_REWIND_MODE = 'FETCH_NO_REWIND_MODE';
+
     private $cursor;
     private $processor;
     private $cache;
 
-    public function __construct(CursorInterface $cursor, CsvDataProcessor $processor = null)
+    private $options = [
+        self::FETCH_NO_REWIND_MODE => false,
+    ];
+
+    public function __construct(CursorInterface $cursor)
     {
         $this->cursor = $cursor;
-        $this->processor = $processor;
+        $this->processor = new NullDataProcessor();
         $this->cache = new CacheCollector();
+    }
+
+    public function setProcessor(CsvDataProcessor $processor)
+    {
+        $this->processor = $processor;
     }
 
     public function getCursor(): CursorInterface
@@ -26,16 +38,9 @@ class CsvReader implements ReaderInterface
 
     public function loop(callable $callable): void
     {
-        if ($this->processor) {
-            while ($this->cursor->valid()) {
-                $callable($this->processor->processRow($this->cursor->current()));
-                $this->cursor->next();
-            }
-        } else {
-            while ($this->cursor->valid()) {
-                $callable($this->cursor->current());
-                $this->cursor->next();
-            }
+        while ($this->cursor->valid()) {
+            $callable($this->processor->processRow($this->cursor->current()));
+            $this->cursor->next();
         }
 
         $this->cursor->rewind();
@@ -45,14 +50,12 @@ class CsvReader implements ReaderInterface
     {
         $data = $this->getRows([$line]);
 
-        //$this->cursor = new ItemCollection($data);
-
         return $data;
     }
 
     public function getColumn(string $columnName): array
     {
-        if (false === $this->cache->hasCache($columnName)) {
+        if (false === $this->cache->hasKey($columnName)) {
             $columnValues = [];
             $this->loop(function ($row) use (&$columnValues, $columnName) {
                 $columnValues[$this->cursor->key()] = $row[$columnName];
@@ -80,16 +83,23 @@ class CsvReader implements ReaderInterface
 
     private function getRows(array $lines): array
     {
-       // if ($this->cache->hasCaches($lines)) {
-       //     return $this->cache->getCaches($lines);
-       // }
+        // flip to position the lines as keys
+        $lines = array_flip($lines);
 
         $collect = [];
-        $this->loop(function ($row) use (&$collect, $lines) {
-            if (\in_array($this->cursor->key(), $lines, true)) {
+        while ($row = $this->cursor->current()) {
+            if (isset($lines[$this->cursor->key()])) {
                 $collect[$this->cursor->key()] = $row;
+                if (\count($collect) === \count($lines)) {
+                    break;
+                }
             }
-        });
+            $this->cursor->next();
+        }
+
+        if (false === $this->options[self::FETCH_NO_REWIND_MODE]) {
+            $this->cursor->rewind();
+        }
 
         return $collect;
     }
@@ -106,32 +116,26 @@ class CsvReader implements ReaderInterface
         return $values;
     }
 
-    public function findOneBy(array $filter): array
+    public function findOneBy(array $filter, array $options = []): array
     {
-        return current($this->findBy($filter)) ?: [];
+        return current($this->findBy($filter, $options)) ?: [];
     }
 
-    public function findBy(array $filter): array
+    public function findBy(array $filter, array $options = []): array
     {
+        $this->options = array_merge($this->options, $options);
+
         $columnName = key($filter);
 
-        if ($this->cache->hasCache($columnName)) {
+        if ($this->cache->hasKey($columnName)) {
 
             // fetch the correct line numbers
             $lines = array_keys($this->cache->filterCache($columnName, static function ($item) use ($filter) {
                 return $filter[key($filter)] === $item;
             }));
 
-            //if ($mode === self::EAGER_MODE && !$this->cache->hasCaches($lines)) {
-                // fill the cache
-                //$this->cursor = new ItemCollection($this->getRows(range($lines[0],$lines[0]+self::MED_CACHE_SIZE)));
-               // $this->cache->setCaches($this->getRows(range($lines[0],$lines[0]+self::MED_CACHE_SIZE)));
-            //}
-
             // fetch the values for these line numbers
             $data = $this->getRows($lines);
-
-            //$this->cursor = new ItemCollection($data);
 
             return $data;
         }
@@ -139,8 +143,6 @@ class CsvReader implements ReaderInterface
         $data = $this->filter(static function ($item) use ($filter, $columnName) {
             return $item[$columnName] === $filter[$columnName];
         });
-
-        //$this->cursor = new ItemCollection($data);
 
         return $data;
     }

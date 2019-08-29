@@ -35,7 +35,7 @@ class ItemCollection implements CursorInterface
 
     public function hasHeaders(): bool
     {
-        return true;
+        return false;
     }
 
     /**

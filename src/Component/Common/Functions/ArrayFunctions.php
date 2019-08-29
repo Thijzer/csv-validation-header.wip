@@ -4,9 +4,7 @@ namespace Misery\Component\Common\Functions;
 
 class ArrayFunctions
 {
-    public const ADDED = 'ADDED';
-    public const REMOVED = 'REMOVED';
-    public const CHANGED = 'CHANGED';
+    public const BECAME = 'BECAME';
 
     /**
      * ISSUE with unflatten
@@ -64,10 +62,7 @@ class ArrayFunctions
         $a = static::flatten($a);
         $b = static::flatten($b);
 
-        return static::unflatten([
-            static::REMOVED => array_diff($a, $b),
-            static::ADDED => array_diff($b, $a),
-        ]);
+        return static::unflatten(array_diff($b, $a));
     }
 
     /**

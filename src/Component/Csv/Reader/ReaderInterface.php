@@ -12,6 +12,6 @@ interface ReaderInterface
     public function loop(callable $callable): void;
     //public function read(string $filename);
     public function indexColumn(string $columnName): void;
-    public function findBy(array $filter): array;
-    public function findOneBy(array $filter): array;
+    public function findBy(array $filter, array $options = []): array;
+    public function findOneBy(array $filter, array $options = []): array;
 }
