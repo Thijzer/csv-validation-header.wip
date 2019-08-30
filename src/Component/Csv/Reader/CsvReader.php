@@ -38,8 +38,8 @@ class CsvReader implements ReaderInterface
 
     public function loop(callable $callable): void
     {
-        while ($this->cursor->valid()) {
-            $callable($this->processor->processRow($this->cursor->current()));
+        while ($row = $this->cursor->current()) {
+            $callable($this->processor->processRow($row));
             $this->cursor->next();
         }
 
@@ -81,7 +81,7 @@ class CsvReader implements ReaderInterface
         $this->cache->setCache($columnName, $this->getColumn($columnName));
     }
 
-    private function getRows(array $lines): array
+    public function getRows(array $lines): array
     {
         // flip to position the lines as keys
         $lines = array_flip($lines);
@@ -116,29 +116,27 @@ class CsvReader implements ReaderInterface
         return $values;
     }
 
-    public function findOneBy(array $filter, array $options = []): array
+    public function findOneBy(array $filter): array
     {
-        return current($this->findBy($filter, $options)) ?: [];
+        return current($this->findBy($filter)) ?: [];
     }
 
-    public function findBy(array $filter, array $options = []): array
+    public function findBy(array $filter): array
     {
-        $this->options = array_merge($this->options, $options);
-
         $columnName = key($filter);
 
-        if ($this->cache->hasKey($columnName)) {
-
-            // fetch the correct line numbers
-            $lines = array_keys($this->cache->filterCache($columnName, static function ($item) use ($filter) {
-                return $filter[key($filter)] === $item;
-            }));
-
-            // fetch the values for these line numbers
-            $data = $this->getRows($lines);
-
-            return $data;
-        }
+//        if ($this->cache->hasKey($columnName)) {
+//
+//            // fetch the correct line numbers
+//            $lines = array_keys($this->cache->filterCache($columnName, static function ($item) use ($filter) {
+//                return $filter[key($filter)] === $item;
+//            }));
+//
+//            // fetch the values for these line numbers
+//            $data = $this->getRows($lines);
+//
+//            return $data;
+//        }
 
         $data = $this->filter(static function ($item) use ($filter, $columnName) {
             return $item[$columnName] === $filter[$columnName];

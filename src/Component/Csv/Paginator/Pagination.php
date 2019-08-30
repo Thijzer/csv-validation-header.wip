@@ -61,7 +61,7 @@ class Pagination implements PaginationInterface
                 break;
             }
             if ($this->isPartOfPage($this->cursor->key())) {
-                $results[] = $this->cursor->current();
+                $results[$this->cursor->key()] = $this->cursor->current();
             }
             $this->cursor->next();
         }

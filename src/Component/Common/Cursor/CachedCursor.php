@@ -53,10 +53,15 @@ class CachedCursor implements CursorInterface
         return $this->items[$position] ?? false;
     }
 
+    /**
+     * Cursor is not rewind
+     * so it could keep fetches in chuncks without reset
+     * @param int $i position
+     */
     private function prefetch(int $i): void
     {
         if (!isset($this->range[$i])) {
-            $this->range = range($i,$i + $this->options['cache_size']);
+            $this->range = array_flip(range($i,$i + $this->options['cache_size']-1));
             $this->items = [];
             while ($row = $this->cursor->current()) {
                 if (isset($this->range[$this->cursor->key()])) {
