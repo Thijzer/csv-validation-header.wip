@@ -2,11 +2,8 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
-$validationDir = __DIR__.'/../examples/akeneo/validation';
-$exampleDir = __DIR__.'/../examples/akeneo/icecat_demo_dev';
-
-$products = 'products';
-$families = 'families';
+$validationDir = __DIR__.'/akeneo/validation';
+$exampleDir = __DIR__.'/akeneo/icecat_demo_dev';
 
 $collector = new Misery\Component\Validator\ValidationCollector();
 

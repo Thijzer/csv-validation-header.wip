@@ -48,9 +48,7 @@ class CsvReader implements ReaderInterface
 
     public function getRow(int $line): array
     {
-        $data = $this->getRows([$line]);
-
-        return $data;
+        return $this->getRows([$line]);
     }
 
     public function getColumn(string $columnName): array
@@ -89,7 +87,7 @@ class CsvReader implements ReaderInterface
         $collect = [];
         while ($row = $this->cursor->current()) {
             if (isset($lines[$this->cursor->key()])) {
-                $collect[$this->cursor->key()] = $row;
+                $collect[$this->cursor->key()] = $this->processor->processRow($row);
                 if (\count($collect) === \count($lines)) {
                     break;
                 }
@@ -126,23 +124,18 @@ class CsvReader implements ReaderInterface
         $columnName = key($filter);
 
         if ($this->cache->hasKey($columnName)) {
-
             // fetch the correct line numbers
             $lines = array_keys($this->cache->filterCache($columnName, static function ($item) use ($filter) {
                 return $filter[key($filter)] === $item;
             }));
-
-            // fetch the values for these line numbers
-            $data = $this->getRows($lines);
-
-            return $data;
+        } else {
+            $lines = array_keys($this->filter(static function ($item) use ($filter, $columnName) {
+                return $item[$columnName] === $filter[$columnName];
+            }));
         }
 
-        $data = $this->filter(static function ($item) use ($filter, $columnName) {
-            return $item[$columnName] === $filter[$columnName];
-        });
-
-        return $data;
+        // fetch the values for these line numbers
+        return $this->getRows($lines);
     }
 
     public function clear(): void

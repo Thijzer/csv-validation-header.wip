@@ -10,8 +10,8 @@ use Misery\Component\Modifier\StripSlashesModifier;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$parser = CsvParser::create(__DIR__ . '/tests/examples/family.csv', ';');
-$newFile = CsvParser::create(__DIR__ . '/tests/examples/family_new.csv', ';');
+$parser = CsvParser::create(__DIR__ . '/private/family.csv', ';');
+$newFile = CsvParser::create(__DIR__ . '/private/family_new.csv', ';');
 
 $modifierRegistry = new ModifierRegistry();
 $modifierRegistry->register(new StripSlashesModifier());
@@ -35,16 +35,15 @@ $processor
     ->addRegistry($modifierRegistry)
 ;
 
-$processor->filterSubjects(Symfony\Component\Yaml\Yaml::parseFile(__DIR__ . '/tests/examples/family.yaml'));
+$processor->filterSubjects(Symfony\Component\Yaml\Yaml::parseFile(__DIR__ . '/private/family.yaml'));
 
-$reader = new Misery\Component\Csv\Reader\CsvReader($parser, $processor);
+$reader = new Misery\Component\Csv\Reader\CsvReader($parser);
+$reader->setProcessor($processor);
 
-$secondReader = new Misery\Component\Csv\Reader\CsvReader($newFile, $processor);
+$secondReader = new Misery\Component\Csv\Reader\CsvReader($newFile);
+$secondReader->setProcessor($processor);
 
-$compare = new Misery\Component\Csv\Compare\CsvCompare(
-    $reader,
-    $secondReader
-);
+$compare = new Misery\Component\Csv\Compare\CsvCompare($reader, $secondReader);
 
 dump(
     $compare->compare('code')

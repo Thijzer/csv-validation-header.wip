@@ -23,6 +23,7 @@ class CsvCompare
 
     public function compare(string $reference): array
     {
+        // compare the old with the new
         $oldCodes = $this->old->getColumn($reference);
         $newCodes = $this->new->getColumn($reference);
 
@@ -35,9 +36,9 @@ class CsvCompare
         // filter out created and removed lines
         $otherCodes = array_diff($oldCodes, $changes[self::ADDED], $changes[self::REMOVED]);
 
-        foreach ($this->new->getRows(array_keys($otherCodes)) as $lineNumber => $new) {
-            $id = $new[$reference];
-            $old = $this->old->findOneBy([$reference => $id]);
+        foreach ($this->old->getRows(array_keys($otherCodes)) as $lineNumber => $old) {
+            $id = $old[$reference];
+            $new = $this->new->findOneBy([$reference => $id]);
 
             if ($new != $old) {
                 $changes[self::CHANGED][] = [

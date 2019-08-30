@@ -3,7 +3,7 @@
 namespace Misery\Component\Common\Registry;
 
 use Misery\Component\Common\Collection\ArrayCollection;
-use Misery\src\Component\Validator\ValidatorInterface;
+use Misery\Component\Validator\ValidatorInterface;
 
 class ValidationRegistry implements Registry
 {
