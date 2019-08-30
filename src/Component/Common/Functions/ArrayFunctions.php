@@ -4,8 +4,6 @@ namespace Misery\Component\Common\Functions;
 
 class ArrayFunctions
 {
-    public const BECAME = 'BECAME';
-
     /**
      * ISSUE with unflatten
      * label-23 => becomes label[23]
