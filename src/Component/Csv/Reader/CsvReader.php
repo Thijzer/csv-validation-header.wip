@@ -125,18 +125,18 @@ class CsvReader implements ReaderInterface
     {
         $columnName = key($filter);
 
-//        if ($this->cache->hasKey($columnName)) {
-//
-//            // fetch the correct line numbers
-//            $lines = array_keys($this->cache->filterCache($columnName, static function ($item) use ($filter) {
-//                return $filter[key($filter)] === $item;
-//            }));
-//
-//            // fetch the values for these line numbers
-//            $data = $this->getRows($lines);
-//
-//            return $data;
-//        }
+        if ($this->cache->hasKey($columnName)) {
+
+            // fetch the correct line numbers
+            $lines = array_keys($this->cache->filterCache($columnName, static function ($item) use ($filter) {
+                return $filter[key($filter)] === $item;
+            }));
+
+            // fetch the values for these line numbers
+            $data = $this->getRows($lines);
+
+            return $data;
+        }
 
         $data = $this->filter(static function ($item) use ($filter, $columnName) {
             return $item[$columnName] === $filter[$columnName];
