@@ -2,9 +2,10 @@
 
 namespace Misery\Component\Csv\Reader;
 
+use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Csv\Exception\InvalidCsvElementSizeException;
 
-class CsvParser implements CsvCursorInterface
+class CsvParser implements CsvInterface, CursorInterface
 {
     public const DELIMITER = ';';
     public const ENCLOSURE = '"';
@@ -112,6 +113,7 @@ class CsvParser implements CsvCursorInterface
      */
     public function rewind(): void
     {
+        $this->count = $this->key();
         $this->file->rewind();
         // allow headers
         $this->hasHeaders()? $this->next(): null;
@@ -131,9 +133,7 @@ class CsvParser implements CsvCursorInterface
     public function count(): int
     {
         if (null === $this->count) {
-            $position = $this->key();
-            $this->count = iterator_count($this);
-            $this->seek($position);
+            $this->loop(function (){});
         }
 
         return $this->count;

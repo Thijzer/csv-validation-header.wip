@@ -2,56 +2,60 @@
 
 namespace Misery\Component\Csv\Reader;
 
+use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Processor\CsvDataProcessor;
+use Misery\Component\Common\Processor\NullDataProcessor;
 use Misery\Component\Csv\Cache\CacheCollector;
 
 class CsvReader implements ReaderInterface
 {
+    public const FETCH_NO_REWIND_MODE = 'FETCH_NO_REWIND_MODE';
+
     private $cursor;
     private $processor;
     private $cache;
 
-    public function __construct(CsvCursorInterface $cursor, CsvDataProcessor $processor = null)
+    private $options = [
+        self::FETCH_NO_REWIND_MODE => false,
+    ];
+
+    public function __construct(CursorInterface $cursor)
     {
         $this->cursor = $cursor;
-        $this->processor = $processor;
+        $this->processor = new NullDataProcessor();
         $this->cache = new CacheCollector();
     }
 
-    public function getCursor(): CsvCursorInterface
+    public function setProcessor(CsvDataProcessor $processor)
     {
-        return $this->cursor;
+        $this->processor = $processor;
     }
 
-    public function line(): int
+    public function getCursor(): CursorInterface
     {
-        return $this->cursor->key();
+        return $this->cursor;
     }
 
     public function loop(callable $callable): void
     {
         while ($row = $this->cursor->current()) {
-            $callable($this->processor ? $this->processor->processRow($row): $row);
+            $callable($this->processor->processRow($row));
             $this->cursor->next();
         }
+
         $this->cursor->rewind();
     }
 
     public function getRow(int $line): array
     {
-        $columnValues = [];
-        $this->loop(function ($row) use (&$columnValues, $line) {
-            if ($this->cursor->key() === $line) {
-                $columnValues = $row;
-            }
-        });
+        $data = $this->getRows([$line]);
 
-        return $columnValues;
+        return $data;
     }
 
     public function getColumn(string $columnName): array
     {
-        if (false === $this->cache->hasCache($columnName)) {
+        if (false === $this->cache->hasKey($columnName)) {
             $columnValues = [];
             $this->loop(function ($row) use (&$columnValues, $columnName) {
                 $columnValues[$this->cursor->key()] = $row[$columnName];
@@ -77,11 +81,27 @@ class CsvReader implements ReaderInterface
         $this->cache->setCache($columnName, $this->getColumn($columnName));
     }
 
-    private function getRows(array $lines): array
+    public function getRows(array $lines): array
     {
-        return array_map(function ($line) {
-            return $this->getRow($line);
-        }, $lines);
+        // flip to position the lines as keys
+        $lines = array_flip($lines);
+
+        $collect = [];
+        while ($row = $this->cursor->current()) {
+            if (isset($lines[$this->cursor->key()])) {
+                $collect[$this->cursor->key()] = $row;
+                if (\count($collect) === \count($lines)) {
+                    break;
+                }
+            }
+            $this->cursor->next();
+        }
+
+        if (false === $this->options[self::FETCH_NO_REWIND_MODE]) {
+            $this->cursor->rewind();
+        }
+
+        return $collect;
     }
 
     private function filter(callable $callable): array
@@ -105,19 +125,29 @@ class CsvReader implements ReaderInterface
     {
         $columnName = key($filter);
 
-        if ($this->cache->hasCache($columnName)) {
+        if ($this->cache->hasKey($columnName)) {
 
             // fetch the correct line numbers
-            $lines = $this->cache->filterCache($columnName, static function ($item) use ($filter) {
+            $lines = array_keys($this->cache->filterCache($columnName, static function ($item) use ($filter) {
                 return $filter[key($filter)] === $item;
-            });
+            }));
 
             // fetch the values for these line numbers
-            return array_values($this->getRows($lines));
+            $data = $this->getRows($lines);
+
+            return $data;
         }
 
-        return $this->filter(static function ($item) use ($filter, $columnName) {
+        $data = $this->filter(static function ($item) use ($filter, $columnName) {
             return $item[$columnName] === $filter[$columnName];
         });
+
+        return $data;
+    }
+
+    public function clear(): void
+    {
+        $this->cursor->clear();
+        $this->cache->clear();
     }
 }

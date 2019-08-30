@@ -3,6 +3,7 @@
 namespace Misery\Component\Csv\Compare;
 
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
+use Misery\Component\Csv\Reader\CsvReader;
 use Misery\Component\Csv\Reader\ReaderInterface;
 
 class CsvCompare
@@ -34,14 +35,19 @@ class CsvCompare
         // filter out created and removed lines
         $otherCodes = array_diff($oldCodes, $changes[self::ADDED], $changes[self::REMOVED]);
 
-        foreach ($otherCodes as $lineNumber => $id) {
-            $old = $this->new->findOneBy([$reference => $id]);
-            $new = $this->old->findOneBy([$reference => $id]);
+        foreach ($this->new->getRows(array_keys($otherCodes)) as $lineNumber => $new) {
+            $id = $new[$reference];
+            $old = $this->old->findOneBy([$reference => $id]);
 
             if ($new != $old) {
                 $changes[self::CHANGED][] = [
-                    $reference => [$lineNumber => $id],
-                    'changes' => Arr::multiCompare($new, $old),
+                    'reference' => $reference,
+                    'id' => $id,
+                    'line' => $lineNumber,
+                    'changes' => array_filter([
+                        self::REMOVED => Arr::multiCompare($new, $old),
+                        self::ADDED => Arr::multiCompare($old, $new),
+                    ]),
                 ];
             }
         }
