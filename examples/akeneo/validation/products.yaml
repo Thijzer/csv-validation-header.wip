@@ -1,16 +1,16 @@
 columns:
   sku:
-    string:
+    string: ~
   categories:
-    list:
+    list: ~
   enabled:
-    boolean:
+    boolean: ~
   family:
-    string:
+    string: ~
   parent:
-    string:
+    string: ~
   groups:
-    list:
+    list: ~
 
 rows:
   unflatten:

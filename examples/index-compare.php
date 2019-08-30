@@ -14,11 +14,11 @@ $parser = CsvParser::create(__DIR__ . '/private/family.csv', ';');
 $newFile = CsvParser::create(__DIR__ . '/private/family_new.csv', ';');
 
 $modifierRegistry = new ModifierRegistry();
-$modifierRegistry->register(new StripSlashesModifier());
-$modifierRegistry->register(new Misery\Component\Modifier\ArrayUnflattenModifier());
-$modifierRegistry->register(new Misery\Component\Modifier\NullifyEmptyStringModifier());
-
-
+$modifierRegistry
+    ->register(new StripSlashesModifier())
+    ->register(new Misery\Component\Modifier\ArrayUnflattenModifier())
+    ->register(new Misery\Component\Modifier\NullifyEmptyStringModifier())
+;
 $formatRegistry = new FormatRegistry();
 $formatRegistry
     ->register(new SerializeFormat())
@@ -28,7 +28,6 @@ $formatRegistry
     ->register(new Misery\Component\Format\DateTimeFormat())
     ->register(new Misery\Component\Format\ListFormat())
 ;
-
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
 $processor
     ->addRegistry($formatRegistry)
@@ -36,14 +35,13 @@ $processor
 ;
 
 $processor->filterSubjects(Symfony\Component\Yaml\Yaml::parseFile(__DIR__ . '/private/family.yaml'));
+$parser->setProcessor($processor);
+$newFile->setProcessor($processor);
 
-$reader = new Misery\Component\Csv\Reader\CsvReader($parser);
-$reader->setProcessor($processor);
-
-$secondReader = new Misery\Component\Csv\Reader\CsvReader($newFile);
-$secondReader->setProcessor($processor);
-
-$compare = new Misery\Component\Csv\Compare\CsvCompare($reader, $secondReader);
+$compare = new Misery\Component\Csv\Compare\CsvCompare(
+   new Misery\Component\Csv\Reader\CsvReader($parser),
+   new Misery\Component\Csv\Reader\CsvReader($newFile)
+);
 
 dump(
     $compare->compare('code')
