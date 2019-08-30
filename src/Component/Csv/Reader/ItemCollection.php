@@ -3,7 +3,6 @@
 namespace Misery\Component\Csv\Reader;
 
 use Misery\Component\Common\Cursor\CursorInterface;
-use Misery\Component\Csv\Exception\InvalidCsvElementSizeException;
 
 class ItemCollection implements CursorInterface
 {
@@ -16,7 +15,8 @@ class ItemCollection implements CursorInterface
 
     public function __construct(array $items = [])
     {
-        $this->items = $items;
+        // array_values removes any position keys
+        $this->items = array_values($items);
     }
 
     public function loop(callable $callable): void
@@ -43,7 +43,7 @@ class ItemCollection implements CursorInterface
      */
     public function current()
     {
-        return $this->items[$this->position];
+        return $this->items[$this->position] ?? $this->valid();
     }
 
     /**
@@ -87,6 +87,14 @@ class ItemCollection implements CursorInterface
         if (!$this->valid()) {
             //throw new OutOfBoundsException('Invalid position');
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getValues(): array
+    {
+        return $this->items;
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Validator;
 
-use Misery\src\Component\Validator\ValidatorInterface;
+use Misery\Component\Validator\ValidatorInterface;
 
 abstract class AbstractValidator implements ValidatorInterface
 {

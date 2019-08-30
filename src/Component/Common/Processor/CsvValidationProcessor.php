@@ -9,7 +9,7 @@ use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Csv\Reader\ReaderAwareInterface;
 use Misery\Component\Csv\Reader\ReaderInterface;
 use Misery\Component\Csv\Validator\UniqueValueValidator;
-use Misery\src\Component\Validator\ValidatorInterface;
+use Misery\Component\Validator\ValidatorInterface;
 
 class CsvValidationProcessor
 {
@@ -92,7 +92,7 @@ class CsvValidationProcessor
                     $reader = $this->getRegistry(ReaderRegistry::NAME)->filterByName($file)->first();
                     /** @var $reader ReaderInterface */
                     $reader->loop(function ($row) use ($property, $reader, $class, $context) {
-                        $context['line'] = $reader->line();
+                        $context['line'] = $reader->getCursor()->key();
                         $context['column'] = $property;
 
                         $class->validate($row[$property], $context);

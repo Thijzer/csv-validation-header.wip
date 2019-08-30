@@ -3,6 +3,8 @@
 namespace Misery\Component\Csv\Reader;
 
 use Misery\Component\Common\Cursor\CursorInterface;
+use Misery\Component\Common\Processor\CsvDataProcessor;
+use Misery\Component\Common\Processor\NullDataProcessor;
 use Misery\Component\Csv\Exception\InvalidCsvElementSizeException;
 
 class CsvParser implements CsvInterface, CursorInterface
@@ -14,6 +16,7 @@ class CsvParser implements CsvInterface, CursorInterface
     private $headers;
     private $file;
     private $count;
+    private $processor;
 
     public function __construct(
         \SplFileObject $file,
@@ -31,6 +34,7 @@ class CsvParser implements CsvInterface, CursorInterface
             \SplFileObject::DROP_NEW_LINE
         );
         $file->setCsvControl($delimiter, $enclosure, $escapeChar);
+        $this->processor = new NullDataProcessor();
 
         // set headers
         $this->headers = $file->current();
@@ -46,6 +50,11 @@ class CsvParser implements CsvInterface, CursorInterface
         return new self(new \SplFileObject($filename), $delimiter, $enclosure, $escapeChar);
     }
 
+    public function setProcessor(CsvDataProcessor $processor): void
+    {
+        $this->processor = $processor;
+    }
+
     public function getHeaders(): array
     {
         return $this->headers;
@@ -58,8 +67,8 @@ class CsvParser implements CsvInterface, CursorInterface
 
     public function loop(callable $callable): void
     {
-        while ($row = $this->current()) {
-            $callable($row);
+        while ($this->valid()) {
+            $callable($this->current());
             $this->next();
         }
         $this->rewind();
@@ -81,7 +90,7 @@ class CsvParser implements CsvInterface, CursorInterface
             throw new InvalidCsvElementSizeException($this->file->getFilename(), $this->key());
         }
 
-        return $row;
+        return $this->processor->processRow($row);
     }
 
     /**

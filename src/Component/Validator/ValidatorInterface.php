@@ -1,6 +1,6 @@
 <?php
 
-namespace Misery\src\Component\Validator;
+namespace Misery\Component\Validator;
 
 interface ValidatorInterface
 {

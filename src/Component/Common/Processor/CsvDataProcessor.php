@@ -48,7 +48,7 @@ class CsvDataProcessor
         }
 
         $rows = [];
-        foreach ($subjects['row'] ?? [] as $converterName => $converterOptions) {
+        foreach ($subjects['rows'] ?? [] as $converterName => $converterOptions) {
             $this->registries->map(function (Registry $registry) use ($converterName, $converterOptions, &$rows) {
                 /** @var ArrayCollection $items */
                 $items = $registry->filterByName($converterName);
