@@ -19,6 +19,11 @@ class ItemCollection implements CursorInterface
         $this->items = array_values($items);
     }
 
+    public function addItem($item): void
+    {
+        $this->items[] = $item;
+    }
+
     public function loop(callable $callable): void
     {
         while ($this->valid()) {

@@ -10,7 +10,7 @@ class CachedCursor implements CursorInterface
 
     private $position = 0;
     private $cursor;
-    private $items;
+    private $items = [];
 
     private $options = [
         'cache_size' => self::MEDIUM_CACHE_SIZE,
@@ -124,7 +124,7 @@ class CachedCursor implements CursorInterface
      */
     public function count(): int
     {
-        return \count($this->items);
+        return $this->cursor->count();
     }
 
     public function clear(): void

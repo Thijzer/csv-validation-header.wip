@@ -33,11 +33,6 @@ class Pagination implements PaginationInterface
         return ($this->limit * $this->pageId) - $this->limit;
     }
 
-    public function isPartOfPage(int $pageId): bool
-    {
-        return $pageId >= $this->getPageOffset() & $pageId <= $this->getPageUpset();
-    }
-
     public function getNbResults(): int
     {
         return $this->cursor->count();
@@ -55,16 +50,17 @@ class Pagination implements PaginationInterface
 
     public function getCurrentPageResults(): array
     {
+        $this->cursor->seek($this->getPageOffset()+1);
+
         $results = [];
         while ($this->cursor->valid()) {
-            if ($results === $this->getPageLimit()) {
+            $results[$this->cursor->key()] = $this->cursor->current();
+            if (\count($results) === $this->getPageLimit()) {
                 break;
-            }
-            if ($this->isPartOfPage($this->cursor->key())) {
-                $results[$this->cursor->key()] = $this->cursor->current();
             }
             $this->cursor->next();
         }
+
         $this->cursor->rewind();
 
         return $results;
@@ -93,11 +89,6 @@ class Pagination implements PaginationInterface
     public function getNextPage(): int
     {
         return $this->pageId + 1;
-    }
-
-    public function count(): int
-    {
-        return $this->getNbResults();
     }
 
     public function canPaginate(): bool
