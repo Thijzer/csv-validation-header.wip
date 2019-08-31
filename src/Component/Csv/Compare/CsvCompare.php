@@ -36,9 +36,12 @@ class CsvCompare
         // filter out created and removed lines
         $otherCodes = array_diff($oldCodes, $changes[self::ADDED], $changes[self::REMOVED]);
 
+        // flip codes so we can get find the NEW $lineNumber
+        $codes = array_flip($newCodes);
+
         foreach ($this->old->getRows(array_keys($otherCodes)) as $lineNumber => $old) {
             $id = $old[$reference];
-            $new = $this->new->findOneBy([$reference => $id]);
+            $new = $this->new->getRow($codes[$id]);
 
             if ($new != $old) {
                 $changes[self::CHANGED][] = [

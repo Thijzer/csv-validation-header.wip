@@ -4,14 +4,16 @@ namespace Misery\Component\Common\Cursor;
 
 class CachedCursor implements CursorInterface
 {
-    const MED_CACHE_SIZE = 10000;
+    const SMALL_CACHE_SIZE = 1000;
+    const MEDIUM_CACHE_SIZE = 5000;
+    const LARGE_CACHE_SIZE = 10000;
 
     private $position = 0;
     private $cursor;
     private $items;
 
     private $options = [
-        'cache_size' => self::MED_CACHE_SIZE,
+        'cache_size' => self::MEDIUM_CACHE_SIZE,
     ];
     private $range = [];
 
@@ -29,8 +31,8 @@ class CachedCursor implements CursorInterface
 
     public function loop(callable $callable): void
     {
-        while ($row = $this->current()) {
-            $callable($row);
+        while ($this->valid()) {
+            $callable($this->current());
             $this->next();
         }
         $this->rewind();
@@ -46,11 +48,9 @@ class CachedCursor implements CursorInterface
      */
     public function current()
     {
-        $position = $this->position;
+        $this->prefetch($this->position);
 
-        $this->prefetch($position);
-
-        return $this->items[$position] ?? false;
+        return $this->items[$this->position] ?? false;
     }
 
     /**

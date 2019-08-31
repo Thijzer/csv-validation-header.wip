@@ -35,7 +35,7 @@ class CsvReader implements ReaderInterface
 
     public function getRow(int $line): array
     {
-        return $this->getRows([$line]);
+        return current($this->getRows([$line])) ?? [];
     }
 
     public function getColumn(string $columnName): array
@@ -68,18 +68,10 @@ class CsvReader implements ReaderInterface
 
     public function getRows(array $lines): array
     {
-        // flip to position the lines as keys
-        $lines = array_flip($lines);
-
         $collect = [];
-        while ($this->cursor->valid()) {
-            if (isset($lines[$this->cursor->key()])) {
-                $collect[$this->cursor->key()] = $this->cursor->current();
-                if (\count($collect) === \count($lines)) {
-                    break;
-                }
-            }
-            $this->cursor->next();
+        foreach ($lines as $lineNr) {
+            $this->cursor->seek($lineNr);
+            $collect[$lineNr] = $this->cursor->current();
         }
 
         $this->cursor->rewind();
