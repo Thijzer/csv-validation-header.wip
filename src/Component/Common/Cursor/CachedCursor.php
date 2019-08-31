@@ -66,7 +66,7 @@ class CachedCursor implements CursorInterface
             while ($row = $this->cursor->current()) {
                 if (isset($this->range[$this->cursor->key()])) {
                     $this->items[$this->cursor->key()] = $row;
-                    if ($this->count() === $this->options['cache_size']) {
+                    if (\count($this->items) === $this->options['cache_size']) {
                         break;
                     }
                 }

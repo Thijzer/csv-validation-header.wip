@@ -50,7 +50,8 @@ class Pagination implements PaginationInterface
 
     public function getCurrentPageResults(): array
     {
-        $this->cursor->seek($this->getPageOffset()+1);
+        $this->cursor->rewind();
+        $this->cursor->seek($this->getPageOffset()+$this->cursor->key());
 
         $results = [];
         while ($this->cursor->valid()) {

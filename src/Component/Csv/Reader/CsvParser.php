@@ -122,10 +122,14 @@ class CsvParser implements CsvInterface, CursorInterface
      */
     public function rewind(): void
     {
+        if (false === $this->valid()) {
+            $this->count = $this->key() - (int) $this->hasHeaders();
+        }
+
         $this->count();
         $this->file->rewind();
 
-        !$this->hasHeaders()?: $this->next();
+        false == $this->hasHeaders() ?: $this->next();
     }
 
     /**
@@ -142,10 +146,7 @@ class CsvParser implements CsvInterface, CursorInterface
     public function count(): int
     {
         if (null === $this->count) {
-            while ($this->valid()) {
-                $this->next();
-            }
-            $this->count = $this->key() - $this->hasHeaders();
+            $this->loop(function (){});
         }
 
         return $this->count;

@@ -125,10 +125,4 @@ class CsvReader implements ReaderInterface
 
         return $rows;
     }
-
-    public function clear(): void
-    {
-        $this->cursor->clear();
-        $this->cache->clear();
-    }
 }
