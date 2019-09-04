@@ -70,7 +70,7 @@ class CsvParser implements CsvInterface, CursorInterface
      */
     public function loop(callable $callable): void
     {
-        foreach ($this->getInterator() as $row) {
+        foreach ($this->getIterator() as $row) {
             $callable($row);
         }
     }
@@ -78,7 +78,7 @@ class CsvParser implements CsvInterface, CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function getInterator(): \Generator
+    public function getIterator(): \Generator
     {
         while ($this->valid()) {
             yield $this->current();

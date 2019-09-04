@@ -1,30 +1,20 @@
 <?php
 
-use Misery\Component\Common\Processor\CsvValidationProcessor;
-use Misery\Component\Common\Registry\ReaderRegistry;
-use Misery\Component\Common\Registry\ValidationRegistry;
+use Misery\Component\Common\Cursor\CachedCursor;
 use Misery\Component\Csv\Reader\CsvParser;
 use Misery\Component\Csv\Reader\CsvReader;
-use Misery\Component\Csv\Validator\ReferencedColumnValidator;
-use Misery\Component\Csv\Validator\UniqueValueValidator;
-use Misery\Component\Validator\InArrayValidator;
-use Misery\Component\Validator\IntegerValidator;
-use Misery\Component\Validator\RequiredValidator;
-use Misery\Component\Validator\SnakeCaseValidator;
-use Misery\Component\Validator\ValidationCollector;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-use Symfony\Component\Yaml\Yaml;
 
 require __DIR__.'/../vendor/autoload.php';
 
 $validationFile = Symfony\Component\Yaml\Yaml::parseFile(__DIR__ . '/sales.yaml');
 
 $zip = new \ZipArchive();
-$res = $zip->open($value->getRealPath());
+$res = $zip->open(__DIR__.'/1500000 Sales Records.zip');
 
-if ($res === TRUE) {
-    $zip->extractTo($path = __DIR__ . '/tmp');
+if ($res === true) {
+    $zip->extractTo($path = __DIR__ . '/tmp/');
     $zip->close();
 } else {
     return;
@@ -35,7 +25,6 @@ $finder = new Finder();
 $modifierRegistry = new Misery\Component\Common\Registry\ModifierRegistry();
 $modifierRegistry
     ->register(new Misery\Component\Modifier\StripSlashesModifier())
-//    ->register(new Misery\Component\Modifier\ArrayUnflattenModifier())
     ->register(new Misery\Component\Modifier\NullifyEmptyStringModifier())
 ;
 $formatRegistry = new Misery\Component\Common\Registry\FormatRegistry();
@@ -58,11 +47,12 @@ $processor->filterSubjects($validationFile);
 
 /** @var SplFileInfo $file */
 foreach ($finder->in($path)->name('*.csv') as $file) {
-
     $reader = new Misery\Component\Csv\Reader\CsvReader(
-        $parser = new CsvReader(CsvParser::create($file->getRealPath(),',')),
+        CachedCursor::create($parser = CsvParser::create($file->getRealPath(),',')),
     );
     $parser->setProcessor($processor);
 
     $found = $reader->findBy(['Order ID' => '873970830']);
+    var_dump($found);
+    exit;
 }

@@ -13,10 +13,9 @@ columns:
     string: ~
   Order ID:
     string: ~
-  Order Date:
-    string: ~
   Ship Date:
-    string: ~
+    datetime:
+      format: 'd/m/Y'
   Units Sold:
     integer: ~
   Unit Price:

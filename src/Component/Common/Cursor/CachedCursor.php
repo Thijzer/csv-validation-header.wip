@@ -34,14 +34,14 @@ class CachedCursor implements CursorInterface
      */
     public function loop(callable $callable): void
     {
-        foreach ($this->getInterator() as $row) {
+        foreach ($this->getIterator() as $row) {
             $callable($row);
         }
     }
     /**
      * {@inheritDoc}
      */
-    public function getInterator(): \Generator
+    public function getIterator(): \Generator
     {
         while ($this->valid()) {
             yield $this->current();
@@ -70,7 +70,6 @@ class CachedCursor implements CursorInterface
         if (!isset($this->range[$i])) {
             $this->range = array_flip(range($i,$i + $this->options['cache_size']-1));
             $this->items = [];
-            $this->cursor->seek($i);
             while ($row = $this->cursor->current()) {
                 if (isset($this->range[$this->cursor->key()])) {
                     $this->items[$this->cursor->key()] = $row;

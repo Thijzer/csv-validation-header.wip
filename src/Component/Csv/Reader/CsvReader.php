@@ -25,7 +25,7 @@ class CsvReader implements ReaderInterface
 
     public function loop(callable $callable): void
     {
-        foreach($this->cursor->getInterator() as $row) {
+        foreach($this->cursor->getIterator() as $row) {
             $callable($row);
         }
     }
