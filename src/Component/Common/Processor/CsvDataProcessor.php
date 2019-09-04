@@ -8,7 +8,7 @@ use Misery\Component\Common\Registry\FormatRegistry;
 use Misery\Component\Common\Registry\ModifierRegistry;
 use Misery\Component\Common\Registry\Registry;
 
-class CsvDataProcessor
+class CsvDataProcessor implements CsvDataProcessorInterface
 {
     private $registries;
     private $processableHeaders;

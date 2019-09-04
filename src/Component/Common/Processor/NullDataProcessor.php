@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Common\Processor;
 
-class NullDataProcessor
+class NullDataProcessor implements CsvDataProcessorInterface
 {
     public function processRow(array $row): array
     {

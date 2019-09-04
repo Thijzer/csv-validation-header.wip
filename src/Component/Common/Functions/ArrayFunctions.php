@@ -85,6 +85,25 @@ class ArrayFunctions
         return $data;
     }
 
+    /**
+     * Merge Array A and B together as One
+     * Some new keys will be generated to avoid collision with same values
+     * Array A is leading
+     *
+     * @param array $a
+     * @param array $b
+     *
+     * @return array
+     */
+    public static function arrayUnion(array $a, array $b)
+    {
+        return array_merge(
+            array_intersect($a, $b),
+            array_diff($a, $b),
+            array_diff($b, $a)
+        );
+    }
+
     public static function array_set(&$array, $key, $value, $prefix = '.'): array
     {
         if (null === $key) {

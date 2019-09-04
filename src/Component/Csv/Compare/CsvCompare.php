@@ -44,9 +44,9 @@ class CsvCompare
             $new = $this->new->getRow($codes[$id]);
 
             if ($new != $old) {
-                $changes[self::CHANGED][] = [
+                $changes[self::CHANGED][$id] = [
                     'reference' => $reference,
-                    'id' => $id,
+                    $reference => $id,
                     'line' => $lineNumber,
                     'changes' => array_filter([
                         self::REMOVED => Arr::multiCompare($new, $old),

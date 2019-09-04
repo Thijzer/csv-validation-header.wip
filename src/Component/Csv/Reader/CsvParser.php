@@ -4,6 +4,7 @@ namespace Misery\Component\Csv\Reader;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Processor\CsvDataProcessor;
+use Misery\Component\Common\Processor\CsvDataProcessorInterface;
 use Misery\Component\Common\Processor\NullDataProcessor;
 use Misery\Component\Csv\Exception\InvalidCsvElementSizeException;
 
@@ -50,7 +51,7 @@ class CsvParser implements CsvInterface, CursorInterface
         return new self(new \SplFileObject($filename), $delimiter, $enclosure, $escapeChar);
     }
 
-    public function setProcessor(CsvDataProcessor $processor): void
+    public function setProcessor(CsvDataProcessorInterface $processor): void
     {
         $this->processor = $processor;
     }

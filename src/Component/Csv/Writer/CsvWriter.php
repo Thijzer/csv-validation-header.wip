@@ -67,6 +67,7 @@ class CsvWriter
     {
         if (null === $this->headers && $this->allowHeaders) {
             $this->headers = $headers;
+            $this->write($headers);
         }
     }
 }
