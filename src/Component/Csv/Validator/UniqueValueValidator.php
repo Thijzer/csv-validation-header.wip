@@ -24,7 +24,7 @@ class UniqueValueValidator extends AbstractValidator implements OptionsInterface
         $reader = $this->getReader();
         $reader->indexColumn($columnName);
 
-        $columnData = array_filter($reader->getColumn($columnName));
+        $columnData = $reader->getColumn($columnName);
 
         $duplicates = array_unique($columnData);
         if (\count($columnData) !== \count($duplicates)) {
@@ -32,7 +32,7 @@ class UniqueValueValidator extends AbstractValidator implements OptionsInterface
                 new Constraint\UniqueValueConstraint(),
                 sprintf(
                     Constraint\UniqueValueConstraint::UNIQUE_VALUE,
-                    implode(', ', $duplicates)
+                    implode(', ', array_unique(array_diff_assoc($columnData, array_unique($columnData))))
                 ),
                 $context
             );

@@ -73,6 +73,10 @@ class CsvValidationProcessor
                     if ($class instanceof ReaderAwareInterface) {
                         $readerFile = $match['options']['file'] ?? $file;
                         $reader = $this->getRegistry(ReaderRegistry::NAME)->filterByName($readerFile)->first();
+                        if (null === $reader) {
+                            // @todo this is invalid
+                            continue;
+                        }
                         $class->setReader($reader);
                     }
 
@@ -92,10 +96,13 @@ class CsvValidationProcessor
                     $reader = $this->getRegistry(ReaderRegistry::NAME)->filterByName($file)->first();
                     /** @var $reader ReaderInterface */
                     $reader->loop(function ($row) use ($property, $reader, $class, $context) {
-                        $context['line'] = $reader->getCursor()->key();
-                        $context['column'] = $property;
+                        // @TODO row not found should be validated
+                        if (isset($row[$property])) {
+                            $context['line'] = $reader->getCursor()->key();
+                            $context['column'] = $property;
 
-                        $class->validate($row[$property], $context);
+                            $class->validate($row[$property], $context);
+                        }
                     });
                 }
             }
