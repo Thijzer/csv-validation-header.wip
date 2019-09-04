@@ -25,9 +25,10 @@ columns:
 rows:
   nullify: ~
 
-index:
-  username:
-  email:
+format:
+  delimiter: ';'
+  enclosure: '"'
+  index: 'username'
 
 validations:
   property:

@@ -6,8 +6,10 @@ columns:
 
 rows:
 
-index:
-  code:
+format:
+  delimiter: ';'
+  enclosure: '"'
+  index: 'code'
 
 validations:
   property:

@@ -17,8 +17,10 @@ rows:
     separator: '-'
   nullify: ~
 
-index:
-  sku:
+format:
+  delimiter: ';'
+  enclosure: '"'
+  index: 'sku'
 
 source:
   attributes:

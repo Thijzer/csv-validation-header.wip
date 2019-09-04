@@ -57,8 +57,10 @@ rows:
     separator: '-'
   nullify: ~
 
-index:
-  code:
+format:
+  delimiter: ';'
+  enclosure: '"'
+  index: 'code'
 
 validations:
   property:

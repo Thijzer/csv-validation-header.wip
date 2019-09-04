@@ -3,7 +3,6 @@
 namespace Misery\Component\Csv\Reader;
 
 use Misery\Component\Common\Cursor\CursorInterface;
-use Misery\Component\Common\Processor\CsvDataProcessor;
 use Misery\Component\Common\Processor\CsvDataProcessorInterface;
 use Misery\Component\Common\Processor\NullDataProcessor;
 use Misery\Component\Csv\Exception\InvalidCsvElementSizeException;

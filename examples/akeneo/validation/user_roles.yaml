@@ -5,8 +5,10 @@ columns:
 
 rows:
 
-index:
-  role:
+format:
+  delimiter: ';'
+  enclosure: '"'
+  index: 'role'
 
 validations:
   property:
