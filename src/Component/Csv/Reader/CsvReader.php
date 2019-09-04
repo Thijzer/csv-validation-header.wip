@@ -25,12 +25,9 @@ class CsvReader implements ReaderInterface
 
     public function loop(callable $callable): void
     {
-        while ($this->cursor->valid()) {
-            $callable($this->cursor->current());
-            $this->cursor->next();
+        foreach($this->cursor->getInterator() as $row) {
+            $callable($row);
         }
-
-        $this->cursor->rewind();
     }
 
     public function getRow(int $line): array
@@ -54,16 +51,41 @@ class CsvReader implements ReaderInterface
         return $this->cache->getCache($columnName) ?? [];
     }
 
-    public function indexColumns(string ...$columnNames): void
+    public function getColumns(array $columnNames): array
     {
+        $columnValues = [];
         foreach ($columnNames as $columnName) {
-            $this->indexColumn($columnName);
+            $columnValues[$columnName] = $this->getColumn($columnName);
         }
+
+        return $columnValues;
+    }
+
+    public function indexColumnsReference(string ...$columnNames): array
+    {
+        $this->cache->setCache(
+            $referenceKey = implode('|', $columnNames),
+            $references = $this->combineReferences($this->getColumns($columnNames))
+        );
+
+        return [$referenceKey => $references];
+    }
+
+    private function combineReferences(array $arrays)
+    {
+        $concat = [];
+        foreach ($arrays as $array) {
+            foreach ($array as $pointer => $item) {
+                $concat[$pointer] = isset($concat[$pointer]) ? $concat[$pointer].'|'.$item : $item;
+            }
+        }
+
+        return $concat;
     }
 
     public function indexColumn(string $columnName): void
     {
-        $this->cache->setCache($columnName, $this->getColumn($columnName));
+        $this->getColumn($columnName);
     }
 
     public function getRows(array $lines): array

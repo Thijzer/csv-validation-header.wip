@@ -65,10 +65,23 @@ class CsvParser implements CsvInterface, CursorInterface
         return null !== $this->headers;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function loop(callable $callable): void
     {
+        foreach ($this->getInterator() as $row) {
+            $callable($row);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getInterator(): \Generator
+    {
         while ($this->valid()) {
-            $callable($this->current());
+            yield $this->current();
             $this->next();
         }
         $this->rewind();

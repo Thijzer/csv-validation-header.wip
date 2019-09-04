@@ -29,18 +29,25 @@ class CachedCursor implements CursorInterface
         return new self($cursor, $options);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function loop(callable $callable): void
     {
+        foreach ($this->getInterator() as $row) {
+            $callable($row);
+        }
+    }
+    /**
+     * {@inheritDoc}
+     */
+    public function getInterator(): \Generator
+    {
         while ($this->valid()) {
-            $callable($this->current());
+            yield $this->current();
             $this->next();
         }
         $this->rewind();
-    }
-
-    public function getItemKeys(): array
-    {
-        return array_keys($this->current());
     }
 
     /**
@@ -63,6 +70,7 @@ class CachedCursor implements CursorInterface
         if (!isset($this->range[$i])) {
             $this->range = array_flip(range($i,$i + $this->options['cache_size']-1));
             $this->items = [];
+            $this->cursor->seek($i);
             while ($row = $this->cursor->current()) {
                 if (isset($this->range[$this->cursor->key()])) {
                     $this->items[$this->cursor->key()] = $row;
@@ -125,10 +133,5 @@ class CachedCursor implements CursorInterface
     public function count(): int
     {
         return $this->cursor->count();
-    }
-
-    public function clear(): void
-    {
-        $this->items = [];
     }
 }

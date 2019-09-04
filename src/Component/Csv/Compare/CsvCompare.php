@@ -2,6 +2,7 @@
 
 namespace Misery\Component\Csv\Compare;
 
+use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
 use Misery\Component\Csv\Reader\CsvReader;
 use Misery\Component\Csv\Reader\ReaderInterface;
@@ -21,11 +22,19 @@ class CsvCompare
         $this->new = $new;
     }
 
-    public function compare(string $reference): array
+    public function compare(string...$references): array
     {
-        // compare the old with the new
-        $oldCodes = $this->old->getColumn($reference);
-        $newCodes = $this->new->getColumn($reference);
+        if (count($references) === 2) {
+            $oldCodes = $this->old->indexColumnsReference(...$references);
+            $reference = key($oldCodes);
+            $oldCodes = current($oldCodes);
+            $newCodes = current($this->new->indexColumnsReference(...$references));
+        } else {
+            $reference = current($references);
+            // compare the old with the new
+            $oldCodes = $this->old->getColumn($reference);
+            $newCodes = $this->new->getColumn($reference);
+        }
 
         $changes = [
             self::ADDED => array_diff($newCodes, $oldCodes),
@@ -40,7 +49,7 @@ class CsvCompare
         $codes = array_flip($newCodes);
 
         foreach ($this->old->getRows(array_keys($otherCodes)) as $lineNumber => $old) {
-            $id = $old[$reference];
+            $id = $oldCodes[$lineNumber];
             $new = $this->new->getRow($codes[$id]);
 
             if ($new != $old) {

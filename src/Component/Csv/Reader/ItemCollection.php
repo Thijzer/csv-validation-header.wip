@@ -4,7 +4,7 @@ namespace Misery\Component\Csv\Reader;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 
-class ItemCollection implements CursorInterface
+class ItemCollection implements CsvInterface, CursorInterface
 {
     public const DELIMITER = ';';
     public const ENCLOSURE = '"';
@@ -19,25 +19,39 @@ class ItemCollection implements CursorInterface
         $this->items = array_values($items);
     }
 
-    public function addItem($item): void
-    {
-        $this->items[] = $item;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function loop(callable $callable): void
     {
+        foreach ($this->getInterator() as $row) {
+            $callable($row);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getInterator(): \Generator
+    {
         while ($this->valid()) {
-            $callable($this->current());
+            yield $this->current();
             $this->next();
         }
         $this->rewind();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getHeaders(): array
     {
         return array_keys($this->current());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function hasHeaders(): bool
     {
         return false;
