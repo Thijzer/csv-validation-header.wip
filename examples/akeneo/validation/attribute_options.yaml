@@ -14,7 +14,7 @@ rows:
 format:
   delimiter: ';'
   enclosure: '"'
-  index: 'code'
+  reference: ['code', 'attribute']
 
 validations:
   property:

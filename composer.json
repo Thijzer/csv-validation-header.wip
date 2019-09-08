@@ -12,7 +12,8 @@
         "symfony/var-dumper": "^4.3",
         "symfony/yaml": "^4.3",
         "ext-json": "*",
-        "ext-zip": "*"
+        "ext-zip": "*",
+        "ext-redis": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",

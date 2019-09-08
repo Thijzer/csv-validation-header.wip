@@ -2,20 +2,25 @@
 
 namespace Misery\Component\Csv\Reader;
 
+use Misery\Component\Common\Cache\Local\InMemoryCache;
+use Misery\Component\Common\Cache\SimpleCacheInterface;
 use Misery\Component\Common\Cursor\CursorInterface;
-use Misery\Component\Common\Processor\CsvDataProcessor;
-use Misery\Component\Common\Processor\NullDataProcessor;
-use Misery\Component\Csv\Cache\CacheCollector;
 
 class CsvReader implements ReaderInterface
 {
     private $cursor;
+    /** @var SimpleCacheInterface */
     private $cache;
 
     public function __construct(CursorInterface $cursor)
     {
         $this->cursor = $cursor;
-        $this->cache = new CacheCollector();
+        $this->cache = new InMemoryCache();
+    }
+
+    public function setCache(SimpleCacheInterface $cache): void
+    {
+        $this->cache = $cache;
     }
 
     public function getCursor(): CursorInterface
@@ -37,18 +42,18 @@ class CsvReader implements ReaderInterface
 
     public function getColumn(string $columnName): array
     {
-        if (false === $this->cache->hasKey($columnName)) {
+        if (false === $this->cache->has($columnName)) {
             $columnValues = [];
             $this->loop(function ($row) use (&$columnValues, $columnName) {
                 $columnValues[$this->cursor->key()] = $row[$columnName];
             });
 
-            $this->cache->setCache($columnName, $columnValues);
+            $this->cache->set($columnName, $columnValues);
 
             return $columnValues;
         }
 
-        return $this->cache->getCache($columnName) ?? [];
+        return $this->cache->get($columnName) ?? [];
     }
 
     public function getColumns(array $columnNames): array
@@ -63,7 +68,7 @@ class CsvReader implements ReaderInterface
 
     public function indexColumnsReference(string ...$columnNames): array
     {
-        $this->cache->setCache(
+        $this->cache->set(
             $referenceKey = implode('|', $columnNames),
             $references = $this->combineReferences($this->getColumns($columnNames))
         );
@@ -134,9 +139,9 @@ class CsvReader implements ReaderInterface
 
     private function processFilter($key, $value): array
     {
-        if ($this->cache->hasKey($key)) {
+        if ($this->cache->has($key)) {
             // cached lineNr to get rows per lineNr
-            $rows = $this->getRows(array_keys($this->cache->filterCache($key, static function ($row) use ($value) {
+            $rows = $this->getRows(array_keys($this->cache->filter($key, static function ($row) use ($value) {
                 return $value === $row;
             })));
         } else {
