@@ -58,6 +58,11 @@ class CsvWriter
         fclose($this->getHandle());
     }
 
+    public function clear(): void
+    {
+        file_put_contents($this->filename, '');
+    }
+
     public function __destruct()
     {
         $this->close();

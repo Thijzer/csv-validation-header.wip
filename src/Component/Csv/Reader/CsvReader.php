@@ -3,8 +3,6 @@
 namespace Misery\Component\Csv\Reader;
 
 use Misery\Component\Common\Cursor\CursorInterface;
-use Misery\Component\Common\Processor\CsvDataProcessor;
-use Misery\Component\Common\Processor\NullDataProcessor;
 use Misery\Component\Csv\Cache\CacheCollector;
 
 class CsvReader implements ReaderInterface
@@ -14,6 +12,13 @@ class CsvReader implements ReaderInterface
 
     public function __construct(CursorInterface $cursor)
     {
+        $this->cursor = $cursor;
+        $this->cache = new CacheCollector();
+    }
+
+    public function reset(CursorInterface $cursor)
+    {
+        $cursor->rewind();
         $this->cursor = $cursor;
         $this->cache = new CacheCollector();
     }
@@ -32,7 +37,7 @@ class CsvReader implements ReaderInterface
 
     public function getRow(int $line): array
     {
-        return current($this->getRows([$line])) ?? [];
+        return current($this->getRows([$line])) ?: [];
     }
 
     public function getColumn(string $columnName): array

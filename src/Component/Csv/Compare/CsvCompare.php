@@ -2,9 +2,7 @@
 
 namespace Misery\Component\Csv\Compare;
 
-use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
-use Misery\Component\Csv\Reader\CsvReader;
 use Misery\Component\Csv\Reader\ReaderInterface;
 
 class CsvCompare
@@ -24,7 +22,7 @@ class CsvCompare
 
     public function compare(string...$references): array
     {
-        if (count($references) === 2) {
+        if (\count($references) === 2) {
             $oldCodes = $this->old->indexColumnsReference(...$references);
             $reference = key($oldCodes);
             $oldCodes = current($oldCodes);
@@ -56,7 +54,7 @@ class CsvCompare
                 $changes[self::CHANGED][$id] = [
                     'reference' => $reference,
                     $reference => $id,
-                    'line' => $lineNumber,
+                    'line_number' => $lineNumber,
                     'changes' => array_filter([
                         self::REMOVED => Arr::multiCompare($new, $old),
                         self::ADDED => Arr::multiCompare($old, $new),

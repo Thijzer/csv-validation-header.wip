@@ -36,9 +36,7 @@ class CsvParser implements CsvInterface, CursorInterface
         $file->setCsvControl($delimiter, $enclosure, $escapeChar);
         $this->processor = new NullDataProcessor();
 
-        // set headers
-        $this->headers = $file->current();
-        $file->next();
+        $this->setHeaders();
     }
 
     public static function create(
@@ -53,6 +51,14 @@ class CsvParser implements CsvInterface, CursorInterface
     public function setProcessor(CsvDataProcessorInterface $processor): void
     {
         $this->processor = $processor;
+    }
+
+    public function setHeaders(): void
+    {
+        if ($row = $this->current()) {
+            $this->headers = $row;
+            $this->next();
+        }
     }
 
     public function getHeaders(): array
@@ -99,7 +105,7 @@ class CsvParser implements CsvInterface, CursorInterface
 
         // here we need to use the filter
         $row = @array_combine($this->headers, $current);
-        if (false === $row) {
+        if (null === $row) {
             throw new InvalidCsvElementSizeException($this->file->getFilename(), $this->key());
         }
 
@@ -142,7 +148,7 @@ class CsvParser implements CsvInterface, CursorInterface
         $this->count();
         $this->file->rewind();
 
-        false == $this->hasHeaders() ?: $this->next();
+        false == $this->hasHeaders() ? $this->setHeaders(): $this->next();
     }
 
     /**
