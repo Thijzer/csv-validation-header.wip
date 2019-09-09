@@ -42,6 +42,6 @@ foreach ($finder->in($exampleDir)->name('*.csv') as $file) {
 
 $processor->processValidation();
 
-dump(
+var_dump(
     $collector->getErrors()
 );
