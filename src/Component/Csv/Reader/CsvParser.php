@@ -53,7 +53,7 @@ class CsvParser implements CsvInterface, CursorInterface
         $this->processor = $processor;
     }
 
-    public function setHeaders(): void
+    private function setHeaders(): void
     {
         if ($row = $this->current()) {
             $this->headers = $row;
@@ -148,7 +148,7 @@ class CsvParser implements CsvInterface, CursorInterface
         $this->count();
         $this->file->rewind();
 
-        false == $this->hasHeaders() ? $this->setHeaders(): $this->next();
+        false === $this->hasHeaders() ? $this->setHeaders(): $this->next();
     }
 
     /**
