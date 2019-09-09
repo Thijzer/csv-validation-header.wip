@@ -8,6 +8,13 @@ class InMemoryCache implements SimpleCacheInterface
 {
     private $cache = [];
 
+    public function getIterator(): \Generator
+    {
+        foreach ($this->cache as $key => $value) {
+            yield $value;
+        }
+    }
+
     public function get($key, $default = null)
     {
         return $this->cache[$key] ?? null;
@@ -22,7 +29,6 @@ class InMemoryCache implements SimpleCacheInterface
 
         return $collection;
     }
-
 
     public function set($key, $value, $ttl = null): void
     {
@@ -39,13 +45,6 @@ class InMemoryCache implements SimpleCacheInterface
     public function has($key): bool
     {
         return isset($this->cache[$key]);
-    }
-
-    public function filter($cacheKey, callable $callable): array
-    {
-        return array_filter($this->cache[$cacheKey], static function ($row) use ($callable) {
-            return $callable($row);
-        });
     }
 
     public function delete($key): void

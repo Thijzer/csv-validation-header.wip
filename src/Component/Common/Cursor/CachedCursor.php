@@ -133,4 +133,11 @@ class CachedCursor implements CursorInterface
     {
         return $this->cursor->count();
     }
+
+    public function clear(): void
+    {
+        $this->items = [];
+        $this->range = [];
+        $this->rewind();
+    }
 }

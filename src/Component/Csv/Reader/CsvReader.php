@@ -23,6 +23,13 @@ class CsvReader implements ReaderInterface
         $this->cache = $cache;
     }
 
+    public function reset(CursorInterface $cursor)
+    {
+        $cursor->rewind();
+        $this->cursor = $cursor;
+        $this->cache = new CacheCollector();
+    }
+
     public function getCursor(): CursorInterface
     {
         return $this->cursor;
@@ -37,7 +44,7 @@ class CsvReader implements ReaderInterface
 
     public function getRow(int $line): array
     {
-        return current($this->getRows([$line])) ?? [];
+        return current($this->getRows([$line])) ?: [];
     }
 
     public function getColumn(string $columnName): array

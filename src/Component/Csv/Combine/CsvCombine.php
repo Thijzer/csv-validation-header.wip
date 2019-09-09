@@ -6,7 +6,6 @@ use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Processor\NullDataProcessor;
 use Misery\Component\Csv\Compare\CsvCompare;
 use Misery\Component\Csv\Reader\ReaderInterface;
-use Misery\Component\Csv\Writer\CsvWriter;
 
 class CsvCombine
 {
@@ -19,13 +18,18 @@ class CsvCombine
         $differences = $csvCompare->compare($reference);
 
         $combinedHeaders = ArrayFunctions::arrayUnion(
-            $readerA->getCursor()->getHeaders(),
-            $readerB->getCursor()->getHeaders()
+            array_keys($readerA->getCursor()->current()),
+            array_keys($readerB->getCursor()->current())
         );
         $combinedHeaderRow = array_combine($combinedHeaders, array_fill(0, \count($combinedHeaders), null));
 
-        $readerA->getCursor()->setProcessor(new NullDataProcessor());
-        $readerB->getCursor()->setProcessor(new NullDataProcessor());
+        // TODO replace with ProcessorAware
+        if (method_exists($readerA->getCursor(), 'setProcessor')) {
+            $readerA->getCursor()->setProcessor(new NullDataProcessor());
+        }
+        if (method_exists($readerB->getCursor(), 'setProcessor')) {
+            $readerB->getCursor()->setProcessor(new NullDataProcessor());
+        }
 
         if (false === $this->shouldDiffer) {
             $readerA->loop(function ($row) use ($call, $reference, $combinedHeaderRow, $differences) {
@@ -35,6 +39,7 @@ class CsvCombine
             });
         }
 
+        dump(\count($differences), \count($differences[CsvCompare::CHANGED]), \count($differences[CsvCompare::ADDED]));
         foreach ($differences as $type => $difference) {
             if (CsvCompare::ADDED === $type) {
                 $row = $readerB->findOneBy([$reference => current($difference)]);
@@ -47,6 +52,19 @@ class CsvCombine
                 }
             }
         }
+    }
+
+    public function join(ReaderInterface $readerA, ReaderInterface $readerB, string $reference, callable $call): void
+    {
+        if (empty($readerA->getCursor()->current())) {
+            $readerB->loop(function ($row) use ($call) {
+                $call($row);
+            });
+            $readerA->reset($readerA->getCursor());
+            return;
+        }
+
+        $this->differInto($readerA, $readerB, $reference, $call);
     }
 
     public function differInto(ReaderInterface $readerA, ReaderInterface $readerB, string $reference, callable $call): void
