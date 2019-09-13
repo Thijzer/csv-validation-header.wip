@@ -39,7 +39,6 @@ class CsvCombine
             });
         }
 
-        dump(\count($differences), \count($differences[CsvCompare::CHANGED]), \count($differences[CsvCompare::ADDED]));
         foreach ($differences as $type => $difference) {
             if (CsvCompare::ADDED === $type) {
                 $row = $readerB->findOneBy([$reference => current($difference)]);

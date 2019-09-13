@@ -19,6 +19,16 @@ class ItemCollection implements CsvInterface, CursorInterface
         $this->items = array_values($items);
     }
 
+    public function add($value)
+    {
+        $this->items[] = $value;
+    }
+
+    public function set($key, $value): void
+    {
+        $this->items[$key] = $value;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -62,7 +72,7 @@ class ItemCollection implements CsvInterface, CursorInterface
      */
     public function current()
     {
-        return $this->items[$this->position] ?? $this->valid();
+        return current($this->items) ?? $this->valid();
     }
 
     /**
@@ -71,6 +81,7 @@ class ItemCollection implements CsvInterface, CursorInterface
     public function next(): void
     {
         ++$this->position;
+        next($this->items);
     }
 
     /**
@@ -86,7 +97,7 @@ class ItemCollection implements CsvInterface, CursorInterface
      */
     public function valid(): bool
     {
-        return isset($this->items[$this->position]);
+        return $this->position < $this->count();
     }
 
     /**
@@ -94,6 +105,7 @@ class ItemCollection implements CsvInterface, CursorInterface
      */
     public function rewind(): void
     {
+        reset($this->items);
         $this->position = 0;
     }
 

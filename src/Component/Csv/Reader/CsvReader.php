@@ -6,7 +6,7 @@ use Misery\Component\Common\Cache\Local\InMemoryCache;
 use Misery\Component\Common\Cache\SimpleCacheInterface;
 use Misery\Component\Common\Cursor\CursorInterface;
 
-class CsvReader implements ReaderInterface
+class CsvReader implements CsvReaderInterface, ReaderInterface
 {
     private $cursor;
     /** @var SimpleCacheInterface */
@@ -27,7 +27,7 @@ class CsvReader implements ReaderInterface
     {
         $cursor->rewind();
         $this->cursor = $cursor;
-        $this->cache = new CacheCollector();
+        $this->cache = new InMemoryCache();
     }
 
     public function getCursor(): CursorInterface
@@ -148,9 +148,7 @@ class CsvReader implements ReaderInterface
     {
         if ($this->cache->has($key)) {
             // cached lineNr to get rows per lineNr
-            $rows = $this->getRows(array_keys($this->cache->filter($key, static function ($row) use ($value) {
-                return $value === $row;
-            })));
+            $rows = $this->getRows(array_keys($this->cache->get($key)));
         } else {
             $rows = $this->filter(static function ($row) use ($value, $key) {
                 return $row[$key] === $value;
