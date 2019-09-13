@@ -32,6 +32,16 @@ class ItemCollection implements CsvInterface, CursorInterface
         $this->keys[$key];
     }
 
+    public function add($value)
+    {
+        $this->items[] = $value;
+    }
+
+    public function set($key, $value): void
+    {
+        $this->items[$key] = $value;
+    }
+
     /**
      * {@inheritDoc}
      */
