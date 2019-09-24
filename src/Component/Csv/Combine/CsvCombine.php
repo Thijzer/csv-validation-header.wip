@@ -39,10 +39,15 @@ class CsvCombine
             });
         }
 
+        // old 8393;759;/f/i/finaal-30x30.jpg;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;0;"Oslo Fotokader 30x30 Zwart";0;3
+        // new 8393;759;/f/i/finaal-30x30.jpg;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;0;"Oslo Fotokader 30x30 Zwart";0;1
+
         foreach ($differences as $type => $difference) {
             if (CsvCompare::ADDED === $type) {
-                $row = $readerB->findOneBy([$reference => current($difference)]);
-                $call(array_merge($combinedHeaderRow, $row));
+                foreach ($difference as $line) {
+                    $row = $readerB->findOneBy($find = [$reference => $line]);
+                    $call(array_merge($combinedHeaderRow, $row));
+                }
             }
             if (CsvCompare::CHANGED === $type) {
                 foreach ($difference as $diff) {

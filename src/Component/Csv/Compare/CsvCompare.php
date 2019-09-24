@@ -13,11 +13,16 @@ class CsvCompare
 
     private $old;
     private $new;
+    /**
+     * @var array
+     */
+    private $excludes;
 
-    public function __construct(ReaderInterface $old, ReaderInterface $new)
+    public function __construct(ReaderInterface $old, ReaderInterface $new, array $excludes)
     {
         $this->old = $old;
         $this->new = $new;
+        $this->excludes = $excludes;
     }
 
     public function compare(string...$references): array
@@ -49,6 +54,13 @@ class CsvCompare
         foreach ($this->old->getRows(array_keys($otherCodes)) as $lineNumber => $old) {
             $id = $oldCodes[$lineNumber];
             $new = $this->new->getRow($codes[$id]);
+
+            if ($this->excludes) {
+                foreach ($this->excludes as $exclude) {
+                    unset($old[$exclude]);
+                    unset($new[$exclude]);
+                }
+            }
 
             if ($new != $old) {
                 $changes[self::CHANGED][$id] = [

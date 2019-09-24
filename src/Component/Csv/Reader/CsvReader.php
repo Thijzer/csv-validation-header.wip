@@ -3,6 +3,7 @@
 namespace Misery\Component\Csv\Reader;
 
 use Misery\Component\Common\Cache\Local\InMemoryCache;
+use Misery\Component\Common\Cache\Local\NameSpacedPoolCache;
 use Misery\Component\Common\Cache\SimpleCacheInterface;
 use Misery\Component\Common\Cursor\CursorInterface;
 
@@ -15,19 +16,19 @@ class CsvReader implements CsvReaderInterface, ReaderInterface
     public function __construct(CursorInterface $cursor)
     {
         $this->cursor = $cursor;
-        $this->cache = new InMemoryCache();
+        $this->cache = new NameSpacedPoolCache();
     }
 
     public function setCache(SimpleCacheInterface $cache): void
     {
-        $this->cache = $cache;
+        //$this->cache = $cache;
     }
 
     public function reset(CursorInterface $cursor)
     {
         $cursor->rewind();
         $this->cursor = $cursor;
-        $this->cache = new InMemoryCache();
+        $this->cache = new NameSpacedPoolCache();
     }
 
     public function getCursor(): CursorInterface
@@ -50,17 +51,14 @@ class CsvReader implements CsvReaderInterface, ReaderInterface
     public function getColumn(string $columnName): array
     {
         if (false === $this->cache->has($columnName)) {
-            $columnValues = [];
-            $this->loop(function ($row) use (&$columnValues, $columnName) {
-                $columnValues[$this->cursor->key()] = $row[$columnName];
+            $cache = new InMemoryCache();
+            $this->loop(function ($row) use (&$columnValues, $columnName, $cache) {
+                $cache->set($row[$columnName], $this->cursor->key());
             });
-
-            $this->cache->set($columnName, $columnValues);
-
-            return $columnValues;
+            $this->cache->addCache($cache, $columnName);
         }
 
-        return $this->cache->get($columnName) ?? [];
+        return array_flip($this->cache->getItems($columnName) ?? []);
     }
 
     public function getColumns(array $columnNames): array
@@ -148,7 +146,7 @@ class CsvReader implements CsvReaderInterface, ReaderInterface
     {
         if ($this->cache->has($key)) {
             // cached lineNr to get rows per lineNr
-            $rows = $this->getRows(array_keys($this->cache->get($key)));
+            $rows = $this->getRows([$this->cache->get($key, $value)]);
         } else {
             $rows = $this->filter(static function ($row) use ($value, $key) {
                 return $row[$key] === $value;
@@ -156,5 +154,10 @@ class CsvReader implements CsvReaderInterface, ReaderInterface
         }
 
         return $rows;
+    }
+
+    public function __destruct()
+    {
+        $this->cache->clear();
     }
 }

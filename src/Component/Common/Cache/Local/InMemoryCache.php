@@ -59,8 +59,14 @@ class InMemoryCache implements SimpleCacheInterface
         }
     }
 
+    public function getItems()
+    {
+        return $this->cache;
+    }
+
     public function clear(): void
     {
+        unset($this->cache);
         $this->cache = [];
     }
 
