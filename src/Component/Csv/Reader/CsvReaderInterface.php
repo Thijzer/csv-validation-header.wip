@@ -8,5 +8,5 @@ interface CsvReaderInterface
     public function getRows(array $lines): array;
     public function getColumn(string $columnName): array;
     public function getColumns(string...$columnNames): array;
-    public function loop(callable $callable): void;
+    public function getIterator(): \Generator;
 }

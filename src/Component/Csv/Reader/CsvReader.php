@@ -18,13 +18,6 @@ class CsvReader implements CsvReaderInterface
         return $this->cursor->getIterator();
     }
 
-    public function loop(callable $callable): void
-    {
-        foreach($this->cursor->getIterator() as $row) {
-            $callable($row);
-        }
-    }
-
     public function getRow(int $line): array
     {
         return current($this->getRows([$line])) ?: [];
@@ -32,15 +25,15 @@ class CsvReader implements CsvReaderInterface
 
     public function getRows(array $lines): array
     {
-        $collect = [];
+        $items = [];
         foreach ($lines as $lineNr) {
             $this->cursor->seek($lineNr);
-            $collect[$lineNr] = $this->cursor->current();
+            $items[$lineNr] = $this->cursor->current();
         }
 
         $this->cursor->rewind();
 
-        return $collect;
+        return $items;
     }
 
     public function getColumn(string $columnName): array
