@@ -21,21 +21,14 @@ $pool = new ItemCollection();
 
 /** @var \Symfony\Component\Finder\SplFileInfo $file */
 foreach ($finder as $index => $file) {
-    dump($file->getFilename());
-
-    $combine->join(
-        $pool,
-        CachedCursor::create(CsvParser::create($file->getRealPath(), ';')),
-        $reference = 'a_workcode',
-        function ($row) use ($pool, $reference) {
-            $pool->set($row[$reference], $row);
-        }
+    $dates = explode('_',
+        str_replace('dbfact_import_export_', '', $file->getFilename())
     );
-}
+    $date = \DateTime::createFromFormat('dmY', $dates[0]);
+    $newFile = implode('_', array_merge([
+        'dbfact_import_export',
+        $date->format('Ymd'),
+    ], $dates));
 
-$csvWriter = new CsvWriter($newFile);
-$csvWriter->clear();
-
-foreach ($pool->getIterator() as $row) {
-    $csvWriter->write($row);
+    copy($file->getRealPath(), $newFile);
 }

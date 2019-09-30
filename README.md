@@ -29,7 +29,7 @@ The formatting Component are none destructive, meaning that you always have a re
     }
 ```
 
-#### Reserse format
+#### Reverse format
 You are able to recover from a formatted value, but only if you record that action.
 
 ```php
@@ -38,3 +38,9 @@ You are able to recover from a formatted value, but only if you record that acti
         return (string) $value;
     }
 ```
+
+#### Csv File
+The Csv File is a file that creates adds more Contextual elements like 
+- references
+- delimiter, enclosure, escapeChar
+- validation rules

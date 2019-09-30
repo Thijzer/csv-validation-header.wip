@@ -44,7 +44,7 @@ class CachedCursor implements CursorInterface
     public function getIterator(): \Generator
     {
         while ($this->valid()) {
-            yield $this->current();
+            yield $this->key() => $this->current();
             $this->next();
         }
         $this->rewind();

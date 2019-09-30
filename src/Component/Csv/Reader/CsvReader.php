@@ -18,12 +18,17 @@ class CsvReader implements CsvReaderInterface
         return $this->cursor->getIterator();
     }
 
-    public function getRow(int $line): array
+    public function getValues(): array
     {
-        return current($this->getRows([$line])) ?: [];
+        return iterator_to_array($this->cursor);
     }
 
-    public function getRows(array $lines): array
+    public function getRow(int $line): ItemCollection
+    {
+        return $this->getRows([$line]);
+    }
+
+    public function getRows(array $lines): ItemCollection
     {
         $items = [];
         foreach ($lines as $lineNr) {
@@ -33,26 +38,23 @@ class CsvReader implements CsvReaderInterface
 
         $this->cursor->rewind();
 
-        return $items;
+        return new ItemCollection($items);
     }
 
-    public function getColumn(string $columnName): array
+    public function getColumn(string $columnName): ItemCollection
+    {
+        return $this->getColumns($columnName);
+    }
+
+    public function getColumns(string...$columnNames): ItemCollection
     {
         $items = [];
-        foreach ($this->getIterator() as $row) {
-            $items[$this->cursor->key()] = $row[$columnName];
+        foreach ($this->cursor->getIterator() as $key => $row) {
+            foreach ($columnNames as $columnName) {
+                $items[$columnName][$key] = $row[$columnName];
+            }
         }
 
-        return $items;
-    }
-
-    public function getColumns(string...$columnNames): array
-    {
-        $columnValues = [];
-        foreach ($columnNames as $columnName) {
-            $columnValues[$columnName] = $this->getColumn($columnName);
-        }
-
-        return $columnValues;
+        return new ItemCollection($items);
     }
 }
