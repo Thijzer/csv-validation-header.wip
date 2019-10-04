@@ -45,11 +45,17 @@ The Csv File is a file that creates adds more Contextual elements like
 - delimiter, enclosure, escapeChar
 - validation rules
 
+
+#### Reader Interface
+
+Tool that simplifies the reading of files.
+
+
 ```php
 
 $reader = new CsvReader($cursor);
 
-$reader->getColumns('id', 'name')->filter(['name' => 'Nick'])->geValues();
+$reader->getColumns('id', 'name')->find(['name' => 'Nick'])->geValues();
 
 $reader->getColumns('id', 'name')->getRows(range(1, 100))->geValues();
 

@@ -46,16 +46,21 @@ class CsvReader implements CsvReaderInterface
         return new self(new ItemCollection($items));
     }
 
-    public function filter(array $constraints): CsvReaderInterface
+    public function find(array $constraints): CsvReaderInterface
     {
         $reader = $this;
         foreach ($constraints as $columnName => $rowValue) {
-            $reader = new self($reader->process(static function ($row) use ($rowValue, $columnName) {
+            $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
                 return $row[$columnName] === $rowValue;
-            }));
+            });
         }
 
         return $reader;
+    }
+
+    public function filter(callable $callable): CsvReaderInterface
+    {
+        return new self($this->process($callable));
     }
 
     private function process(callable $callable): \Generator

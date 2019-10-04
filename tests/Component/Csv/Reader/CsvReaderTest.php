@@ -75,14 +75,36 @@ class CsvReaderTest extends TestCase
         $this->assertSame($result, $filteredReader->getValues());
     }
 
-    public function test_find_parse_rows_and_columns(): void
+    public function test_find_items(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new CsvReader(new CsvParser($file, ','));
 
         $filteredReader = $reader
             ->getColumns('first_name', 'last_name')
-            ->filter(['first_name' => 'Fifi'])
+            ->find(['first_name' => 'Fifi'])
+        ;
+
+        $result = [
+            149 => [
+                'first_name' => 'Fifi',
+                'last_name' => 'Rapier',
+            ],
+        ];
+
+        $this->assertSame($result, $filteredReader->getValues());
+    }
+
+    public function test_filter_items(): void
+    {
+        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
+        $reader = new CsvReader(new CsvParser($file, ','));
+
+        $filteredReader = $reader
+            ->getColumns('first_name', 'last_name')
+            ->filter(function ($row) {
+                return $row['last_name'] === 'Rapier';
+            })
         ;
 
         $result = [
