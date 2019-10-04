@@ -4,10 +4,11 @@ namespace Misery\Component\Csv\Reader;
 
 interface CsvReaderInterface
 {
-    public function getRow(int $line): ItemCollection;
-    public function getRows(array $lines): ItemCollection;
-    public function getColumn(string $columnName): ItemCollection;
-    public function getColumns(string...$columnNames): ItemCollection;
-    public function getIterator(): \Generator;
+    public function getRow(int $line): self;
+    public function getRows(array $lines): self;
+    public function getColumnNames(string $columnName): self;
+    public function getColumns(string...$columnNames): self;
+    public function filter(array $constraints): self;
+    public function getIterator(): \Iterator;
     public function getValues(): array;
 }

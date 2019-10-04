@@ -13,7 +13,7 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new CsvReader(new CsvParser($file, ','));
 
-        $filteredReader = $reader->getColumn('first_name');
+        $filteredReader = $reader->getColumnNames('first_name');
         $data = iterator_to_array($filteredReader->getIterator());
 
         $this->assertSame(\count($data), 300);
@@ -25,9 +25,10 @@ class CsvReaderTest extends TestCase
         $reader = new CsvReader($parser = new CsvParser($file, ','));
 
         $filteredReader = $reader->getColumns('first_name', 'last_name');
-        $data = iterator_to_array($filteredReader->getIterator());
 
-        $this->assertSame(array_keys($data), ['first_name', 'last_name']);
+        $this->assertSame(
+            array_keys(current($filteredReader->getValues())), ['first_name', 'last_name']
+        );
     }
 
     public function test_parse_a_row(): void
@@ -36,9 +37,8 @@ class CsvReaderTest extends TestCase
         $reader = new CsvReader($parser = new CsvParser($file, ','));
 
         $filteredReader = $reader->getRow(150);
-        $data = iterator_to_array($filteredReader->getIterator());
 
-        $this->assertSame(array_keys($data), $parser->getHeaders());
+        $this->assertSame(array_keys($filteredReader->getValues()[150]), $parser->getHeaders());
     }
 
     public function test_parse_rows(): void
@@ -47,9 +47,8 @@ class CsvReaderTest extends TestCase
         $reader = new CsvReader($parser = new CsvParser($file, ','));
 
         $filteredReader = $reader->getRows([149, 150]);
-        $data = iterator_to_array($filteredReader->getIterator());
 
-        $this->assertSame(count($data), 2);
+        $this->assertSame(count($filteredReader->getValues()), 2);
     }
 
     public function test_mix_parse_rows_and_columns(): void
@@ -57,22 +56,42 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new CsvReader(new CsvParser($file, ','));
 
-        $filteredReader = $reader->getColumns('first_name', 'last_name');
-        $filteredReader = $filteredReader->getRows([149, 150]);
-
-        $data = iterator_to_array($filteredReader->getIterator());
+        $filteredReader = $reader
+            ->getColumns('first_name', 'last_name')
+            ->getRows([149, 150])
+        ;
 
         $result = [
-            [
-                'first_name' => 'A',
-                'last_name' => 'B',
+            149 => [
+                'first_name' => 'Fifi',
+                'last_name' => 'Rapier',
             ],
-            [
-                'first_name' => 'C',
-                'last_name' => 'D',
+            150 => [
+                'first_name' => 'Catherina',
+                'last_name' => 'Fewless',
             ],
         ];
 
-        $this->assertSame($result, $data);
+        $this->assertSame($result, $filteredReader->getValues());
+    }
+
+    public function test_find_parse_rows_and_columns(): void
+    {
+        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
+        $reader = new CsvReader(new CsvParser($file, ','));
+
+        $filteredReader = $reader
+            ->getColumns('first_name', 'last_name')
+            ->filter(['first_name' => 'Fifi'])
+        ;
+
+        $result = [
+            149 => [
+                'first_name' => 'Fifi',
+                'last_name' => 'Rapier',
+            ],
+        ];
+
+        $this->assertSame($result, $filteredReader->getValues());
     }
 }

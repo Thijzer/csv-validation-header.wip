@@ -2,33 +2,21 @@
 
 namespace Misery\Component\Csv\Reader;
 
-use Misery\Component\Common\Cursor\CursorInterface;
-
 class CsvReader implements CsvReaderInterface
 {
     private $cursor;
 
-    public function __construct(CursorInterface $cursor)
+    public function __construct(\Iterator $cursor)
     {
         $this->cursor = $cursor;
     }
 
-    public function getIterator(): \Generator
-    {
-        return $this->cursor->getIterator();
-    }
-
-    public function getValues(): array
-    {
-        return iterator_to_array($this->cursor);
-    }
-
-    public function getRow(int $line): ItemCollection
+    public function getRow(int $line): CsvReaderInterface
     {
         return $this->getRows([$line]);
     }
 
-    public function getRows(array $lines): ItemCollection
+    public function getRows(array $lines): CsvReaderInterface
     {
         $items = [];
         foreach ($lines as $lineNr) {
@@ -38,23 +26,54 @@ class CsvReader implements CsvReaderInterface
 
         $this->cursor->rewind();
 
-        return new ItemCollection($items);
+        return new self(new ItemCollection($items));
     }
 
-    public function getColumn(string $columnName): ItemCollection
+    public function getColumnNames(string $columnName): CsvReaderInterface
     {
         return $this->getColumns($columnName);
     }
 
-    public function getColumns(string...$columnNames): ItemCollection
+    public function getColumns(string...$columnNames): CsvReaderInterface
     {
         $items = [];
-        foreach ($this->cursor->getIterator() as $key => $row) {
+        foreach ($this->getIterator() as $key => $row) {
             foreach ($columnNames as $columnName) {
-                $items[$columnName][$key] = $row[$columnName];
+                $items[$key][$columnName] = $row[$columnName];
             }
         }
 
-        return new ItemCollection($items);
+        return new self(new ItemCollection($items));
+    }
+
+    public function filter(array $constraints): CsvReaderInterface
+    {
+        $reader = $this;
+        foreach ($constraints as $columnName => $rowValue) {
+            $reader = new self($reader->process(static function ($row) use ($rowValue, $columnName) {
+                return $row[$columnName] === $rowValue;
+            }));
+        }
+
+        return $reader;
+    }
+
+    private function process(callable $callable): \Generator
+    {
+        foreach ($this->getIterator() as $key => $row) {
+            if (true === $callable($row)) {
+                yield $key => $row;
+            }
+        }
+    }
+
+    public function getIterator(): \Iterator
+    {
+        return $this->cursor;
+    }
+
+    public function getValues(): array
+    {
+        return iterator_to_array($this->cursor);
     }
 }

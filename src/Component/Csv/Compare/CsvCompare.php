@@ -35,8 +35,8 @@ class CsvCompare
         } else {
             $reference = current($references);
             // compare the old with the new
-            $oldCodes = $this->old->getColumn($reference)->getValues()[$reference];
-            $newCodes = $this->new->getColumn($reference)->getValues()[$reference];
+            $oldCodes = $this->old->getColumnNames($reference)->getValues()[$reference];
+            $newCodes = $this->new->getColumnNames($reference)->getValues()[$reference];
         }
 
         $changes = [
