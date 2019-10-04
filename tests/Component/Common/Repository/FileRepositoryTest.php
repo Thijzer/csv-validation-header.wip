@@ -6,9 +6,8 @@ use Misery\Component\Csv\Reader\CsvParser;
 use Misery\Component\Csv\Reader\CsvReader;
 use PHPUnit\Framework\TestCase;
 
-class CsvReaderTest extends TestCase
+class FileRepositoryTest extends TestCase
 {
-<<<<<<< HEAD
 //    public function test_find_by(): void
 //    {
 //        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
@@ -30,7 +29,6 @@ class CsvReaderTest extends TestCase
 //
 //        $this->assertSame($data, $reader->getRow(30));
 //    }
-=======
     public function test_find_by(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
@@ -52,5 +50,4 @@ class CsvReaderTest extends TestCase
 
         $this->assertSame($data, $reader->getRow(30));
     }
->>>>>>> Added ProcessorAware trait
 }
