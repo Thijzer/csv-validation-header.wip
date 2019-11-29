@@ -13,40 +13,107 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new CsvReader(new CsvParser($file, ','));
 
-        $data = $reader->getColumn('first_name');
+        $filteredReader = $reader->getColumnNames('first_name');
+        $data = iterator_to_array($filteredReader->getIterator());
 
         $this->assertSame(\count($data), 300);
+    }
+
+    public function test_parse_columns(): void
+    {
+        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
+        $reader = new CsvReader($parser = new CsvParser($file, ','));
+
+        $filteredReader = $reader->getColumns('first_name', 'last_name');
+
+        $this->assertSame(
+            array_keys(current($filteredReader->getValues())), ['first_name', 'last_name']
+        );
     }
 
     public function test_parse_a_row(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader(new CsvParser($file, ','));
+        $reader = new CsvReader($parser = new CsvParser($file, ','));
 
-        $data = $reader->getRow(150);
+        $filteredReader = $reader->getRow(150);
 
-        $this->assertSame(array_keys($data), $reader->getCursor()->getHeaders());
+        $this->assertSame(array_keys($filteredReader->getValues()[150]), $parser->getHeaders());
     }
 
-    public function test_find_by(): void
+    public function test_parse_rows(): void
+    {
+        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
+        $reader = new CsvReader($parser = new CsvParser($file, ','));
+
+        $filteredReader = $reader->getRows([149, 150]);
+
+        $this->assertSame(count($filteredReader->getValues()), 2);
+    }
+
+    public function test_mix_parse_rows_and_columns(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new CsvReader(new CsvParser($file, ','));
 
-        $data = $reader->findOneBy(['first_name' => 'Gordie']);
+        $filteredReader = $reader
+            ->getColumns('first_name', 'last_name')
+            ->getRows([149, 150])
+        ;
 
-        $this->assertSame($data, $reader->getRow(30));
+        $result = [
+            149 => [
+                'first_name' => 'Fifi',
+                'last_name' => 'Rapier',
+            ],
+            150 => [
+                'first_name' => 'Catherina',
+                'last_name' => 'Fewless',
+            ],
+        ];
+
+        $this->assertSame($result, $filteredReader->getValues());
     }
 
-    public function test_find_by_with_index(): void
+    public function test_find_items(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new CsvReader(new CsvParser($file, ','));
 
-        $reader->indexColumns('first_name');
+        $filteredReader = $reader
+            ->getColumns('first_name', 'last_name')
+            ->find(['first_name' => 'Fifi'])
+        ;
 
-        $data = $reader->findOneBy(['first_name' => 'Gordie']);
+        $result = [
+            149 => [
+                'first_name' => 'Fifi',
+                'last_name' => 'Rapier',
+            ],
+        ];
 
-        $this->assertSame($data, $reader->getRow(30));
+        $this->assertSame($result, $filteredReader->getValues());
+    }
+
+    public function test_filter_items(): void
+    {
+        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
+        $reader = new CsvReader(new CsvParser($file, ','));
+
+        $filteredReader = $reader
+            ->getColumns('first_name', 'last_name')
+            ->filter(function ($row) {
+                return $row['last_name'] === 'Rapier';
+            })
+        ;
+
+        $result = [
+            149 => [
+                'first_name' => 'Fifi',
+                'last_name' => 'Rapier',
+            ],
+        ];
+
+        $this->assertSame($result, $filteredReader->getValues());
     }
 }

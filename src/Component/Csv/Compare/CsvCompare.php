@@ -3,7 +3,7 @@
 namespace Misery\Component\Csv\Compare;
 
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
-use Misery\Component\Csv\Reader\ReaderInterface;
+use Misery\Component\Csv\Reader\CsvReaderInterface;
 
 class CsvCompare
 {
@@ -13,11 +13,16 @@ class CsvCompare
 
     private $old;
     private $new;
+    /**
+     * @var array
+     */
+    private $excludes;
 
-    public function __construct(ReaderInterface $old, ReaderInterface $new)
+    public function __construct(CsvReaderInterface $old, CsvReaderInterface $new, array $excludes = null)
     {
         $this->old = $old;
         $this->new = $new;
+        $this->excludes = $excludes;
     }
 
     public function compare(string...$references): array
@@ -30,25 +35,31 @@ class CsvCompare
         } else {
             $reference = current($references);
             // compare the old with the new
-            $oldCodes = $this->old->getColumn($reference);
-            $newCodes = $this->new->getColumn($reference);
+            $oldCodes = $this->old->getColumnNames($reference)->getValues()[$reference];
+            $newCodes = $this->new->getColumnNames($reference)->getValues()[$reference];
         }
 
         $changes = [
             self::ADDED => array_diff($newCodes, $oldCodes),
-            self::CHANGED => [],
             self::REMOVED => array_diff($oldCodes, $newCodes),
+            self::CHANGED => [],
         ];
 
-        // filter out created and removed lines
-        $otherCodes = array_diff($oldCodes, $changes[self::ADDED], $changes[self::REMOVED]);
+        $possibleChanges = array_diff($oldCodes, $changes[self::REMOVED]);
 
         // flip codes so we can get find the NEW $lineNumber
         $codes = array_flip($newCodes);
 
-        foreach ($this->old->getRows(array_keys($otherCodes)) as $lineNumber => $old) {
+        foreach ($this->old->getRows(array_keys($possibleChanges)) as $lineNumber => $old) {
             $id = $oldCodes[$lineNumber];
-            $new = $this->new->getRow($codes[$id]);
+            $new = current($this->new->getRow($codes[$id])->getValues());
+
+            if ($this->excludes) {
+                foreach ($this->excludes as $exclude) {
+                    unset($old[$exclude]);
+                    unset($new[$exclude]);
+                }
+            }
 
             if ($new != $old) {
                 $changes[self::CHANGED][$id] = [

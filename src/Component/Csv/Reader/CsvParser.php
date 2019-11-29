@@ -3,12 +3,15 @@
 namespace Misery\Component\Csv\Reader;
 
 use Misery\Component\Common\Cursor\CursorInterface;
-use Misery\Component\Common\Processor\CsvDataProcessorInterface;
 use Misery\Component\Common\Processor\NullDataProcessor;
+use Misery\Component\Common\Processor\ProcessorAwareInterface;
+use Misery\Component\Common\Processor\ProcessorAwareTrait;
 use Misery\Component\Csv\Exception\InvalidCsvElementSizeException;
 
-class CsvParser implements CsvInterface, CursorInterface
+class CsvParser implements CsvInterface, CursorInterface, ProcessorAwareInterface
 {
+    use ProcessorAwareTrait;
+
     public const DELIMITER = ';';
     public const ENCLOSURE = '"';
     public const ESCAPE = '\\';
@@ -16,7 +19,6 @@ class CsvParser implements CsvInterface, CursorInterface
     private $headers;
     private $file;
     private $count;
-    private $processor;
 
     public function __construct(
         \SplFileObject $file,
@@ -46,11 +48,6 @@ class CsvParser implements CsvInterface, CursorInterface
         string $escapeChar = self::ESCAPE
     ): self {
         return new self(new \SplFileObject($filename), $delimiter, $enclosure, $escapeChar);
-    }
-
-    public function setProcessor(CsvDataProcessorInterface $processor): void
-    {
-        $this->processor = $processor;
     }
 
     private function setHeaders(): void
@@ -87,7 +84,7 @@ class CsvParser implements CsvInterface, CursorInterface
     public function getIterator(): \Generator
     {
         while ($this->valid()) {
-            yield $this->current();
+            yield $this->key() => $this->current();
             $this->next();
         }
         $this->rewind();

@@ -8,9 +8,9 @@ columns:
   available_locales:
     list:
   date_max:
-    datetime:
+    string:
   date_min:
-    datetime:
+    string:
   decimals_allowed:
     boolean:
   default_metric_unit:

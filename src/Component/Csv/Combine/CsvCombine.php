@@ -2,76 +2,78 @@
 
 namespace Misery\Component\Csv\Combine;
 
+use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Processor\NullDataProcessor;
+use Misery\Component\Common\Processor\ProcessorAwareInterface;
 use Misery\Component\Csv\Compare\CsvCompare;
-use Misery\Component\Csv\Reader\ReaderInterface;
+use Misery\Component\Csv\Reader\CsvReader;
 
 class CsvCombine
 {
     private $shouldDiffer = false;
 
-    public function combineInto(ReaderInterface $readerA, ReaderInterface $readerB, string $reference, callable $call): void
+    public function combineInto(CursorInterface $cursorA, CursorInterface $cursorB, string $reference, callable $call): void
     {
-        $csvCompare = new CsvCompare($readerA, $readerB);
+        $csvCompare = new CsvCompare(
+            $readerA = new CsvReader($cursorA),
+            $readerB = new CsvReader($cursorB)
+        );
 
         $differences = $csvCompare->compare($reference);
 
         $combinedHeaders = ArrayFunctions::arrayUnion(
-            array_keys($readerA->getCursor()->current()),
-            array_keys($readerB->getCursor()->current())
+            array_keys($cursorA->current()),
+            array_keys($cursorB->current())
         );
         $combinedHeaderRow = array_combine($combinedHeaders, array_fill(0, \count($combinedHeaders), null));
 
-        // TODO replace with ProcessorAware
-        if (method_exists($readerA->getCursor(), 'setProcessor')) {
-            $readerA->getCursor()->setProcessor(new NullDataProcessor());
+        if ($cursorA instanceof ProcessorAwareInterface) {
+            $cursorA->setProcessor(new NullDataProcessor());
         }
-        if (method_exists($readerB->getCursor(), 'setProcessor')) {
-            $readerB->getCursor()->setProcessor(new NullDataProcessor());
+        if ($cursorB instanceof ProcessorAwareInterface) {
+            $cursorB->setProcessor(new NullDataProcessor());
         }
 
         if (false === $this->shouldDiffer) {
-            $readerA->loop(function ($row) use ($call, $reference, $combinedHeaderRow, $differences) {
+            $cursorA->loop(function ($row) use ($call, $reference, $combinedHeaderRow, $differences) {
                 if (!array_key_exists($row[$reference], $differences[CsvCompare::CHANGED])) {
                     $call(array_merge($combinedHeaderRow, $row));
                 }
             });
         }
 
-        dump(\count($differences), \count($differences[CsvCompare::CHANGED]), \count($differences[CsvCompare::ADDED]));
-        foreach ($differences as $type => $difference) {
-            if (CsvCompare::ADDED === $type) {
-                $row = $readerB->findOneBy([$reference => current($difference)]);
+        foreach ($readerB->getRows(array_keys($differences[CsvCompare::ADDED])) as $lineNumber => $row) {
+            $call(array_merge($combinedHeaderRow, $row));
+        }
+
+        $changedReferences = array_keys($differences[CsvCompare::CHANGED]);
+        foreach ($cursorB->getIterator() as $row) {
+            if (in_array($row[$reference], $changedReferences)) {
                 $call(array_merge($combinedHeaderRow, $row));
-            }
-            if (CsvCompare::CHANGED === $type) {
-                foreach ($difference as $diff) {
-                    $row = $readerB->findOneBy([$reference => $diff[$reference]]);
-                    $call(array_merge($combinedHeaderRow, $row));
-                }
             }
         }
     }
 
-    public function join(ReaderInterface $readerA, ReaderInterface $readerB, string $reference, callable $call): void
+    public function join(CursorInterface $cursorA, CursorInterface $cursorB, string $reference, callable $call): void
     {
-        if (empty($readerA->getCursor()->current())) {
-            $readerB->loop(function ($row) use ($call) {
+        if (empty($cursorA->current())) {
+            $cursorB->loop(function ($row) use ($call) {
                 $call($row);
             });
-            $readerA->reset($readerA->getCursor());
+            $cursorA->rewind();
+
             return;
         }
 
-        $this->differInto($readerA, $readerB, $reference, $call);
+        $this->differInto($cursorA, $cursorB, $reference, $call);
     }
 
-    public function differInto(ReaderInterface $readerA, ReaderInterface $readerB, string $reference, callable $call): void
+    public function differInto(CursorInterface $cursorA, CursorInterface $cursorB, string $reference, callable $call): void
     {
         $this->shouldDiffer = true;
 
-        $this->combineInto($readerA, $readerB, $reference, $call);
+        $this->combineInto($cursorA, $cursorB, $reference, $call);
 
         $this->shouldDiffer = false;
     }

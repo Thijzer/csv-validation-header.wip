@@ -12,11 +12,24 @@ class ItemCollection implements CsvInterface, CursorInterface
 
     private $position = 0;
     private $items;
+    private $keys;
 
     public function __construct(array $items = [])
     {
         // array_values removes any position keys
-        $this->items = array_values($items);
+        $this->items = $items;
+        $this->keys = array_keys($items);
+    }
+
+    public function add($value)
+    {
+        $this->items[] = $value;
+    }
+
+    public function set($key, $value): void
+    {
+        $this->items[$key] = $value;
+        $this->keys[$key];
     }
 
     /**
@@ -27,6 +40,7 @@ class ItemCollection implements CsvInterface, CursorInterface
         foreach ($this->getIterator() as $row) {
             $callable($row);
         }
+        $this->rewind();
     }
 
     /**
@@ -35,7 +49,7 @@ class ItemCollection implements CsvInterface, CursorInterface
     public function getIterator(): \Generator
     {
         while ($this->valid()) {
-            yield $this->current();
+            yield $this->key() => $this->current();
             $this->next();
         }
         $this->rewind();
@@ -62,7 +76,7 @@ class ItemCollection implements CsvInterface, CursorInterface
      */
     public function current()
     {
-        return $this->items[$this->position] ?? $this->valid();
+        return current($this->items) ?? $this->valid();
     }
 
     /**
@@ -71,6 +85,7 @@ class ItemCollection implements CsvInterface, CursorInterface
     public function next(): void
     {
         ++$this->position;
+        next($this->items);
     }
 
     /**
@@ -78,7 +93,7 @@ class ItemCollection implements CsvInterface, CursorInterface
      */
     public function key()
     {
-        return $this->position;
+        return $this->keys[$this->position] ?? $this->position;
     }
 
     /**
@@ -86,7 +101,7 @@ class ItemCollection implements CsvInterface, CursorInterface
      */
     public function valid(): bool
     {
-        return isset($this->items[$this->position]);
+        return $this->position < $this->count();
     }
 
     /**
@@ -94,6 +109,7 @@ class ItemCollection implements CsvInterface, CursorInterface
      */
     public function rewind(): void
     {
+        reset($this->items);
         $this->position = 0;
     }
 
@@ -102,7 +118,14 @@ class ItemCollection implements CsvInterface, CursorInterface
      */
     public function seek($pointer): void
     {
-        $this->position = (int) $pointer;
+        $this->rewind();
+        while ($this->valid()) {
+            if ($this->key() === $pointer) {
+                break;
+            }
+            $this->next();
+        }
+
         if (!$this->valid()) {
             //throw new OutOfBoundsException('Invalid position');
         }
