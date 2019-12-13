@@ -53,7 +53,7 @@ class CsvReader implements CsvReaderInterface
     {
         $items = [];
         foreach ($this->getIterator() as $key => $row) {
-            $items[$key][$columnName] = $row[$columnName];
+            $items[$key] = $row[$columnName];
         }
 
         return $items;
