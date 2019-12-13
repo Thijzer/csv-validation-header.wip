@@ -46,6 +46,19 @@ class CsvReader implements CsvReaderInterface
         return new self(new ItemCollection($items));
     }
 
+    /**
+     * @todo replace to another class
+     */
+    public function getColumnValues(string $columnName): array
+    {
+        $items = [];
+        foreach ($this->getIterator() as $key => $row) {
+            $items[$key][$columnName] = $row[$columnName];
+        }
+
+        return $items;
+    }
+
     public function find(array $constraints): CsvReaderInterface
     {
         $reader = $this;
