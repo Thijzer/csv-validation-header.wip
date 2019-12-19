@@ -16,18 +16,18 @@ $newFile = CsvParser::create(__DIR__ . '/private/family_new.csv', ';');
 
 $modifierRegistry = new Registry();
 $modifierRegistry
-    ->register(new StripSlashesModifier())
-    ->register(new Misery\Component\Modifier\ArrayUnflattenModifier())
-    ->register(new Misery\Component\Modifier\NullifyEmptyStringModifier())
+    ->registerNamedObject(new StripSlashesModifier())
+    ->registerNamedObject(new Misery\Component\Modifier\ArrayUnflattenModifier())
+    ->registerNamedObject(new Misery\Component\Modifier\NullifyEmptyStringModifier())
 ;
-$formatRegistry = new FormatRegistryInterface();
+$formatRegistry = new Registry();
 $formatRegistry
-    ->register(new SerializeFormat())
-    ->register(new FloatFormat())
-    ->register(new IntFormat())
-    ->register(new Misery\Component\Format\BooleanFormat())
-    ->register(new Misery\Component\Format\DateTimeFormat())
-    ->register(new Misery\Component\Format\ListFormat())
+    ->registerNamedObject(new SerializeFormat())
+    ->registerNamedObject(new FloatFormat())
+    ->registerNamedObject(new IntFormat())
+    ->registerNamedObject(new Misery\Component\Format\BooleanFormat())
+    ->registerNamedObject(new Misery\Component\Format\DateTimeFormat())
+    ->registerNamedObject(new Misery\Component\Format\ListFormat())
 ;
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
 $processor

@@ -13,6 +13,13 @@ class Registry implements RegistryInterface
         $this->collection = new ArrayCollection();
     }
 
+    public function registerNamedObject($object): self
+    {
+        $this->collection->set($object::NAME, $object);
+
+        return $this;
+    }
+
     public function register(string $alias, $object): self
     {
         $this->collection->set($alias, $object);

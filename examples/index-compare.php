@@ -9,6 +9,8 @@ use Misery\Component\Modifier\StripSlashesModifier;
 use Misery\Component\Format\BooleanFormat;
 use Misery\Component\Format\DateTimeFormat;
 use Misery\Component\Format\ListFormat;
+use Misery\Component\Modifier\ArrayUnflattenModifier;
+use Misery\Component\Modifier\NullifyEmptyStringModifier;
 
 require __DIR__.'/../vendor/autoload.php';
 
@@ -18,9 +20,10 @@ $newFile = CsvParser::create(__DIR__ . '/private/family_new.csv', ';');
 $modifierRegistry = new Registry();
 $modifierRegistry
     ->register(StripSlashesModifier::NAME, new StripSlashesModifier())
-->register(ArrayUnflattenModifier::NAME, new Misery\Component\Modifier\ArrayUnflattenModifier())
-    ->register(NullifyEmptyStringModifier::NAME, new Misery\Component\Modifier\NullifyEmptyStringModifier())
+    ->register(ArrayUnflattenModifier::NAME, new ArrayUnflattenModifier())
+    ->register(NullifyEmptyStringModifier::NAME, new NullifyEmptyStringModifier())
 ;
+
 $formatRegistry = new Registry();
 $formatRegistry
     ->register(SerializeFormat::NAME, new SerializeFormat())
