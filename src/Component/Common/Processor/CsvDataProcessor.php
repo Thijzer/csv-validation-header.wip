@@ -4,9 +4,9 @@ namespace Misery\Component\Common\Processor;
 
 use Misery\Component\Common\Collection\ArrayCollection;
 use Misery\Component\Common\Options\OptionsInterface;
-use Misery\Component\Common\Registry\FormatRegistry;
-use Misery\Component\Common\Registry\ModifierRegistry;
+use Misery\Component\Common\Registry\FormatRegistryInterface;
 use Misery\Component\Common\Registry\Registry;
+use Misery\Component\Common\Registry\RegistryInterface;
 
 class CsvDataProcessor implements CsvDataProcessorInterface
 {
@@ -21,7 +21,7 @@ class CsvDataProcessor implements CsvDataProcessorInterface
         $this->rowModifiers = [];
     }
 
-    public function addRegistry(Registry $registry): self
+    public function addRegistry(RegistryInterface $registry): self
     {
         $this->registries->add($registry);
 
@@ -33,9 +33,9 @@ class CsvDataProcessor implements CsvDataProcessorInterface
         $headers = [];
         foreach ($subjects['columns'] ?? [] as $header => $converters) {
             foreach ($converters as $converterName => $converterOptions) {
-                $this->registries->map(function (Registry $registry) use ($converterName, $converterOptions, $header, &$headers) {
+                $this->registries->map(function (RegistryInterface $registry) use ($converterName, $converterOptions, $header, &$headers) {
                     /** @var ArrayCollection $items */
-                    $items = $registry->filterByName($converterName);
+                    $items = $registry->filterByAlias($converterName);
                     if ($items->hasValues()) {
                         $headers[$header][$converterName][] = [
                             'type' => $registry::NAME,
@@ -49,9 +49,9 @@ class CsvDataProcessor implements CsvDataProcessorInterface
 
         $rows = [];
         foreach ($subjects['rows'] ?? [] as $converterName => $converterOptions) {
-            $this->registries->map(function (Registry $registry) use ($converterName, $converterOptions, &$rows) {
+            $this->registries->map(function (RegistryInterface $registry) use ($converterName, $converterOptions, &$rows) {
                 /** @var ArrayCollection $items */
-                $items = $registry->filterByName($converterName);
+                $items = $registry->filterByAlias($converterName);
                 if ($items->hasValues()) {
                     $rows[$converterName][] = [
                         'type' => $registry::NAME,
@@ -76,11 +76,11 @@ class CsvDataProcessor implements CsvDataProcessorInterface
             $class->setOptions($match['options']);
         }
 
-        if ($type === ModifierRegistry::NAME) {
+        if ($type === Registry::NAME) {
             $row[$header] = $class->modify($row[$header]);
         }
 
-        if ($type === FormatRegistry::NAME) {
+        if ($type === FormatRegistryInterface::NAME) {
             $row[$header] = $class->format($row[$header]);
         }
     }
@@ -104,7 +104,7 @@ class CsvDataProcessor implements CsvDataProcessorInterface
                     $class->setOptions($match['options']);
                 }
 
-                if ($type === ModifierRegistry::NAME) {
+                if ($type === Registry::NAME) {
                     $row = $class->modify($row);
                 }
             }

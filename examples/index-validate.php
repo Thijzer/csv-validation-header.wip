@@ -7,7 +7,7 @@ $exampleDir = __DIR__.'/akeneo/icecat_demo_dev';
 
 $collector = new Misery\Component\Validator\ValidationCollector();
 
-$ValidationRegistry = new Misery\Component\Common\Registry\ValidationRegistry();
+$ValidationRegistry = new Misery\Component\Common\Registry\ValidationRegistryInterface();
 $ValidationRegistry->register(new Misery\Component\Csv\Validator\ReferencedColumnValidator($collector));
 $ValidationRegistry->register(new Misery\Component\Csv\Validator\UniqueValueValidator($collector));
 $ValidationRegistry->register(new Misery\Component\Validator\RequiredValidator($collector));
@@ -15,7 +15,7 @@ $ValidationRegistry->register(new Misery\Component\Validator\InArrayValidator($c
 $ValidationRegistry->register(new Misery\Component\Validator\SnakeCaseValidator($collector));
 $ValidationRegistry->register(new Misery\Component\Validator\IntegerValidator($collector));
 
-$readerRegistry = new Misery\Component\Common\Registry\ReaderRegistry();
+$readerRegistry = new Misery\Component\Common\Registry\ReaderRegistryInterface();
 
 $processor = new Misery\Component\Common\Processor\CsvValidationProcessor();
 $processor

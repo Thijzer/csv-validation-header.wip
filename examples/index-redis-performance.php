@@ -25,12 +25,12 @@ $path = __DIR__ . '/tmp/';
 
 $finder = new Finder();
 
-$modifierRegistry = new Misery\Component\Common\Registry\ModifierRegistry();
+$modifierRegistry = new Misery\Component\Common\Registry\Registry();
 $modifierRegistry
     ->register(new Misery\Component\Modifier\StripSlashesModifier())
     ->register(new Misery\Component\Modifier\NullifyEmptyStringModifier())
 ;
-$formatRegistry = new Misery\Component\Common\Registry\FormatRegistry();
+$formatRegistry = new Misery\Component\Common\Registry\FormatRegistryInterface();
 $formatRegistry
     ->register(new Misery\Component\Format\SerializeFormat())
     ->register(new Misery\Component\Format\FloatFormat())

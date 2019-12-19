@@ -1,32 +1,34 @@
 <?php
 
-use Misery\Component\Common\Registry\FormatRegistry;
-use Misery\Component\Common\Registry\ModifierRegistry;
+use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Csv\Reader\CsvParser;
 use Misery\Component\Format\FloatFormat;
 use Misery\Component\Format\IntFormat;
 use Misery\Component\Format\SerializeFormat;
 use Misery\Component\Modifier\StripSlashesModifier;
+use Misery\Component\Format\BooleanFormat;
+use Misery\Component\Format\DateTimeFormat;
+use Misery\Component\Format\ListFormat;
 
 require __DIR__.'/../vendor/autoload.php';
 
 $parser = CsvParser::create(__DIR__ . '/private/family.csv', ';');
 $newFile = CsvParser::create(__DIR__ . '/private/family_new.csv', ';');
 
-$modifierRegistry = new ModifierRegistry();
+$modifierRegistry = new Registry();
 $modifierRegistry
-    ->register(new StripSlashesModifier())
-    ->register(new Misery\Component\Modifier\ArrayUnflattenModifier())
-    ->register(new Misery\Component\Modifier\NullifyEmptyStringModifier())
+    ->register(StripSlashesModifier::NAME, new StripSlashesModifier())
+->register(ArrayUnflattenModifier::NAME, new Misery\Component\Modifier\ArrayUnflattenModifier())
+    ->register(NullifyEmptyStringModifier::NAME, new Misery\Component\Modifier\NullifyEmptyStringModifier())
 ;
-$formatRegistry = new FormatRegistry();
+$formatRegistry = new Registry();
 $formatRegistry
-    ->register(new SerializeFormat())
-    ->register(new FloatFormat())
-    ->register(new IntFormat())
-    ->register(new Misery\Component\Format\BooleanFormat())
-    ->register(new Misery\Component\Format\DateTimeFormat())
-    ->register(new Misery\Component\Format\ListFormat())
+    ->register(SerializeFormat::NAME, new SerializeFormat())
+    ->register(FloatFormat::NAME, new FloatFormat())
+    ->register(IntFormat::NAME, new IntFormat())
+    ->register(BooleanFormat::NAME, new BooleanFormat())
+    ->register(DateTimeFormat::NAME, new DateTimeFormat())
+    ->register(ListFormat::NAME, new ListFormat())
 ;
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
 $processor

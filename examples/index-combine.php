@@ -1,7 +1,7 @@
 <?php
 
-use Misery\Component\Common\Registry\FormatRegistry;
-use Misery\Component\Common\Registry\ModifierRegistry;
+use Misery\Component\Common\Registry\FormatRegistryInterface;
+use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Csv\Reader\CsvParser;
 use Misery\Component\Csv\Writer\CsvWriter;
 use Misery\Component\Format\FloatFormat;
@@ -14,13 +14,13 @@ require __DIR__.'/../vendor/autoload.php';
 $parser = CsvParser::create(__DIR__ . '/private/family.csv', ';');
 $newFile = CsvParser::create(__DIR__ . '/private/family_new.csv', ';');
 
-$modifierRegistry = new ModifierRegistry();
+$modifierRegistry = new Registry();
 $modifierRegistry
     ->register(new StripSlashesModifier())
     ->register(new Misery\Component\Modifier\ArrayUnflattenModifier())
     ->register(new Misery\Component\Modifier\NullifyEmptyStringModifier())
 ;
-$formatRegistry = new FormatRegistry();
+$formatRegistry = new FormatRegistryInterface();
 $formatRegistry
     ->register(new SerializeFormat())
     ->register(new FloatFormat())
