@@ -1,7 +1,7 @@
 <?php
 
-use Misery\Component\Common\Registry\FormatRegistry;
-use Misery\Component\Common\Registry\ModifierRegistry;
+use Misery\Component\Common\Registry\FormatRegistryInterface;
+use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Csv\Reader\CsvParser;
 use Misery\Component\Format\FloatFormat;
 use Misery\Component\Format\IntFormat;

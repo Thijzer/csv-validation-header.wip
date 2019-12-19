@@ -7,19 +7,19 @@ $exampleDir = __DIR__.'/akeneo/icecat_demo_dev';
 
 $collector = new Misery\Component\Validator\ValidationCollector();
 
-$ValidationRegistry = new Misery\Component\Common\Registry\ValidationRegistry();
-$ValidationRegistry->register(new Misery\Component\Csv\Validator\ReferencedColumnValidator($collector));
-$ValidationRegistry->register(new Misery\Component\Csv\Validator\UniqueValueValidator($collector));
-$ValidationRegistry->register(new Misery\Component\Validator\RequiredValidator($collector));
-$ValidationRegistry->register(new Misery\Component\Validator\InArrayValidator($collector));
-$ValidationRegistry->register(new Misery\Component\Validator\SnakeCaseValidator($collector));
-$ValidationRegistry->register(new Misery\Component\Validator\IntegerValidator($collector));
+$validationRegistry = new Misery\Component\Common\Registry\Registry();
+$validationRegistry->registerNamedObject(new Misery\Component\Csv\Validator\ReferencedColumnValidator($collector));
+$validationRegistry->registerNamedObject(new Misery\Component\Csv\Validator\UniqueValueValidator($collector));
+$validationRegistry->registerNamedObject(new Misery\Component\Validator\RequiredValidator($collector));
+$validationRegistry->registerNamedObject(new Misery\Component\Validator\InArrayValidator($collector));
+$validationRegistry->registerNamedObject(new Misery\Component\Validator\SnakeCaseValidator($collector));
+$validationRegistry->registerNamedObject(new Misery\Component\Validator\IntegerValidator($collector));
 
-$readerRegistry = new Misery\Component\Common\Registry\ReaderRegistry();
+$readerRegistry = new Misery\Component\Common\Registry\Registry();
 
 $processor = new Misery\Component\Common\Processor\CsvValidationProcessor();
 $processor
-    ->addRegistry($ValidationRegistry)
+    ->addRegistry($validationRegistry)
     ->addRegistry($readerRegistry)
 ;
 

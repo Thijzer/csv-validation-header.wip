@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Csv\Reader;
 
-interface CsvReaderInterface
+interface CsvReaderInterface extends ReaderInterface
 {
     public function getRow(int $line): self;
     public function getRows(array $lines): self;

@@ -11,6 +11,11 @@ class CsvReader implements CsvReaderInterface
         $this->cursor = $cursor;
     }
 
+    public function read(): \Iterator
+    {
+        return $this->cursor;
+    }
+
     public function getRow(int $line): CsvReaderInterface
     {
         return $this->getRows([$line]);

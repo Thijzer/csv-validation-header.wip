@@ -4,8 +4,8 @@ namespace Misery\Component\Common\Processor;
 
 use Misery\Component\Common\Collection\ArrayCollection;
 use Misery\Component\Common\Options\OptionsInterface;
-use Misery\Component\Common\Registry\ReaderRegistry;
-use Misery\Component\Common\Registry\Registry;
+use Misery\Component\Common\Registry\ReaderRegistryInterface;
+use Misery\Component\Common\Registry\RegistryInterface;
 use Misery\Component\Csv\Reader\ReaderAwareInterface;
 use Misery\Component\Csv\Reader\ReaderInterface;
 use Misery\Component\Csv\Validator\UniqueValueValidator;
@@ -22,14 +22,14 @@ class CsvValidationProcessor
         $this->processableHeaders = [];
     }
 
-    public function addRegistry(Registry $registry): self
+    public function addRegistry(RegistryInterface $registry): self
     {
         $this->registries->set($registry::NAME,$registry);
 
         return $this;
     }
 
-    public function getRegistry(string $alias): Registry
+    public function getRegistry(string $alias): RegistryInterface
     {
         return $this->registries->get($alias)->first();
     }
@@ -39,9 +39,9 @@ class CsvValidationProcessor
         $headers = [];
         foreach ($subjects['validations']['property'] ?? [] as $header => $converters) {
             foreach ($converters as $converterName => $converterOptions) {
-                $this->registries->map(function (Registry $registry) use ($converterName, $converterOptions, $header, &$headers) {
+                $this->registries->map(function (RegistryInterface $registry) use ($converterName, $converterOptions, $header, &$headers) {
                     /** @var ArrayCollection $items */
-                    $items = $registry->filterByName($converterName);
+                    $items = $registry->filterByAlias($converterName);
                     if ($items->hasValues()) {
                         $headers[$header][$converterName] = [
                             'type' => $registry::NAME,
@@ -72,7 +72,7 @@ class CsvValidationProcessor
 
                     if ($class instanceof ReaderAwareInterface) {
                         $readerFile = $match['options']['file'] ?? $file;
-                        $reader = $this->getRegistry(ReaderRegistry::NAME)->filterByName($readerFile)->first();
+                        $reader = $this->getRegistry(ReaderRegistryInterface::NAME)->filterByAlias($readerFile)->first();
                         if (null === $reader) {
                             // @todo this is invalid
                             continue;
@@ -93,7 +93,7 @@ class CsvValidationProcessor
 
                     // part of how we validate should be inside the validator
                     // uses 2 readers on for looping another for matching
-                    $reader = $this->getRegistry(ReaderRegistry::NAME)->filterByName($file)->first();
+                    $reader = $this->getRegistry(ReaderRegistryInterface::NAME)->filterByAlias($file)->first();
                     /** @var $reader ReaderInterface */
                     $reader->loop(function ($row) use ($property, $reader, $class, $context) {
                         // @TODO row not found should be validated

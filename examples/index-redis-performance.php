@@ -25,19 +25,19 @@ $path = __DIR__ . '/tmp/';
 
 $finder = new Finder();
 
-$modifierRegistry = new Misery\Component\Common\Registry\ModifierRegistry();
+$modifierRegistry = new Misery\Component\Common\Registry\Registry();
 $modifierRegistry
-    ->register(new Misery\Component\Modifier\StripSlashesModifier())
-    ->register(new Misery\Component\Modifier\NullifyEmptyStringModifier())
+    ->registerNamedObject(new Misery\Component\Modifier\StripSlashesModifier())
+    ->registerNamedObject(new Misery\Component\Modifier\NullifyEmptyStringModifier())
 ;
-$formatRegistry = new Misery\Component\Common\Registry\FormatRegistry();
+$formatRegistry = new Misery\Component\Common\Registry\Registry();
 $formatRegistry
-    ->register(new Misery\Component\Format\SerializeFormat())
-    ->register(new Misery\Component\Format\FloatFormat())
-    ->register(new Misery\Component\Format\IntFormat())
-    ->register(new Misery\Component\Format\BooleanFormat())
-    ->register(new Misery\Component\Format\DateTimeFormat())
-    ->register(new Misery\Component\Format\ListFormat())
+    ->registerNamedObject(new Misery\Component\Format\SerializeFormat())
+    ->registerNamedObject(new Misery\Component\Format\FloatFormat())
+    ->registerNamedObject(new Misery\Component\Format\IntFormat())
+    ->registerNamedObject(new Misery\Component\Format\BooleanFormat())
+    ->registerNamedObject(new Misery\Component\Format\DateTimeFormat())
+    ->registerNamedObject(new Misery\Component\Format\ListFormat())
 ;
 
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
