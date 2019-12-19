@@ -30,7 +30,7 @@ $reader = new Misery\Component\Csv\Reader\CsvReader(
 );
 $parser->setProcessor($processor);
 
-$found = $reader->findBy(['family' => 'led_tvs', 'display_diagonal' => '26']);
+$found = $reader->find(['family' => 'led_tvs', 'display_diagonal' => '26']);
 
 // unflatten overlap issue
 //  "display_diagonal" => "26"
