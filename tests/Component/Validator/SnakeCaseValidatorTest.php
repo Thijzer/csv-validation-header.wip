@@ -17,7 +17,7 @@ class SnakeCaseValidatorTest extends TestCase
         $validator->validate('jennyFromTheBlock');
 
         $this->assertTrue($collector->hasConstraints());
-        $this->assertSame($collector->getMessages(), [SnakeCaseConstraint::INVALID_FORMAT]);
+        $this->assertSame($collector->getErrors(), [SnakeCaseConstraint::INVALID_FORMAT]);
     }
 
     public function test_it_should_validate_a_none_snake_case_value(): void

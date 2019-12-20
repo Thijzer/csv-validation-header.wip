@@ -9,7 +9,7 @@ class RequiredValidator extends AbstractValidator
     public function validate($value, array $context = []): void
     {
         if (null === $value || '' === $value) {
-            $this->getCollector()->collect(
+            $this->getValidationCollector()->collect(
                 new Constraint\RequiredConstraint(),
                 Constraint\RequiredConstraint::NOT_BLANK,
                 $context

@@ -13,7 +13,7 @@ class SnakeCaseValidator extends AbstractValidator
         $formatter = new SnakeCaseModifier();
         if ($formatter->modify($value) !== $value) {
             // constraint
-            $this->getCollector()->collect(
+            $this->getValidationCollector()->collect(
                 new Constraint\SnakeCaseConstraint(),
                 Constraint\SnakeCaseConstraint::INVALID_FORMAT
             );

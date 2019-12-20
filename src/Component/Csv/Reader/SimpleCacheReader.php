@@ -13,21 +13,41 @@ class SimpleCacheReader implements ReaderInterface
         $this->cache = $cache;
     }
 
-    public function getIterator(): \Generator
+    public function getIterator(): \Iterator
     {
         foreach ($this->cache->getKeys() as $key) {
             yield $this->cache->get($key);
         }
     }
 
-    public function findOneBy(array $filter): array
+    public function find(array $constraints): ReaderInterface
     {
-        $value = current($filter);
+        $reader = $this;
+        foreach ($constraints as $columnName => $rowValue) {
+            $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
+                return $row[$columnName] === $rowValue;
+            });
+        }
 
-        return $this->cache->get($value);
+        return $reader;
     }
 
-    public function findBy(array $filter): array
+    public function filter(callable $callable): ReaderInterface
     {
+        return new self($this->process($callable));
+    }
+
+    private function process(callable $callable): \Generator
+    {
+        foreach ($this->getIterator() as $key => $row) {
+            if (true === $callable($row)) {
+                yield $key => $row;
+            }
+        }
+    }
+
+    public function getValues(): array
+    {
+        return iterator_to_array($this->getIterator());
     }
 }

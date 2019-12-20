@@ -53,7 +53,7 @@ $cachePool = new RedisNameSpacedCache($redisFactory->create($redisAccount), 'sal
 
 /** @var SplFileInfo $file */
 foreach ($finder->in($path)->name('*.csv') as $file) {
-    $reader = new Misery\Component\Csv\Reader\CsvReader(
+    $reader = new Misery\Component\Csv\Reader\RowReader(
         CachedCursor::create($parser = CsvParser::create($file->getRealPath(),',')),
     );
     #$reader->indexColumn('Order ID');

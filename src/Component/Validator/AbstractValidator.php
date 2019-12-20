@@ -13,7 +13,7 @@ abstract class AbstractValidator implements ValidatorInterface
         $this->collector = $collector;
     }
 
-    public function getCollector(): ValidationCollector
+    public function getValidationCollector(): ValidationCollector
     {
         return $this->collector;
     }

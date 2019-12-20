@@ -8,6 +8,6 @@ class CsvDataFilter
 {
     public function filter(ReaderInterface $dataStream, string $columnName, $reference): array
     {
-        return $dataStream->findOneBy([$columnName => $reference]);
+        return $dataStream->find([$columnName => $reference]);
     }
 }

@@ -75,10 +75,10 @@ foreach ($linkedFiles as $filename => $file) {
 
     $reference = $file['reference'];
 
-    $readerA = new Misery\Component\Csv\Reader\CsvReader(CachedCursor::create($parser1));
+    $readerA = new Misery\Component\Csv\Reader\RowReader(CachedCursor::create($parser1));
     $readerA->indexColumn($reference);
 
-    $readerB = new Misery\Component\Csv\Reader\CsvReader(CachedCursor::create($parser2));
+    $readerB = new Misery\Component\Csv\Reader\RowReader(CachedCursor::create($parser2));
     $readerB->indexColumn($reference);
 
     $compare = new Misery\Component\Csv\Compare\CsvCompare(

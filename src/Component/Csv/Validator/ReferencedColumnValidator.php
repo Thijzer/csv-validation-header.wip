@@ -32,7 +32,7 @@ class ReferencedColumnValidator extends AbstractValidator implements ReaderAware
         $reader = $this->getReader();
 
         if (!\in_array($cellValue, $reader->getColumn($this->options['id']), true)) {
-            $this->getCollector()->collect(
+            $this->getValidationCollector()->collect(
                 new Constraint\ReferencedColumnConstraint(),
                 sprintf(
                     Constraint\ReferencedColumnConstraint::UNKNOWN_REFERENCE,

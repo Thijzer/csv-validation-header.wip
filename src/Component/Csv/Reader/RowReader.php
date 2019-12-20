@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Csv\Reader;
 
-class CsvReader implements CsvReaderInterface
+class RowReader implements RowReaderInterface
 {
     private $cursor;
 
@@ -16,12 +16,13 @@ class CsvReader implements CsvReaderInterface
         return $this->cursor;
     }
 
-    public function getRow(int $line): CsvReaderInterface
+    public function getRow(int $line): RowReaderInterface
+
     {
         return $this->getRows([$line]);
     }
 
-    public function getRows(array $lines): CsvReaderInterface
+    public function getRows(array $lines): RowReaderInterface
     {
         $items = [];
         foreach ($lines as $lineNr) {
@@ -34,12 +35,7 @@ class CsvReader implements CsvReaderInterface
         return new self(new ItemCollection($items));
     }
 
-    public function getColumnNames(string $columnName): CsvReaderInterface
-    {
-        return $this->getColumns($columnName);
-    }
-
-    public function getColumns(string...$columnNames): CsvReaderInterface
+    public function getColumns(string...$columnNames): RowReaderInterface
     {
         $items = [];
         foreach ($this->getIterator() as $key => $row) {
@@ -51,7 +47,7 @@ class CsvReader implements CsvReaderInterface
         return new self(new ItemCollection($items));
     }
 
-    public function find(array $constraints): CsvReaderInterface
+    public function find(array $constraints): ReaderInterface
     {
         $reader = $this;
         foreach ($constraints as $columnName => $rowValue) {
@@ -63,7 +59,7 @@ class CsvReader implements CsvReaderInterface
         return $reader;
     }
 
-    public function filter(callable $callable): CsvReaderInterface
+    public function filter(callable $callable): ReaderInterface
     {
         return new self($this->process($callable));
     }

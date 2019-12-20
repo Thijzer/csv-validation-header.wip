@@ -18,7 +18,7 @@ class InArrayValidator extends AbstractValidator implements OptionsInterface
     public function validate($value, array $context = []): void
     {
         if (!empty($this->options['options']) && !\in_array($value, $this->options['options'], true)) {
-            $this->getCollector()->collect(
+            $this->getValidationCollector()->collect(
                 new Constraint\InArrayConstraint(),
                 sprintf(Constraint\InArrayConstraint::NOT_LISTED, $value),
                 $context
