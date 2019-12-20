@@ -3,7 +3,7 @@
 namespace Misery\Component\Csv\Compare;
 
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
-use Misery\Component\Csv\Reader\CsvReaderInterface;
+use Misery\Component\Csv\Reader\RowReaderInterface;
 
 class CsvCompare
 {
@@ -18,7 +18,7 @@ class CsvCompare
      */
     private $excludes;
 
-    public function __construct(CsvReaderInterface $old, CsvReaderInterface $new, array $excludes = null)
+    public function __construct(RowReaderInterface $old, RowReaderInterface $new, array $excludes = null)
     {
         $this->old = $old;
         $this->new = $new;
@@ -35,8 +35,8 @@ class CsvCompare
         } else {
             $reference = current($references);
             // compare the old with the new
-            $oldCodes = $this->old->getColumnNames($reference)->getValues()[$reference];
-            $newCodes = $this->new->getColumnNames($reference)->getValues()[$reference];
+            $oldCodes = $this->old->getColumns($reference)->getValues()[$reference];
+            $newCodes = $this->new->getColumns($reference)->getValues()[$reference];
         }
 
         $changes = [

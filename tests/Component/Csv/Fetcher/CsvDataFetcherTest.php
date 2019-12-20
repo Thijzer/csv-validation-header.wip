@@ -5,7 +5,7 @@ namespace Tests\Misery\Component\Component\Csv\Fetcher;
 use Misery\Component\Csv\Fetcher\CsvDataFetcher;
 use Misery\Component\Csv\Filter\CsvDataFilter;
 use Misery\Component\Csv\Reader\CsvParser;
-use Misery\Component\Csv\Reader\CsvReader;
+use Misery\Component\Csv\Reader\RowReader;
 use PHPUnit\Framework\TestCase;
 
 class CsvDataFetcherTest extends TestCase
@@ -15,7 +15,7 @@ class CsvDataFetcherTest extends TestCase
     {
         $exampleFile = __DIR__ . '/../../../examples/example_no_format_row.csv';
 
-        $reader = new CsvReader(CsvParser::create($exampleFile));
+        $reader = new RowReader(CsvParser::create($exampleFile));
         $filter = new CsvDataFilter();
         $fetcher = new CsvDataFetcher($reader, $filter);
 

@@ -3,14 +3,14 @@
 namespace Misery\Component\Common\Repository;
 
 use Misery\Component\Common\Cache\Local\NameSpacedPoolCache;
-use Misery\Component\Csv\Reader\CsvReaderInterface;
+use Misery\Component\Csv\Reader\RowReaderInterface;
 
 class FileRepository
 {
     private $cache;
     private $reader;
 
-    public function __construct(CsvReaderInterface $reader, ...$references)
+    public function __construct(RowReaderInterface $reader, ...$references)
     {
         $this->cache = new NameSpacedPoolCache();
         $this->reader = $reader;

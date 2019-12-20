@@ -44,8 +44,8 @@ $compare = new Misery\Component\Csv\Combine\CsvCombine();
 $csvWriter = new CsvWriter(__DIR__ . '/private/family_difference.csv');
 
 $compare->differInto(
-    new Misery\Component\Csv\Reader\CsvReader($parser),
-    new Misery\Component\Csv\Reader\CsvReader($newFile),
+    new Misery\Component\Csv\Reader\RowReader($parser),
+    new Misery\Component\Csv\Reader\RowReader($newFile),
     'code',
     function ($row) use ($csvWriter) {
         $csvWriter->write($row);
@@ -55,8 +55,8 @@ $compare->differInto(
 $csvWriter = new CsvWriter(__DIR__ . '/private/family_combined.csv');
 
 $compare->combineInto(
-    new Misery\Component\Csv\Reader\CsvReader($parser),
-    new Misery\Component\Csv\Reader\CsvReader($newFile),
+    new Misery\Component\Csv\Reader\RowReader($parser),
+    new Misery\Component\Csv\Reader\RowReader($newFile),
     'code',
     function ($row) use ($csvWriter) {
         $csvWriter->write($row);

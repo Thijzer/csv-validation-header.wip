@@ -7,7 +7,7 @@ use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Processor\NullDataProcessor;
 use Misery\Component\Common\Processor\ProcessorAwareInterface;
 use Misery\Component\Csv\Compare\CsvCompare;
-use Misery\Component\Csv\Reader\CsvReader;
+use Misery\Component\Csv\Reader\RowReader;
 
 class CsvCombine
 {
@@ -16,8 +16,8 @@ class CsvCombine
     public function combineInto(CursorInterface $cursorA, CursorInterface $cursorB, string $reference, callable $call): void
     {
         $csvCompare = new CsvCompare(
-            $readerA = new CsvReader($cursorA),
-            $readerB = new CsvReader($cursorB)
+            $readerA = new RowReader($cursorA),
+            $readerB = new RowReader($cursorB)
         );
 
         $differences = $csvCompare->compare($reference);

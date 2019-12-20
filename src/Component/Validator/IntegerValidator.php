@@ -13,7 +13,7 @@ class IntegerValidator extends AbstractValidator
         }
 
         if (filter_var($value, FILTER_VALIDATE_INT) === false) {
-            $this->getCollector()->collect(
+            $this->getValidationCollector()->collect(
                 new Constraint\IntegerConstraint(),
                 sprintf(Constraint\IntegerConstraint::INVALID_VALUE, $value),
                 $context

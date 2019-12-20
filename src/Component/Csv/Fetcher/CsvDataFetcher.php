@@ -16,9 +16,9 @@ class CsvDataFetcher
         $this->dataFilter = $dataFilter;
     }
 
-    public function fetchRow( string $columnName, $reference): array
+    public function fetchRow(string $columnName, $reference): array
     {
-        return $this->dataFilter->filter($this->reader, $columnName, $reference);
+        return $this->reader->find([$columnName => $reference])->getValues();
     }
 }
 

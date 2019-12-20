@@ -22,13 +22,12 @@ class UniqueValueValidator extends AbstractValidator implements OptionsInterface
     {
         /** @var ReaderInterface $reader */
         $reader = $this->getReader();
-        $reader->indexColumn($columnName);
 
-        $columnData = $reader->getColumn($columnName);
+        $columnData = $reader->($columnName);
 
         $duplicates = array_unique($columnData);
         if (\count($columnData) !== \count($duplicates)) {
-            $this->getCollector()->collect(
+            $this->getValidationCollector()->collect(
                 new Constraint\UniqueValueConstraint(),
                 sprintf(
                     Constraint\UniqueValueConstraint::UNIQUE_VALUE,

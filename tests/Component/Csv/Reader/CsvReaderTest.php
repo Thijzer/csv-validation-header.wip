@@ -3,7 +3,7 @@
 namespace Tests\Misery\Component\Component\Csv\Reader;
 
 use Misery\Component\Csv\Reader\CsvParser;
-use Misery\Component\Csv\Reader\CsvReader;
+use Misery\Component\Csv\Reader\RowReader;
 use PHPUnit\Framework\TestCase;
 
 class CsvReaderTest extends TestCase
@@ -11,9 +11,9 @@ class CsvReaderTest extends TestCase
     public function test_parse_a_column(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader(new CsvParser($file, ','));
+        $reader = new RowReader(new CsvParser($file, ','));
 
-        $filteredReader = $reader->getColumnNames('first_name');
+        $filteredReader = $reader->getColumns('first_name');
         $data = iterator_to_array($filteredReader->getIterator());
 
         $this->assertSame(\count($data), 300);
@@ -22,7 +22,7 @@ class CsvReaderTest extends TestCase
     public function test_parse_columns(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader($parser = new CsvParser($file, ','));
+        $reader = new RowReader($parser = new CsvParser($file, ','));
 
         $filteredReader = $reader->getColumns('first_name', 'last_name');
 
@@ -34,7 +34,7 @@ class CsvReaderTest extends TestCase
     public function test_parse_a_row(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader($parser = new CsvParser($file, ','));
+        $reader = new RowReader($parser = new CsvParser($file, ','));
 
         $filteredReader = $reader->getRow(150);
 
@@ -44,7 +44,7 @@ class CsvReaderTest extends TestCase
     public function test_parse_rows(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader($parser = new CsvParser($file, ','));
+        $reader = new RowReader($parser = new CsvParser($file, ','));
 
         $filteredReader = $reader->getRows([149, 150]);
 
@@ -54,7 +54,7 @@ class CsvReaderTest extends TestCase
     public function test_mix_parse_rows_and_columns(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader(new CsvParser($file, ','));
+        $reader = new RowReader(new CsvParser($file, ','));
 
         $filteredReader = $reader
             ->getColumns('first_name', 'last_name')
@@ -78,7 +78,7 @@ class CsvReaderTest extends TestCase
     public function test_find_items(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader(new CsvParser($file, ','));
+        $reader = new RowReader(new CsvParser($file, ','));
 
         $filteredReader = $reader
             ->getColumns('first_name', 'last_name')
@@ -98,7 +98,7 @@ class CsvReaderTest extends TestCase
     public function test_filter_items(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader(new CsvParser($file, ','));
+        $reader = new RowReader(new CsvParser($file, ','));
 
         $filteredReader = $reader
             ->getColumns('first_name', 'last_name')

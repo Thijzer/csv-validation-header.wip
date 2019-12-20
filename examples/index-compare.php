@@ -44,8 +44,8 @@ $parser->setProcessor($processor);
 $newFile->setProcessor($processor);
 
 $compare = new Misery\Component\Csv\Compare\CsvCompare(
-   new Misery\Component\Csv\Reader\CsvReader($parser),
-   new Misery\Component\Csv\Reader\CsvReader($newFile)
+   new Misery\Component\Csv\Reader\RowReader($parser),
+   new Misery\Component\Csv\Reader\RowReader($newFile)
 );
 
 dump(

@@ -131,10 +131,20 @@ class ItemCollection implements CsvInterface, CursorInterface
         }
     }
 
+    public function getItemValues(string $key)
+    {
+        $items = [];
+        foreach ($this->getIterator() as $index => $row) {
+            $items[$index] = $row[$key];
+        }
+
+        return $items;
+    }
+
     /**
      * @return array
      */
-    public function getValues(): array
+    public function getItems(): array
     {
         return $this->items;
     }

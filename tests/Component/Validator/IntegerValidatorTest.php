@@ -18,12 +18,12 @@ class IntegerValidatorTest extends TestCase
         $validator->validate('jennyFromTheBlock');
 
         $this->assertTrue($collector->hasConstraints());
-        $this->assertSame($collector->getMessages(), [IntegerConstraint::INVALID_VALUE]);
+        $this->assertSame($collector->getErrors(), [IntegerConstraint::INVALID_VALUE]);
 
         $validator->validate('0.1');
 
         $this->assertTrue($collector->hasConstraints());
-        $this->assertSame($collector->getMessages(), [IntegerConstraint::INVALID_VALUE]);
+        $this->assertSame($collector->getErrors(), [IntegerConstraint::INVALID_VALUE]);
     }
 
     public function test_it_should_validate_a_none_integer_value(): void
