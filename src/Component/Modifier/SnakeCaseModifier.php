@@ -9,10 +9,6 @@ class SnakeCaseModifier implements CellModifier
     public const NAME = 'snake_case';
 
     /**
-     * badly converts
-     * @Abc to @_abc
-     * @ABC to @_a_b_c
-     *
      *
      * @param string $value
      * @return string

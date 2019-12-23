@@ -2,9 +2,9 @@
 
 namespace Misery\Component\Modifier;
 
-use Misery\Component\Common\Modifier\Modifier;
+use Misery\Component\Common\Modifier\RowModifier;
 
-class UTF8EncodeModifier implements Modifier
+class UTF8EncodeModifier implements RowModifier
 {
     const UTF8 = 'UTF-8';
 

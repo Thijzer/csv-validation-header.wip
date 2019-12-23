@@ -4,8 +4,6 @@ namespace Misery\Component\Csv\Combine;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Functions\ArrayFunctions;
-use Misery\Component\Common\Processor\NullDataProcessor;
-use Misery\Component\Common\Processor\ProcessorAwareInterface;
 use Misery\Component\Csv\Compare\CsvCompare;
 use Misery\Component\Csv\Reader\RowReader;
 
@@ -28,12 +26,12 @@ class CsvCombine
         );
         $combinedHeaderRow = array_combine($combinedHeaders, array_fill(0, \count($combinedHeaders), null));
 
-        if ($cursorA instanceof ProcessorAwareInterface) {
-            $cursorA->setProcessor(new NullDataProcessor());
-        }
-        if ($cursorB instanceof ProcessorAwareInterface) {
-            $cursorB->setProcessor(new NullDataProcessor());
-        }
+//        if ($cursorA instanceof ProcessorAwareInterface) {
+//            $cursorA->setProcessor(new NullDataProcessor());
+//        }
+//        if ($cursorB instanceof ProcessorAwareInterface) {
+//            $cursorB->setProcessor(new NullDataProcessor());
+//        }
 
         if (false === $this->shouldDiffer) {
             $cursorA->loop(function ($row) use ($call, $reference, $combinedHeaderRow, $differences) {

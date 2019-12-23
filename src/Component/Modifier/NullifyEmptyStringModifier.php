@@ -2,9 +2,9 @@
 
 namespace Misery\Component\Modifier;
 
-use Misery\Component\Common\Modifier\Modifier;
+use Misery\Component\Common\Modifier\RowModifier;
 
-class NullifyEmptyStringModifier implements Modifier
+class NullifyEmptyStringModifier implements RowModifier
 {
     public const NAME = 'nullify';
 
