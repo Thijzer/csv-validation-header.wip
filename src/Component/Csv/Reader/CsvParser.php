@@ -8,10 +8,8 @@ use Misery\Component\Common\Processor\ProcessorAwareInterface;
 use Misery\Component\Common\Processor\ProcessorAwareTrait;
 use Misery\Component\Csv\Exception\InvalidCsvElementSizeException;
 
-class CsvParser implements CsvInterface, CursorInterface, ProcessorAwareInterface
+class CsvParser implements CsvInterface, CursorInterface
 {
-    use ProcessorAwareTrait;
-
     public const DELIMITER = ';';
     public const ENCLOSURE = '"';
     public const ESCAPE = '\\';
@@ -36,7 +34,6 @@ class CsvParser implements CsvInterface, CursorInterface, ProcessorAwareInterfac
             \SplFileObject::DROP_NEW_LINE
         );
         $file->setCsvControl($delimiter, $enclosure, $escapeChar);
-        $this->processor = new NullDataProcessor();
 
         $this->setHeaders();
     }
@@ -102,11 +99,11 @@ class CsvParser implements CsvInterface, CursorInterface, ProcessorAwareInterfac
 
         // here we need to use the filter
         $row = @array_combine($this->headers, $current);
-        if (null === $row) {
+        if (false === $row || null === $row) {
             throw new InvalidCsvElementSizeException($this->file->getFilename(), $this->key());
         }
 
-        return $this->processor->processRow($row);
+        return $row;
     }
 
     /**
