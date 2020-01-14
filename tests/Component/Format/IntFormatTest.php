@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Misery\Component\Component\Format;
+namespace Tests\Misery\Component\Format;
 
 use Misery\Component\Format\IntFormat;
 use PHPUnit\Framework\TestCase;

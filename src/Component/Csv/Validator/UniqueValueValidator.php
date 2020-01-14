@@ -2,28 +2,20 @@
 
 namespace Misery\Component\Csv\Validator;
 
-use Misery\Component\Common\Options\OptionsInterface;
-use Misery\Component\Common\Options\OptionsTrait;
-use Misery\Component\Csv\Reader\ReaderAwareInterface;
-use Misery\Component\Csv\Reader\ReaderAwareTrait;
-use Misery\Component\Csv\Reader\ReaderInterface;
+use Misery\Component\Csv\Fetcher\ColumnValuesFetcher;
+use Misery\Component\Csv\Reader\RowReaderAwareInterface;
+use Misery\Component\Csv\Reader\RowReaderAwareTrait;
 use Misery\Component\Validator\AbstractValidator;
 
-class UniqueValueValidator extends AbstractValidator implements OptionsInterface, ReaderAwareInterface
+class UniqueValueValidator extends AbstractValidator implements RowReaderAwareInterface
 {
-    use OptionsTrait;
-    use ReaderAwareTrait;
+    use RowReaderAwareTrait;
 
     public const NAME = 'unique';
 
-    private $options = [];
-
     public function validate($columnName, array $context = []): void
     {
-        /** @var ReaderInterface $reader */
-        $reader = $this->getReader();
-
-        $columnData = $reader->($columnName);
+        $columnData = ColumnValuesFetcher::fetch($this->getReader(), $columnName);
 
         $duplicates = array_unique($columnData);
         if (\count($columnData) !== \count($duplicates)) {
@@ -31,7 +23,7 @@ class UniqueValueValidator extends AbstractValidator implements OptionsInterface
                 new Constraint\UniqueValueConstraint(),
                 sprintf(
                     Constraint\UniqueValueConstraint::UNIQUE_VALUE,
-                    implode(', ', array_unique(array_diff_assoc($columnData, array_unique($columnData))))
+                    implode(', ', array_unique(array_diff_assoc($columnData, $duplicates)))
                 ),
                 $context
             );

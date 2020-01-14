@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Misery\Component\Component\Modifier;
+namespace Tests\Misery\Component\Modifier;
 
 use Misery\Component\Modifier\SnakeCaseModifier;
 use PHPUnit\Framework\TestCase;

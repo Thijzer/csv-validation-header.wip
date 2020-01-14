@@ -26,6 +26,9 @@
             "/tests/"
         ]
     },
+    "autoload-dev": {
+        "psr-4": { "Tests\\Misery\\": "tests/" }
+    },
     "scripts": {
         "test": [
             "php vendor/bin/phpunit",

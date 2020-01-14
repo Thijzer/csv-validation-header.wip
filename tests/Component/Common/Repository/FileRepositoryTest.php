@@ -3,51 +3,29 @@
 namespace Tests\Misery\Component\Common\Repository;
 
 use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Csv\Reader\ItemCollection;
 use Misery\Component\Csv\Reader\RowReader;
 use PHPUnit\Framework\TestCase;
 
 class FileRepositoryTest extends TestCase
 {
-//    public function test_find_by(): void
-//    {
-//        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-//        $reader = new CsvReader(new CsvParser($file, ','));
-//
-//        $data = $reader->findOneBy(['first_name' => 'Gordie']);
-//
-//        $this->assertSame($data, $reader->getRow(30));
-//    }
-//
-//    public function test_find_by_with_index(): void
-//    {
-//        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-//        $reader = new CsvReader(new CsvParser($file, ','));
-//
-//        $reader->indexColumns('first_name');
-//
-//        $data = $reader->findOneBy(['first_name' => 'Gordie']);
-//
-//        $this->assertSame($data, $reader->getRow(30));
-//    }
-    public function test_find_by(): void
+    private $items = [
+        [
+            'first_name' => 'Gordie',
+        ],
+        [
+            'first_name' => 'Frans',
+        ],
+    ];
+
+    // TODO we should implement te RowReader behaviour to a matching Repository Interface
+
+    public function test_find(): void
     {
-        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader(new CsvParser($file, ','));
+        $reader = new RowReader($items = new ItemCollection($this->items));
 
-        $data = $reader->findOneBy(['first_name' => 'Gordie']);
+        $data = $reader->find(['first_name' => 'Gordie']);
 
-        $this->assertSame($data, $reader->getRow(30));
-    }
-
-    public function test_find_by_with_index(): void
-    {
-        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader(new CsvParser($file, ','));
-
-        $reader->indexColumns('first_name');
-
-        $data = $reader->findOneBy(['first_name' => 'Gordie']);
-
-        $this->assertSame($data, $reader->getRow(30));
+        $this->assertSame([$items->getItems()[0]], $data->getItems());
     }
 }

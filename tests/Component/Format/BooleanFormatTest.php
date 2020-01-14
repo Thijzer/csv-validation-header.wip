@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Misery\Component\Component\Format;
+namespace Tests\Misery\Component\Format;
 
 use Misery\Component\Format\BooleanFormat;
 use PHPUnit\Framework\TestCase;
