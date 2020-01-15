@@ -3,57 +3,61 @@
 namespace Misery\Component\Common\Repository;
 
 use Misery\Component\Common\Cache\Local\NameSpacedPoolCache;
+use Misery\Component\Csv\Reader\ItemCollection;
+use Misery\Component\Csv\Reader\RowReader;
 use Misery\Component\Csv\Reader\RowReaderInterface;
 
+/**
+ * A doctrine compatible File Repository
+ */
 class FileRepository
 {
     private $cache;
     private $reader;
+    private $references;
 
     public function __construct(RowReaderInterface $reader, ...$references)
     {
         $this->cache = new NameSpacedPoolCache();
         $this->reader = $reader;
         $this->indexColumnsReference($references);
+        $this->references = $references;
     }
 
-    public function find($id)
+    public function find($id): array
     {
-    }
-
-    public function findBy(array $filter): array
-    {
-        //$cursor = $this->cursor;
-        foreach ($filter as $key => $value) {
-            //$this->cursor = new ItemCollection($this->processFilter($key, $value));
+        $criteria = [];
+        foreach ($this->references as $reference) {
+            $criteria[$reference] = $id;
         }
-        // rotate back the cursor
-        //$rows = $this->cursor;
-        //$this->cursor = $cursor;
 
-        // fetch the values for these line numbers
-        //return $rows->getValues();
+        return $this->findOneBy($criteria);
     }
 
-    public function findOneBy(array $filter): array
+    public function findBy(array $criteria): array
     {
-        return current($this->findBy($filter)) ?: [];
+        return $this->reader->find($criteria)->getItems();
+    }
+
+    public function findOneBy(array $criteria): array
+    {
+        return current($this->findBy($criteria)) ?: [];
     }
 
     private function indexColumnsReference(string ...$columnNames): array
     {
         $this->cache->set(
-            $referenceKey = implode('|', $columnNames),
+            $uniqueReference = implode('|', $columnNames),
             $references = $this->combineReferences($this->reader->getColumns($columnNames))
         );
 
-        return [$referenceKey => $references];
+        return [$uniqueReference => $references];
     }
 
-    private function combineReferences(array $arrays)
+    private function combineReferences(RowReaderInterface $reader): array
     {
         $concat = [];
-        foreach ($arrays as $array) {
+        foreach ($reader->getIterator() as $array) {
             foreach ($array as $pointer => $item) {
                 $concat[$pointer] = isset($concat[$pointer]) ? $concat[$pointer].'|'.$item : $item;
             }
@@ -64,14 +68,7 @@ class FileRepository
 
     private function filter(callable $callable): array
     {
-        $values = [];
-        foreach ($this->reader->getIterator() as $key => $row) {
-            if (true === $callable($row)) {
-                $values[$key] = $row;
-            }
-        }
-
-        return $values;
+        return $this->reader->filter($callable)->getItems();
     }
 
     private function processFilter($key, $value): array

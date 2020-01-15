@@ -6,7 +6,7 @@ use Misery\Component\Validator\IntegerValidator;
 use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
 
-class IntegerTestValidatorTest extends TestCase
+class IntegerValidatorTest extends TestCase
 {
     public function test_it_should_invalidate_a_none_integer_value(): void
     {

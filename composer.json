@@ -8,15 +8,14 @@
         }
     ],
     "require": {
-        "php": ">=7.3.0",
-        "symfony/var-dumper": "^4.3",
+        "php": ">=7.2.0",
         "symfony/yaml": "^4.3",
         "ext-json": "*",
-        "ext-zip": "*",
-        "ext-redis": "*"
+        "ext-zip": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
+        "symfony/var-dumper": "^4.3",
         "phpspec/phpspec": "^5.1",
         "phpunit/phpunit": "^8.3"
     },

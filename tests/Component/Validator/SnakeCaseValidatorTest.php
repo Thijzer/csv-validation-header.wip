@@ -6,7 +6,7 @@ use Misery\Component\Validator\SnakeCaseValidator;
 use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
 
-class SnakeCaseTestValidatorTest extends TestCase
+class SnakeCaseValidatorTest extends TestCase
 {
     public function test_it_should_invalidate_a_none_snake_case_value(): void
     {
