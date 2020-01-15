@@ -16,11 +16,11 @@ class FileRepository
     private $reader;
     private $references;
 
-    public function __construct(RowReaderInterface $reader, ...$references)
+    public function __construct(RowReaderInterface $reader,string ...$references)
     {
         $this->cache = new NameSpacedPoolCache();
         $this->reader = $reader;
-        $this->indexColumnsReference($references);
+        $this->indexColumnsReference(...$references);
         $this->references = $references;
     }
 
@@ -48,7 +48,7 @@ class FileRepository
     {
         $this->cache->set(
             $uniqueReference = implode('|', $columnNames),
-            $references = $this->combineReferences($this->reader->getColumns($columnNames))
+            $references = $this->combineReferences($this->reader->getColumns(...$columnNames))
         );
 
         return [$uniqueReference => $references];
