@@ -46,7 +46,7 @@ class SimpleCacheReader implements ReaderInterface
         }
     }
 
-    public function getValues(): array
+    public function getItems(): array
     {
         return iterator_to_array($this->getIterator());
     }

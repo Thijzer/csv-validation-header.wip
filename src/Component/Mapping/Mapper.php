@@ -7,8 +7,8 @@ interface Mapper
     /**
      * @param array $item
      * @param array $mappings
-     * 
+     *
      * @return mixed
      */
-    public function mapColumns(array $item, array $mappings);
+    public function map(array $item, array $mappings);
 }

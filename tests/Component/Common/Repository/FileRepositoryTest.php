@@ -2,52 +2,54 @@
 
 namespace Tests\Misery\Component\Common\Repository;
 
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Common\Repository\FileRepository;
+use Misery\Component\Csv\Reader\ItemCollection;
 use Misery\Component\Csv\Reader\RowReader;
 use PHPUnit\Framework\TestCase;
 
 class FileRepositoryTest extends TestCase
 {
-//    public function test_find_by(): void
-//    {
-//        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-//        $reader = new CsvReader(new CsvParser($file, ','));
-//
-//        $data = $reader->findOneBy(['first_name' => 'Gordie']);
-//
-//        $this->assertSame($data, $reader->getRow(30));
-//    }
-//
-//    public function test_find_by_with_index(): void
-//    {
-//        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-//        $reader = new CsvReader(new CsvParser($file, ','));
-//
-//        $reader->indexColumns('first_name');
-//
-//        $data = $reader->findOneBy(['first_name' => 'Gordie']);
-//
-//        $this->assertSame($data, $reader->getRow(30));
-//    }
-    public function test_find_by(): void
+    private $items = [
+        [
+            'id' => '1',
+            'first_name' => 'Gordie',
+        ],
+        [
+            'id' => "2",
+            'first_name' => 'Frans',
+        ],
+    ];
+
+    public function test_find_from_file_repository(): void
     {
-        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader(new CsvParser($file, ','));
+        $reader = new RowReader($items = new ItemCollection($this->items));
 
-        $data = $reader->findOneBy(['first_name' => 'Gordie']);
+        $repository = new FileRepository($reader, 'id');
 
-        $this->assertSame($data, $reader->getRow(30));
+        $data = $repository->find('1');
+
+        $this->assertSame($items->getItems()[0], $data);
     }
 
-    public function test_find_by_with_index(): void
+    public function test_find_one_by_from_file_repository(): void
     {
-        $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
-        $reader = new CsvReader(new CsvParser($file, ','));
+        $reader = new RowReader($items = new ItemCollection($this->items));
 
-        $reader->indexColumns('first_name');
+        $repository = new FileRepository($reader, 'id');
 
-        $data = $reader->findOneBy(['first_name' => 'Gordie']);
+        $data = $repository->findOneBy(['first_name' => 'Frans']);
 
-        $this->assertSame($data, $reader->getRow(30));
+        $this->assertSame($items->getItems()[1], $data);
+    }
+
+    public function test_find_by_from_file_repository(): void
+    {
+        $reader = new RowReader($items = new ItemCollection($this->items));
+
+        $repository = new FileRepository($reader, 'id');
+
+        $data = $repository->findBy(['first_name' => 'Frans']);
+
+        $this->assertSame([1 => $items->getItems()[1]], $data);
     }
 }

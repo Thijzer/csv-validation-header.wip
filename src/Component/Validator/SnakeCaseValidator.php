@@ -15,7 +15,7 @@ class SnakeCaseValidator extends AbstractValidator
             // constraint
             $this->getValidationCollector()->collect(
                 new Constraint\SnakeCaseConstraint(),
-                Constraint\SnakeCaseConstraint::INVALID_FORMAT
+                sprintf(Constraint\SnakeCaseConstraint::INVALID_FORMAT, $value)
             );
         }
     }

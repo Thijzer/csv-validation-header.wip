@@ -1,8 +1,7 @@
 <?php
 
-namespace Component\Mapping;
+namespace Tests\Misery\Component\Mapping;
 
-use Akeneo\Tool\Component\Connector\Exception\DataArrayConversionException;
 use Misery\Component\Mapping\ColumnMapper;
 use PHPUnit\Framework\TestCase;
 
@@ -14,26 +13,32 @@ class ColumnMapperTest extends TestCase
 
         $mappings = [
             'Code' => 'code',
-            'Wassen' => 'wash'
+            'Wassen' => 'wash',
+            'fail' => 'fail',
         ];
 
         $item = [
             'Code' => '1',
-            'Wassen' => 'B'
+            'Wassen' => 'B',
+            'not_mapped' => 'C',
         ];
 
-        $this->assertSame($mapper->mapColumns($item, $mappings), ['code'=> '1', 'wash' => 'B']);
+        $result = [
+            'code'=> '1',
+            'wash' => 'B',
+            'not_mapped' => 'C',
+        ];
+
+        $this->assertSame($result, $mapper->map($item, $mappings));
     }
 
     public function test_it_should_thrown_exception_if_column_names_are_wrong_mapped(): void
     {
-        $this->expectException(DataArrayConversionException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         $mapper = new ColumnMapper();
 
         $mappings = [
-            'Code' => 'code',
-            'Wassen' => 'wash',
             'Temp' => 'temperature'
         ];
 
@@ -42,7 +47,6 @@ class ColumnMapperTest extends TestCase
             'Wassen' => 'B'
         ];
 
-
-        $mapper->mapColumns($item, $mappings);
+        $mapper->map($item, $mappings);
     }
 }

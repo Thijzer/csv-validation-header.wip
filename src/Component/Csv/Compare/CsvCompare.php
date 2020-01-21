@@ -35,8 +35,8 @@ class CsvCompare
         } else {
             $reference = current($references);
             // compare the old with the new
-            $oldCodes = $this->old->getColumns($reference)->getValues()[$reference];
-            $newCodes = $this->new->getColumns($reference)->getValues()[$reference];
+            $oldCodes = $this->old->getColumns($reference)->getItems()[$reference];
+            $newCodes = $this->new->getColumns($reference)->getItems()[$reference];
         }
 
         $changes = [
@@ -52,7 +52,7 @@ class CsvCompare
 
         foreach ($this->old->getRows(array_keys($possibleChanges)) as $lineNumber => $old) {
             $id = $oldCodes[$lineNumber];
-            $new = current($this->new->getRow($codes[$id])->getValues());
+            $new = current($this->new->getRow($codes[$id])->getItems());
 
             if ($this->excludes) {
                 foreach ($this->excludes as $exclude) {

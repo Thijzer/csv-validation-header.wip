@@ -2,25 +2,30 @@
 
 namespace Misery\Component\Mapping;
 
-use Akeneo\Tool\Component\Connector\Exception\DataArrayConversionException;
-
 /**
  * Class ColumnMapper
  * @package Misery\Component\Mapping
  */
 class ColumnMapper implements Mapper
 {
-    public function mapColumns(array $item, array $mappings)
+    public function map(array $item, array $mappings)
     {
-        if (count(array_diff(array_keys($mappings), array_keys($item))) > 0){
-            return new DataArrayConversionException('Mapping items are not found in item ');
+        if (count(array_diff(array_keys($mappings), array_keys($item))) == count(array_keys($mappings))) {
+            throw new \InvalidArgumentException(sprintf(
+                'No mapped items %s are not found in item.',
+                json_encode($mappings)
+            ));
         }
 
-        foreach ($mappings as $key => $value) {
-            $item[$value] = $item[$key];
-            unset($item[$key]);
+        $keys = [];
+        foreach ($item as $key => $value) {
+            if (isset($mappings[$key])) {
+                $keys[] = $mappings[$key];
+                continue;
+            }
+            $keys[] = $key;
         }
 
-        return $item;
+        return array_combine($keys, array_values($item));
     }
 }

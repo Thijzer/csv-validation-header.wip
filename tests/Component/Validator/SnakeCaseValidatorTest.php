@@ -1,8 +1,7 @@
 <?php
 
-namespace Tests\Misery\Component\Component\Validator;
+namespace Tests\Misery\Component\Validator;
 
-use Misery\Component\Validator\Constraint\SnakeCaseConstraint;
 use Misery\Component\Validator\SnakeCaseValidator;
 use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
@@ -14,10 +13,9 @@ class SnakeCaseValidatorTest extends TestCase
         $collector = new ValidationCollector();
         $validator = new SnakeCaseValidator($collector);
 
-        $validator->validate('jennyFromTheBlock');
+        $validator->validate($value = 'jennyFromTheBlock');
 
         $this->assertTrue($collector->hasConstraints());
-        $this->assertSame($collector->getErrors(), [SnakeCaseConstraint::INVALID_FORMAT]);
     }
 
     public function test_it_should_validate_a_none_snake_case_value(): void

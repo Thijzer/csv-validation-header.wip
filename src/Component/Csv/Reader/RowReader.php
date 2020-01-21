@@ -61,10 +61,10 @@ class RowReader implements RowReaderInterface
 
     public function filter(callable $callable): ReaderInterface
     {
-        return new self($this->process($callable));
+        return new self($this->processFilter($callable));
     }
 
-    private function process(callable $callable): \Generator
+    private function processFilter(callable $callable): \Generator
     {
         foreach ($this->getIterator() as $key => $row) {
             if (true === $callable($row)) {
@@ -73,12 +73,24 @@ class RowReader implements RowReaderInterface
         }
     }
 
+    public function map(callable $callable): ReaderInterface
+    {
+        return new self($this->processMap($callable));
+    }
+
+    private function processMap(callable $callable): \Generator
+    {
+        foreach ($this->getIterator() as $key => $row) {
+            yield $key => $callable($row);
+        }
+    }
+
     public function getIterator(): \Iterator
     {
         return $this->cursor;
     }
 
-    public function getValues(): array
+    public function getItems(): array
     {
         return iterator_to_array($this->cursor);
     }

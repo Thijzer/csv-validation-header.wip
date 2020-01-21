@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Misery\Component\Component\Csv\Reader;
+namespace Tests\Misery\Component\Csv\Reader;
 
 use Misery\Component\Csv\Reader\CsvParser;
 use PHPUnit\Framework\TestCase;

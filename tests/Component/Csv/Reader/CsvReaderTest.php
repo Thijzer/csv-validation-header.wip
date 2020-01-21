@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Misery\Component\Component\Csv\Reader;
+namespace Tests\Misery\Component\Csv\Reader;
 
 use Misery\Component\Csv\Reader\CsvParser;
 use Misery\Component\Csv\Reader\RowReader;
@@ -27,7 +27,7 @@ class CsvReaderTest extends TestCase
         $filteredReader = $reader->getColumns('first_name', 'last_name');
 
         $this->assertSame(
-            array_keys(current($filteredReader->getValues())), ['first_name', 'last_name']
+            array_keys(current($filteredReader->getItems())), ['first_name', 'last_name']
         );
     }
 
@@ -38,7 +38,7 @@ class CsvReaderTest extends TestCase
 
         $filteredReader = $reader->getRow(150);
 
-        $this->assertSame(array_keys($filteredReader->getValues()[150]), $parser->getHeaders());
+        $this->assertSame(array_keys($filteredReader->getItems()[150]), $parser->getHeaders());
     }
 
     public function test_parse_rows(): void
@@ -48,7 +48,7 @@ class CsvReaderTest extends TestCase
 
         $filteredReader = $reader->getRows([149, 150]);
 
-        $this->assertSame(count($filteredReader->getValues()), 2);
+        $this->assertSame(count($filteredReader->getItems()), 2);
     }
 
     public function test_mix_parse_rows_and_columns(): void
@@ -72,7 +72,7 @@ class CsvReaderTest extends TestCase
             ],
         ];
 
-        $this->assertSame($result, $filteredReader->getValues());
+        $this->assertSame($result, $filteredReader->getItems());
     }
 
     public function test_find_items(): void
@@ -92,7 +92,7 @@ class CsvReaderTest extends TestCase
             ],
         ];
 
-        $this->assertSame($result, $filteredReader->getValues());
+        $this->assertSame($result, $filteredReader->getItems());
     }
 
     public function test_filter_items(): void
@@ -114,6 +114,6 @@ class CsvReaderTest extends TestCase
             ],
         ];
 
-        $this->assertSame($result, $filteredReader->getValues());
+        $this->assertSame($result, $filteredReader->getItems());
     }
 }
