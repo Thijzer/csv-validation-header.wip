@@ -8,16 +8,16 @@
         }
     ],
     "require": {
-        "php": "7.1.*|7.2.*",
+        "php": "7.1.*|7.2.*|7.3.*",
         "symfony/yaml": "^3.4",
-        "ext-json": "*",
-        "ext-zip": "*"
+        "ext-json": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
         "symfony/var-dumper": "^3.4",
         "phpspec/phpspec": "~3.4.2",
-        "phpunit/phpunit": "6.5.3"
+        "phpunit/phpunit": "6.5.3",
+        "phpstan/phpstan": "^0.12.7"
     },
     "autoload": {
         "psr-4": { "Misery\\": "src/" },
@@ -31,7 +31,8 @@
     "scripts": {
         "test": [
             "php vendor/bin/phpunit",
-            "php vendor/bin/phpspec run"
+            "php vendor/bin/phpspec run",
+            "vendor/bin/phpstan analyse -l 1 src tests"
         ]
     }
 }

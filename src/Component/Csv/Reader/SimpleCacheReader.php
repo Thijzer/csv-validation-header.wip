@@ -50,4 +50,9 @@ class SimpleCacheReader implements ReaderInterface
     {
         return iterator_to_array($this->getIterator());
     }
+
+    public function read(): \Iterator
+    {
+        return $this->getIterator();
+    }
 }

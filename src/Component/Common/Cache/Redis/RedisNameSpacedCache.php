@@ -66,7 +66,7 @@ class RedisNameSpacedCache implements SimpleCacheInterface
     /** @inheritDoc */
     public function deleteMultiple($keys): int
     {
-        $this->cache->deleteMultiple(...$keys);
+        return $this->cache->deleteMultiple(...$keys);
     }
 
     /** @inheritDoc */

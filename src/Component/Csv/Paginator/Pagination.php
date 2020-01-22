@@ -2,11 +2,11 @@
 
 namespace Misery\Component\Csv\Paginator;
 
-use Html\Functions\PaginationInterface;
 use Misery\Component\Common\Cursor\CursorInterface;
-use Misery\Component\Csv\Reader\ReaderInterface;
 
-class Pagination implements PaginationInterface
+// @todo implements Pagination Interface
+
+class Pagination
 {
     private $pageId = 0;
     private $limit = 0;

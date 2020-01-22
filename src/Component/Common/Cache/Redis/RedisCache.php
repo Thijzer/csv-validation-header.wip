@@ -39,7 +39,7 @@ class RedisCache implements SimpleCacheInterface
 
     public function delete($key): int
     {
-        $this->client->delete($key);
+        return (int) $this->client->delete($key);
     }
 
     /** @inheritDoc */
@@ -59,7 +59,7 @@ class RedisCache implements SimpleCacheInterface
     /** @inheritDoc */
     public function deleteMultiple($keys): int
     {
-        $this->client->delete(...$keys);
+        return $this->client->delete(...$keys);
     }
 
     public function has($key): bool

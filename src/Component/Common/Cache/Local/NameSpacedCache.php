@@ -69,9 +69,9 @@ class NameSpacedCache implements SimpleCacheInterface
     }
 
     /** @inheritDoc */
-    public function deleteMultiple($keys): int
+    public function deleteMultiple($keys): bool
     {
-        $this->cache->deleteMultiple(...$keys);
+        return $this->cache->deleteMultiple(...$keys);
     }
 
     /** @inheritDoc */

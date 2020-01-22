@@ -54,7 +54,7 @@ class CsvDataProcessor implements CsvDataProcessorInterface
                 $items = $registry->filterByAlias($converterName);
                 if ($items->hasValues()) {
                     $rows[$converterName][] = [
-                        'type' => $registry::NAME,
+                        'type' => $registry->getAlias(),
                         'class' => $items->first(),
                         'options' => $converterOptions,
                     ];
@@ -76,11 +76,11 @@ class CsvDataProcessor implements CsvDataProcessorInterface
             $class->setOptions($match['options']);
         }
 
-        if ($type === Registry::NAME) {
+        if ($type === 'modifier') {
             $row[$header] = $class->modify($row[$header]);
         }
 
-        if ($type === FormatRegistryInterface::NAME) {
+        if ($type === 'format') {
             $row[$header] = $class->format($row[$header]);
         }
     }
@@ -104,7 +104,7 @@ class CsvDataProcessor implements CsvDataProcessorInterface
                     $class->setOptions($match['options']);
                 }
 
-                if ($type === Registry::NAME) {
+                if ($type === 'modifier') {
                     $row = $class->modify($row);
                 }
             }

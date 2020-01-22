@@ -25,7 +25,7 @@ class ArrayCollection
 
     public function get($key): self
     {
-        return new static([$this->items[$key] ?? null]);
+        return new self([$this->items[$key] ?? null]);
     }
 
     public function first()
@@ -35,12 +35,12 @@ class ArrayCollection
 
     public function map(\Closure $p): self
     {
-        return new static(array_map($p, $this->items));
+        return new self(array_map($p, $this->items));
     }
 
     public function filter(\Closure $filter): self
     {
-        return new static(array_filter($this->items, $filter, ARRAY_FILTER_USE_BOTH));
+        return new self(array_filter($this->items, $filter, ARRAY_FILTER_USE_BOTH));
     }
 
     public function hasValues(): bool

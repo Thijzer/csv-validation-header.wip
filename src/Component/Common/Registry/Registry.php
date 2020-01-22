@@ -7,10 +7,12 @@ use Misery\Component\Common\Collection\ArrayCollection;
 class Registry implements RegistryInterface
 {
     private $collection;
+    private $alias;
 
-    public function __construct()
+    public function __construct(string $alias)
     {
         $this->collection = new ArrayCollection();
+        $this->alias = $alias;
     }
 
     public function registerNamedObject($object): self
@@ -30,5 +32,10 @@ class Registry implements RegistryInterface
     public function filterByAlias(string $alias)
     {
         return $this->collection->get($alias)->first();
+    }
+
+    public function getAlias(): string
+    {
+        return $this->alias;
     }
 }

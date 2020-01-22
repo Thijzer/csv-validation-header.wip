@@ -24,7 +24,7 @@ class CsvValidationProcessor
 
     public function addRegistry(RegistryInterface $registry): self
     {
-        $this->registries->set($registry::NAME,$registry);
+        $this->registries->set(get_class($registry),$registry);
 
         return $this;
     }
@@ -72,7 +72,7 @@ class CsvValidationProcessor
 
                     if ($class instanceof ReaderAwareInterface) {
                         $readerFile = $match['options']['file'] ?? $file;
-                        $reader = $this->getRegistry(ReaderRegistryInterface::NAME)->filterByAlias($readerFile)->first();
+                        $reader = $this->getRegistry('todo_alias')->filterByAlias($readerFile)->first();
                         if (null === $reader) {
                             // @todo this is invalid
                             continue;
@@ -93,12 +93,12 @@ class CsvValidationProcessor
 
                     // part of how we validate should be inside the validator
                     // uses 2 readers on for looping another for matching
-                    $reader = $this->getRegistry(ReaderRegistryInterface::NAME)->filterByAlias($file)->first();
+                    $reader = $this->getRegistry('todo_alias')->filterByAlias($file)->first();
                     /** @var $reader ReaderInterface */
                     $reader->loop(function ($row) use ($property, $reader, $class, $context) {
                         // @TODO row not found should be validated
                         if (isset($row[$property])) {
-                            $context['line'] = $reader->getCursor()->key();
+                            $context['line'] = $reader->getIterator()->key();
                             $context['column'] = $property;
 
                             $class->validate($row[$property], $context);
