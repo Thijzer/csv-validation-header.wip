@@ -3,6 +3,7 @@
 namespace Misery\Component\Csv\Compare;
 
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
+use Misery\Component\Csv\Fetcher\ColumnValuesFetcher;
 use Misery\Component\Csv\Reader\RowReaderInterface;
 
 class CsvCompare
@@ -28,10 +29,11 @@ class CsvCompare
     public function compare(string...$references): array
     {
         if (\count($references) === 2) {
-            $oldCodes = $this->old->indexColumnsReference(...$references);
+            $oldCodes = ColumnValuesFetcher::fetchValues($this->old, ...$references);
             $reference = key($oldCodes);
             $oldCodes = current($oldCodes);
-            $newCodes = current($this->new->indexColumnsReference(...$references));
+            $newCodes = ColumnValuesFetcher::fetchValues($this->new, ...$references);
+            $newCodes = current($newCodes);
         } else {
             $reference = current($references);
             // compare the old with the new
@@ -45,12 +47,12 @@ class CsvCompare
             self::CHANGED => [],
         ];
 
-        $possibleChanges = array_diff($oldCodes, $changes[self::REMOVED]);
+        $pointers = array_diff($oldCodes, $changes[self::REMOVED]);
 
         // flip codes so we can get find the NEW $lineNumber
         $codes = array_flip($newCodes);
 
-        foreach ($this->old->getRows(array_keys($possibleChanges)) as $lineNumber => $old) {
+        foreach ($this->old->getRows(array_keys($pointers)) as $lineNumber => $old) {
             $id = $oldCodes[$lineNumber];
             $new = current($this->new->getRow($codes[$id])->getItems());
 

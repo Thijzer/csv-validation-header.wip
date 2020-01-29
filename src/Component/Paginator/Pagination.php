@@ -1,12 +1,12 @@
 <?php
 
-namespace Misery\Component\Csv\Paginator;
+namespace Misery\Component\Paginator;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 
 // @todo implements Pagination Interface
 
-class Pagination
+class Pagination 
 {
     private $pageId = 0;
     private $limit = 0;

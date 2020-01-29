@@ -15,7 +15,7 @@ class UniqueValueValidator extends AbstractValidator implements RowReaderAwareIn
 
     public function validate($columnName, array $context = []): void
     {
-        $columnData = ColumnValuesFetcher::fetch($this->getReader(), $columnName);
+        $columnData = ColumnValuesFetcher::fetchValues($this->getReader(), $columnName);
 
         $duplicates = array_unique($columnData);
         if (\count($columnData) !== \count($duplicates)) {

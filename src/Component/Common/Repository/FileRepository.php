@@ -3,9 +3,8 @@
 namespace Misery\Component\Common\Repository;
 
 use Misery\Component\Common\Cache\Local\NameSpacedPoolCache;
-use Misery\Component\Csv\Reader\ItemCollection;
-use Misery\Component\Csv\Reader\RowReader;
 use Misery\Component\Csv\Reader\RowReaderInterface;
+use Misery\Component\Item\Builder\Combine\ReferencedValueBuilder;
 
 /**
  * A doctrine compatible File Repository
@@ -44,26 +43,12 @@ class FileRepository
         return current($this->findBy($criteria)) ?: [];
     }
 
-    private function indexColumnsReference(string ...$columnNames): array
+    private function indexColumnsReference(string ...$columnNames): void
     {
         $this->cache->set(
-            $uniqueReference = implode('|', $columnNames),
-            $references = $this->combineReferences($this->reader->getColumns(...$columnNames))
+            $uniqueReference = implode($sep = '|', $columnNames),
+            $references = ReferencedValueBuilder::combine($this->reader, ...$columnNames)
         );
-
-        return [$uniqueReference => $references];
-    }
-
-    private function combineReferences(RowReaderInterface $reader): array
-    {
-        $concat = [];
-        foreach ($reader->getIterator() as $array) {
-            foreach ($array as $pointer => $item) {
-                $concat[$pointer] = isset($concat[$pointer]) ? $concat[$pointer].'|'.$item : $item;
-            }
-        }
-
-        return $concat;
     }
 
     private function filter(callable $callable): array

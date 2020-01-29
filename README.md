@@ -11,3 +11,23 @@ The Csv File is a file that creates adds more Contextual elements like
 - delimiter, enclosure, escapeChar
 - validation rules
 
+
+
+
+## RowReader Interface
+```php
+interface RowReader
+{
+    public function getRow(int $line): self;
+    public function getRows(array $lines): self;
+    public function getColumns(string...$columnNames): self;
+}
+```
+RowReaderInterface remains and issue
+it stricts lots of other classes into the CSV kind
+
+=> getRow getRows =>=> index
+
+get columns is only used for getValues from a specific column like sku
+and can be replaced by ColumnValuesFetcher helper
+=> getColumns deprecaded

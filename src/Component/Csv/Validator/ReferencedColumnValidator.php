@@ -28,7 +28,7 @@ class ReferencedColumnValidator extends AbstractValidator implements RowReaderAw
             return;
         }
 
-        if (!\in_array($cellValue, ColumnValuesFetcher::fetch($this->getReader(), $this->options['reference']), true)) {
+        if (!\in_array($cellValue, ColumnValuesFetcher::fetchValues($this->getReader(), $this->options['reference']), true)) {
             $this->getValidationCollector()->collect(
                 new Constraint\ReferencedColumnConstraint(),
                 sprintf(
