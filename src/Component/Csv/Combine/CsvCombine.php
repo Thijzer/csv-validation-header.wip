@@ -4,8 +4,8 @@ namespace Misery\Component\Csv\Combine;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Functions\ArrayFunctions;
-use Misery\Component\Csv\Compare\CsvCompare;
-use Misery\Component\Csv\Reader\RowReader;
+use Misery\Component\Csv\Compare\ItemCompare;
+use Misery\Component\Csv\Reader\ItemReader;
 
 class CsvCombine
 {
@@ -13,9 +13,9 @@ class CsvCombine
 
     public function combineInto(CursorInterface $cursorA, CursorInterface $cursorB, string $reference, callable $call): void
     {
-        $csvCompare = new CsvCompare(
-            $readerA = new RowReader($cursorA),
-            $readerB = new RowReader($cursorB)
+        $csvCompare = new ItemCompare(
+            $readerA = new ItemReader($cursorA),
+            $readerB = new ItemReader($cursorB)
         );
 
         $differences = $csvCompare->compare($reference);
@@ -35,17 +35,17 @@ class CsvCombine
 
         if (false === $this->shouldDiffer) {
             $cursorA->loop(function ($row) use ($call, $reference, $combinedHeaderRow, $differences) {
-                if (!array_key_exists($row[$reference], $differences[CsvCompare::CHANGED])) {
+                if (!array_key_exists($row[$reference], $differences[ItemCompare::CHANGED])) {
                     $call(array_merge($combinedHeaderRow, $row));
                 }
             });
         }
 
-        foreach ($readerB->getRows(array_keys($differences[CsvCompare::ADDED])) as $lineNumber => $row) {
+        foreach ($readerB->getRows(array_keys($differences[ItemCompare::ADDED])) as $lineNumber => $row) {
             $call(array_merge($combinedHeaderRow, $row));
         }
 
-        $changedReferences = array_keys($differences[CsvCompare::CHANGED]);
+        $changedReferences = array_keys($differences[ItemCompare::CHANGED]);
         foreach ($cursorB->getIterator() as $row) {
             if (in_array($row[$reference], $changedReferences)) {
                 $call(array_merge($combinedHeaderRow, $row));

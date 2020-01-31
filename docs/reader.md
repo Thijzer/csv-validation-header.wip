@@ -28,7 +28,7 @@ Here we get id and name from user 'Nick'
 
 ```php
 $parser = Misery\Component\Csv\Reader\CsvParser::create(__DIR__ . '/users.csv');
-$reader = new Misery\Component\Csv\Reader\RowReader($parser);
+$reader = new Misery\Component\Csv\Reader\ItemReader($parser);
 
 $reader
     ->getColumns('id', 'name')
@@ -41,7 +41,7 @@ here we get id and name from first 100 lines
 
 ```php
 $parser = Misery\Component\Csv\Reader\CsvParser::create(__DIR__ . '/users.csv');
-$reader = new Misery\Component\Csv\Reader\RowReader($parser);
+$reader = new Misery\Component\Csv\Reader\ItemReader($parser);
 
 $reader
     ->getColumns('id', 'name')
@@ -54,7 +54,7 @@ Here we get id and name from user 'Nick' using the filter method
 
 ```php
 $parser = Misery\Component\Csv\Reader\CsvParser::create(__DIR__ . '/users.csv');
-$reader = new Misery\Component\Csv\Reader\RowReader($parser);
+$reader = new Misery\Component\Csv\Reader\ItemReader($parser);
 
 $reader
     ->getColumns('first_name', 'last_name')
@@ -70,7 +70,7 @@ Specify this
 
 ```php
 $parser = Misery\Component\Csv\Reader\CsvParser::create(__DIR__ . '/users.csv');
-$reader = new Misery\Component\Csv\Reader\RowReader($parser);
+$reader = new Misery\Component\Csv\Reader\ItemReader($parser);
 
 $items = $reader
     ->map(function(array $row) {

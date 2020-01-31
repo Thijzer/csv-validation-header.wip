@@ -2,7 +2,7 @@
 
 namespace Tests\Misery\Component\Csv\Validator;
 
-use Misery\Component\Csv\Reader\RowReader;
+use Misery\Component\Csv\Reader\ItemReader;
 use Misery\Component\Csv\Reader\CsvParser;
 use Misery\Component\Csv\Validator\UniqueValueValidator;
 use Misery\Component\Validator\ValidationCollector;
@@ -17,7 +17,7 @@ class UniqueValueValidatorTest extends TestCase
         $parser = CsvParser::create($exampleFile);
         $collector = new ValidationCollector();
         $validator = new UniqueValueValidator($collector);
-        $validator->setReader(new RowReader($parser));
+        $validator->setReader(new ItemReader($parser));
         $validator->validate('code');
 
         $this->assertFalse($collector->hasConstraints());
@@ -30,7 +30,7 @@ class UniqueValueValidatorTest extends TestCase
         $parser = CsvParser::create($exampleFile);
         $collector = new ValidationCollector();
         $validator = new UniqueValueValidator($collector);
-        $validator->setReader($reader = new RowReader($parser));
+        $validator->setReader($reader = new ItemReader($parser));
         $validator->validate('id');
 
         $this->assertTrue($collector->hasConstraints());

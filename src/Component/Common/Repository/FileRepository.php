@@ -4,7 +4,7 @@ namespace Misery\Component\Common\Repository;
 
 use Misery\Component\Common\Cache\Local\NameSpacedPoolCache;
 use Misery\Component\Csv\Reader\RowReaderInterface;
-use Misery\Component\Item\Builder\Combine\ReferencedValueBuilder;
+use Misery\Component\Item\Builder\ReferencedValueBuilder;
 
 /**
  * A doctrine compatible File Repository

@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Csv\Reader;
 
-class RowReader implements RowReaderInterface
+class ItemReader implements RowReaderInterface
 {
     private $cursor;
 

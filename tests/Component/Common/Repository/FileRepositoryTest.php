@@ -4,7 +4,7 @@ namespace Tests\Misery\Component\Common\Repository;
 
 use Misery\Component\Common\Repository\FileRepository;
 use Misery\Component\Csv\Reader\ItemCollection;
-use Misery\Component\Csv\Reader\RowReader;
+use Misery\Component\Csv\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
 
 class FileRepositoryTest extends TestCase
@@ -22,7 +22,7 @@ class FileRepositoryTest extends TestCase
 
     public function test_find_from_file_repository(): void
     {
-        $reader = new RowReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader($items = new ItemCollection($this->items));
 
         $repository = new FileRepository($reader, 'id');
 
@@ -33,7 +33,7 @@ class FileRepositoryTest extends TestCase
 
     public function test_find_one_by_from_file_repository(): void
     {
-        $reader = new RowReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader($items = new ItemCollection($this->items));
 
         $repository = new FileRepository($reader, 'id');
 
@@ -44,7 +44,7 @@ class FileRepositoryTest extends TestCase
 
     public function test_find_by_from_file_repository(): void
     {
-        $reader = new RowReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader($items = new ItemCollection($this->items));
 
         $repository = new FileRepository($reader, 'id');
 

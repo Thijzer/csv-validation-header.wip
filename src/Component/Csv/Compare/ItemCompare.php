@@ -4,9 +4,10 @@ namespace Misery\Component\Csv\Compare;
 
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
 use Misery\Component\Csv\Fetcher\ColumnValuesFetcher;
+use Misery\Component\Csv\Reader\ReaderInterface;
 use Misery\Component\Csv\Reader\RowReaderInterface;
 
-class CsvCompare
+class ItemCompare
 {
     public const ADDED = 'ADDED';
     public const REMOVED = 'REMOVED';
@@ -19,7 +20,7 @@ class CsvCompare
      */
     private $excludes;
 
-    public function __construct(RowReaderInterface $old, RowReaderInterface $new, array $excludes = null)
+    public function __construct(ReaderInterface $old, ReaderInterface $new, array $excludes = null)
     {
         $this->old = $old;
         $this->new = $new;
@@ -37,8 +38,8 @@ class CsvCompare
         } else {
             $reference = current($references);
             // compare the old with the new
-            $oldCodes = $this->old->getColumns($reference)->getItems()[$reference];
-            $newCodes = $this->new->getColumns($reference)->getItems()[$reference];
+            $oldCodes = ColumnValuesFetcher::fetchValues($this->old, ...$reference);
+            $newCodes = ColumnValuesFetcher::fetchValues($this->new, ...$reference);
         }
 
         $changes = [

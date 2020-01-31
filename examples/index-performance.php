@@ -51,7 +51,7 @@ $processor->filterSubjects($validationFile);
 
 /** @var SplFileInfo $file */
 foreach ($finder->in($path)->name('*.csv') as $file) {
-    $reader = new Misery\Component\Csv\Reader\RowReader(
+    $reader = new Misery\Component\Csv\Reader\ItemReader(
         CachedCursor::create($parser = CsvParser::create($file->getRealPath(),',')),
     );
     $parser->setProcessor($processor);

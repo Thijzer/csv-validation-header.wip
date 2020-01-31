@@ -3,7 +3,7 @@
 namespace Tests\Misery\Component\Csv\Validator;
 
 use Misery\Component\Csv\Reader\ItemCollection;
-use Misery\Component\Csv\Reader\RowReader;
+use Misery\Component\Csv\Reader\ItemReader;
 use Misery\Component\Csv\Validator\ReferencedColumnValidator;
 use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +21,7 @@ class ReferencedColumnValidatorTest extends TestCase
 
     public function test_it_should_validate_referenced_columns(): void
     {
-        $reader = new RowReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader($items = new ItemCollection($this->items));
 
         $collector = new ValidationCollector();
         $validator = new ReferencedColumnValidator($collector);
@@ -37,7 +37,7 @@ class ReferencedColumnValidatorTest extends TestCase
 
     public function test_it_should_invalidate_referenced_columns(): void
     {
-        $reader = new RowReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader($items = new ItemCollection($this->items));
 
         $collector = new ValidationCollector();
         $validator = new ReferencedColumnValidator($collector);

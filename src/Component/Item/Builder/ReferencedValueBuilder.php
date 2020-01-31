@@ -1,6 +1,6 @@
 <?php
 
-namespace Misery\Component\Item\Builder\Combine;
+namespace Misery\Component\Item\Builder;
 
 use Misery\Component\Csv\Fetcher\ColumnValuesFetcher;
 use Misery\Component\Csv\Reader\ReaderInterface;

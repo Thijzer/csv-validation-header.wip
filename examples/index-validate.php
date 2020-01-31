@@ -29,7 +29,7 @@ $finder = new Symfony\Component\Finder\Finder();
 foreach ($finder->in($exampleDir)->name('*.csv') as $file) {
     $foundFile = str_replace('.'.$file->getExtension(), '', $file->getFilename());
 
-    $reader = new Misery\Component\Csv\Reader\RowReader(
+    $reader = new Misery\Component\Csv\Reader\ItemReader(
         Misery\Component\Csv\Reader\CsvParser::create($file->getRealPath(),';')
     );
     $readerRegistry->register($reader, $foundFile);

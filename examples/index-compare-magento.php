@@ -1,7 +1,7 @@
 <?php
 
 use Misery\Component\Common\Cursor\CachedCursor;
-use Misery\Component\Csv\Compare\CsvCompare;
+use Misery\Component\Csv\Compare\ItemCompare;
 use Misery\Component\Csv\Reader\CsvParser;
 use Misery\Component\Csv\Reader\ItemCollection;
 use Misery\Component\Csv\Writer\CsvWriter;
@@ -52,20 +52,20 @@ foreach ($linkedFiles as $filename => $file) {
 
     $reference = $file['reference'];
 
-    $readerA = new Misery\Component\Csv\Reader\RowReader(CachedCursor::create($parser1));
+    $readerA = new Misery\Component\Csv\Reader\ItemReader(CachedCursor::create($parser1));
     $readerA->indexColumn($reference);
 
-    $readerB = new Misery\Component\Csv\Reader\RowReader(CachedCursor::create($parser2));
+    $readerB = new Misery\Component\Csv\Reader\ItemReader(CachedCursor::create($parser2));
     $readerB->indexColumn($reference);
 
-    $compare = new Misery\Component\Csv\Compare\CsvCompare(
+    $compare = new Misery\Component\Csv\Compare\ItemCompare(
         $readerA,
         $readerB
     );
     $dump = $compare->compare($reference);
     file_put_contents($file['compare'], json_encode([
-        CsvCompare::ADDED => \count($dump[CsvCompare::ADDED]),
-        CsvCompare::CHANGED => \count($dump[CsvCompare::CHANGED]),
-        CsvCompare::REMOVED => \count($dump[CsvCompare::REMOVED]),
+        ItemCompare::ADDED => \count($dump[ItemCompare::ADDED]),
+        ItemCompare::CHANGED => \count($dump[ItemCompare::CHANGED]),
+        ItemCompare::REMOVED => \count($dump[ItemCompare::REMOVED]),
     ]));
 }

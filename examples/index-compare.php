@@ -43,9 +43,9 @@ $processor->filterSubjects(Symfony\Component\Yaml\Yaml::parseFile(__DIR__ . '/pr
 $parser->setProcessor($processor);
 $newFile->setProcessor($processor);
 
-$compare = new Misery\Component\Csv\Compare\CsvCompare(
-   new Misery\Component\Csv\Reader\RowReader($parser),
-   new Misery\Component\Csv\Reader\RowReader($newFile)
+$compare = new Misery\Component\Csv\Compare\ItemCompare(
+   new Misery\Component\Csv\Reader\ItemReader($parser),
+   new Misery\Component\Csv\Reader\ItemReader($newFile)
 );
 
 dump(
