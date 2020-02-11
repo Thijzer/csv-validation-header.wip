@@ -2,7 +2,7 @@
 
 namespace Tests\Misery\Component\Csv\Reader;
 
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Parser\CsvParser;
 use PHPUnit\Framework\TestCase;
 
 class CsvParserTest extends TestCase

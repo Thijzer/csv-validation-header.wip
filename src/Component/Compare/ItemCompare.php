@@ -3,9 +3,9 @@
 namespace Misery\Component\Csv\Compare;
 
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
-use Misery\Component\Csv\Fetcher\ColumnValuesFetcher;
-use Misery\Component\Csv\Reader\ReaderInterface;
-use Misery\Component\Csv\Reader\RowReaderInterface;
+use Misery\Component\Filter\ColumnFilter;
+use Misery\Component\Reader\ReaderInterface;
+use Misery\Component\Reader\ItemReaderInterface;
 
 class ItemCompare
 {
@@ -30,16 +30,16 @@ class ItemCompare
     public function compare(string...$references): array
     {
         if (\count($references) === 2) {
-            $oldCodes = ColumnValuesFetcher::fetchValues($this->old, ...$references);
+            $oldCodes = ColumnFilter::filterItems($this->old, ...$references);
             $reference = key($oldCodes);
             $oldCodes = current($oldCodes);
-            $newCodes = ColumnValuesFetcher::fetchValues($this->new, ...$references);
+            $newCodes = ColumnFilter::filterItems($this->new, ...$references);
             $newCodes = current($newCodes);
         } else {
             $reference = current($references);
             // compare the old with the new
-            $oldCodes = ColumnValuesFetcher::fetchValues($this->old, ...$reference);
-            $newCodes = ColumnValuesFetcher::fetchValues($this->new, ...$reference);
+            $oldCodes = ColumnFilter::filterItems($this->old, ...$reference);
+            $newCodes = ColumnFilter::filterItems($this->new, ...$reference);
         }
 
         $changes = [
@@ -53,9 +53,9 @@ class ItemCompare
         // flip codes so we can get find the NEW $lineNumber
         $codes = array_flip($newCodes);
 
-        foreach ($this->old->getRows(array_keys($pointers)) as $lineNumber => $old) {
+        foreach ($this->old->index(array_keys($pointers)) as $lineNumber => $old) {
             $id = $oldCodes[$lineNumber];
-            $new = current($this->new->getRow($codes[$id])->getItems());
+            $new = current($this->new->index([$codes[$id]])->getItems());
 
             if ($this->excludes) {
                 foreach ($this->excludes as $exclude) {

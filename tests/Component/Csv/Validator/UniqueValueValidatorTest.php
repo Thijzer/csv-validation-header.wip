@@ -2,8 +2,8 @@
 
 namespace Tests\Misery\Component\Csv\Validator;
 
-use Misery\Component\Csv\Reader\ItemReader;
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Reader\ItemReader;
+use Misery\Component\Parser\CsvParser;
 use Misery\Component\Csv\Validator\UniqueValueValidator;
 use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;

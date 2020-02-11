@@ -1,13 +1,13 @@
 <?php
 
-namespace Misery\Component\Csv\Combine;
+namespace Misery\Component\Combine;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Csv\Compare\ItemCompare;
-use Misery\Component\Csv\Reader\ItemReader;
+use Misery\Component\Reader\ItemReader;
 
-class CsvCombine
+class ItemCombine
 {
     private $shouldDiffer = false;
 
@@ -41,7 +41,7 @@ class CsvCombine
             });
         }
 
-        foreach ($readerB->getRows(array_keys($differences[ItemCompare::ADDED])) as $lineNumber => $row) {
+        foreach ($readerB->index(array_keys($differences[ItemCompare::ADDED])) as $lineNumber => $row) {
             $call(array_merge($combinedHeaderRow, $row));
         }
 

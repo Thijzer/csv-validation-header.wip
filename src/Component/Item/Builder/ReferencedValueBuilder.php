@@ -2,15 +2,15 @@
 
 namespace Misery\Component\Item\Builder;
 
-use Misery\Component\Csv\Fetcher\ColumnValuesFetcher;
-use Misery\Component\Csv\Reader\ReaderInterface;
+use Misery\Component\Filter\ColumnFilter;
+use Misery\Component\Reader\ReaderInterface;
 
 class ReferencedValueBuilder
 {
     public static function combine(ReaderInterface $reader, string ...$references)
     {
         $concat = [];
-        foreach (ColumnValuesFetcher::fetch($reader, ...$references)->getIterator() as $array) {
+        foreach (ColumnFilter::filter($reader, ...$references)->getIterator() as $array) {
             foreach ($array as $pointer => $item) {
                 $concat[$pointer] = isset($concat[$pointer]) ? $concat[$pointer].'|'.$item : $item;
             }

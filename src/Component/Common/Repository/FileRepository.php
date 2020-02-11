@@ -3,7 +3,7 @@
 namespace Misery\Component\Common\Repository;
 
 use Misery\Component\Common\Cache\Local\NameSpacedPoolCache;
-use Misery\Component\Csv\Reader\RowReaderInterface;
+use Misery\Component\Reader\ItemReaderInterface;
 use Misery\Component\Item\Builder\ReferencedValueBuilder;
 
 /**
@@ -15,7 +15,7 @@ class FileRepository
     private $reader;
     private $references;
 
-    public function __construct(RowReaderInterface $reader,string ...$references)
+    public function __construct(ItemReaderInterface $reader, string ...$references)
     {
         $this->cache = new NameSpacedPoolCache();
         $this->reader = $reader;
@@ -60,7 +60,7 @@ class FileRepository
     {
         if ($this->cache->has($key)) {
             // cached lineNr to get rows per lineNr
-            $rows = $this->reader->getRows([$this->cache->get($key, $value)]);
+            $rows = $this->reader->index([$this->cache->get($key, $value)]);
         } else {
             $rows = $this->filter(static function ($row) use ($value, $key) {
                 return $row[$key] === $value;

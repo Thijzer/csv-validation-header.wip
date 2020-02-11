@@ -1,6 +1,6 @@
 <?php
 
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Parser\CsvParser;
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Format\FloatFormat;
 use Misery\Component\Format\IntFormat;

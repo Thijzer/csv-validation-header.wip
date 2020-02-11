@@ -1,6 +1,6 @@
 <?php
 
-namespace Misery\Component\Csv\Exception;
+namespace Misery\Component\Parser\Exception;
 
 use Throwable;
 

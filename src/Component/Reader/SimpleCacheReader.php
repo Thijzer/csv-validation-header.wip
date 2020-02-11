@@ -1,6 +1,6 @@
 <?php
 
-namespace Misery\Component\Csv\Reader;
+namespace Misery\Component\Reader;
 
 use Misery\Component\Common\Cache\SimpleCacheInterface;
 
@@ -34,10 +34,10 @@ class SimpleCacheReader implements ReaderInterface
 
     public function filter(callable $callable): ReaderInterface
     {
-        return new self($this->process($callable));
+        return new self($this->processFilter($callable));
     }
 
-    private function process(callable $callable): \Generator
+    private function processFilter(callable $callable): \Generator
     {
         foreach ($this->getIterator() as $key => $row) {
             if (true === $callable($row)) {
@@ -54,5 +54,17 @@ class SimpleCacheReader implements ReaderInterface
     public function read(): \Iterator
     {
         return $this->getIterator();
+    }
+
+    public function map(callable $callable): ReaderInterface
+    {
+        return new self($this->processMap($callable));
+    }
+
+    private function processMap(callable $callable): \Generator
+    {
+        foreach ($this->getIterator() as $key => $row) {
+            yield $key => $callable($row);
+        }
     }
 }

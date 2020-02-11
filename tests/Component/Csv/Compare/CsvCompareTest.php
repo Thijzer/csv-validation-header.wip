@@ -3,8 +3,8 @@
 namespace Tests\Misery\Component\Csv\Compare;
 
 use Misery\Component\Csv\Compare\ItemCompare;
-use Misery\Component\Csv\Reader\ItemCollection;
-use Misery\Component\Csv\Reader\ItemReader;
+use Misery\Component\Reader\ItemCollection;
+use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
 
 class CsvCompareTest extends TestCase

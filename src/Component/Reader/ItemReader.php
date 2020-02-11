@@ -1,8 +1,8 @@
 <?php
 
-namespace Misery\Component\Csv\Reader;
+namespace Misery\Component\Reader;
 
-class ItemReader implements RowReaderInterface
+class ItemReader implements ItemReaderInterface
 {
     private $cursor;
 
@@ -16,13 +16,7 @@ class ItemReader implements RowReaderInterface
         return $this->cursor;
     }
 
-    public function getRow(int $line): RowReaderInterface
-
-    {
-        return $this->getRows([$line]);
-    }
-
-    public function getRows(array $lines): RowReaderInterface
+    public function index(array $lines): ItemReaderInterface
     {
         $items = [];
         foreach ($lines as $lineNr) {
@@ -31,18 +25,6 @@ class ItemReader implements RowReaderInterface
         }
 
         $this->cursor->rewind();
-
-        return new self(new ItemCollection($items));
-    }
-
-    public function getColumns(string...$columnNames): RowReaderInterface
-    {
-        $items = [];
-        foreach ($this->getIterator() as $key => $row) {
-            foreach ($columnNames as $columnName) {
-                $items[$key][$columnName] = $row[$columnName];
-            }
-        }
 
         return new self(new ItemCollection($items));
     }

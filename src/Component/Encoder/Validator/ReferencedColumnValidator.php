@@ -4,15 +4,15 @@ namespace Misery\Component\Csv\Validator;
 
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
-use Misery\Component\Csv\Fetcher\ColumnValuesFetcher;
-use Misery\Component\Csv\Reader\RowReaderAwareInterface;
-use Misery\Component\Csv\Reader\RowReaderAwareTrait;
+use Misery\Component\Filter\ColumnFilter;
+use Misery\Component\Reader\ItemReaderAwareInterface;
+use Misery\Component\Reader\ItemReaderAwareTrait;
 use Misery\Component\Validator\AbstractValidator;
 
-class ReferencedColumnValidator extends AbstractValidator implements RowReaderAwareInterface, OptionsInterface
+class ReferencedColumnValidator extends AbstractValidator implements ItemReaderAwareInterface, OptionsInterface
 {
     use OptionsTrait;
-    use RowReaderAwareTrait;
+    use ItemReaderAwareTrait;
 
     public const NAME = 'reference_exist';
 
@@ -28,7 +28,7 @@ class ReferencedColumnValidator extends AbstractValidator implements RowReaderAw
             return;
         }
 
-        if (!\in_array($cellValue, ColumnValuesFetcher::fetchValues($this->getReader(), $this->options['reference']), true)) {
+        if (!\in_array($cellValue, ColumnFilter::filterItems($this->getReader(), $this->options['reference']), true)) {
             $this->getValidationCollector()->collect(
                 new Constraint\ReferencedColumnConstraint(),
                 sprintf(

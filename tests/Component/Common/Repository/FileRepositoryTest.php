@@ -3,8 +3,8 @@
 namespace Tests\Misery\Component\Common\Repository;
 
 use Misery\Component\Common\Repository\FileRepository;
-use Misery\Component\Csv\Reader\ItemCollection;
-use Misery\Component\Csv\Reader\ItemReader;
+use Misery\Component\Reader\ItemCollection;
+use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
 
 class FileRepositoryTest extends TestCase

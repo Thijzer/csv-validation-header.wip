@@ -1,10 +1,10 @@
 <?php
 
-namespace Misery\Component\Csv\Reader;
+namespace Misery\Component\Reader;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 
-class ItemCollection implements CsvInterface, CursorInterface
+class ItemCollection implements CursorInterface
 {
     public const DELIMITER = ';';
     public const ENCLOSURE = '"';
@@ -19,11 +19,6 @@ class ItemCollection implements CsvInterface, CursorInterface
         // array_values removes any position keys
         $this->items = $items;
         $this->keys = array_keys($items);
-    }
-
-    public function add($value)
-    {
-        $this->items[] = $value;
     }
 
     public function set($key, $value): void
@@ -53,22 +48,6 @@ class ItemCollection implements CsvInterface, CursorInterface
             $this->next();
         }
         $this->rewind();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getHeaders(): array
-    {
-        return array_keys($this->current());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function hasHeaders(): bool
-    {
-        return false;
     }
 
     /**

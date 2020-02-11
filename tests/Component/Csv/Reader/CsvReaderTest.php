@@ -2,8 +2,9 @@
 
 namespace Tests\Misery\Component\Csv\Reader;
 
-use Misery\Component\Csv\Reader\CsvParser;
-use Misery\Component\Csv\Reader\ItemReader;
+use Misery\Component\Filter\ColumnFilter;
+use Misery\Component\Parser\CsvParser;
+use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
 
 class CsvReaderTest extends TestCase
@@ -13,7 +14,7 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new ItemReader(new CsvParser($file, ','));
 
-        $filteredReader = $reader->getColumns('first_name');
+        $filteredReader = ColumnFilter::filter($reader, 'first_name');
         $data = iterator_to_array($filteredReader->getIterator());
 
         $this->assertSame(\count($data), 300);
@@ -24,7 +25,7 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new ItemReader($parser = new CsvParser($file, ','));
 
-        $filteredReader = $reader->getColumns('first_name', 'last_name');
+        $filteredReader = ColumnFilter::filter($reader, 'first_name', 'last_name');
 
         $this->assertSame(
             array_keys(current($filteredReader->getItems())), ['first_name', 'last_name']
@@ -36,7 +37,7 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new ItemReader($parser = new CsvParser($file, ','));
 
-        $filteredReader = $reader->getRow(150);
+        $filteredReader = $reader->index([150]);
 
         $this->assertSame(array_keys($filteredReader->getItems()[150]), $parser->getHeaders());
     }
@@ -46,7 +47,7 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new ItemReader($parser = new CsvParser($file, ','));
 
-        $filteredReader = $reader->getRows([149, 150]);
+        $filteredReader = $reader->index([149, 150]);
 
         $this->assertSame(count($filteredReader->getItems()), 2);
     }
@@ -56,10 +57,10 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new ItemReader(new CsvParser($file, ','));
 
-        $filteredReader = $reader
-            ->getColumns('first_name', 'last_name')
-            ->getRows([149, 150])
+        $reader
+            ->index([149, 150])
         ;
+        $filteredReader = ColumnFilter::filter($reader, 'first_name', 'last_name');
 
         $result = [
             149 => [
@@ -80,10 +81,10 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new ItemReader(new CsvParser($file, ','));
 
-        $filteredReader = $reader
-            ->getColumns('first_name', 'last_name')
+        $reader
             ->find(['first_name' => 'Fifi'])
         ;
+        $filteredReader = ColumnFilter::filter($reader, 'first_name', 'last_name');
 
         $result = [
             149 => [
@@ -100,12 +101,12 @@ class CsvReaderTest extends TestCase
         $file = new \SplFileObject(__DIR__ . '/../../../examples/users.csv');
         $reader = new ItemReader(new CsvParser($file, ','));
 
-        $filteredReader = $reader
-            ->getColumns('first_name', 'last_name')
+        $reader
             ->filter(function ($row) {
                 return $row['last_name'] === 'Rapier';
             })
         ;
+        $filteredReader = ColumnFilter::filter($reader, 'first_name', 'last_name');
 
         $result = [
             149 => [

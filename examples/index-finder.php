@@ -25,8 +25,8 @@ $processor
 ;
 $processor->filterSubjects(Symfony\Component\Yaml\Yaml::parseFile(__DIR__ . '/akeneo/validation/products.yaml'));
 
-$reader = new Misery\Component\Csv\Reader\ItemReader(
-    $parser = Misery\Component\Csv\Reader\CsvParser::create(__DIR__ . '/akeneo/icecat_demo_dev/products.csv', ';')
+$reader = new Misery\Component\Reader\ItemReader(
+    $parser = \Misery\Component\Parser\CsvParser::create(__DIR__ . '/akeneo/icecat_demo_dev/products.csv', ';')
 );
 $parser->setProcessor($processor);
 

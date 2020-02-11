@@ -1,6 +1,6 @@
 <?php
 
-namespace Misery\Component\Csv\Reader;
+namespace Misery\Component\Reader;
 
 interface ReaderAwareInterface
 {

@@ -1,7 +1,7 @@
 <?php
 
 use Misery\Component\Common\Registry\Registry;
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Parser\CsvParser;
 use Misery\Component\Format\FloatFormat;
 use Misery\Component\Format\IntFormat;
 use Misery\Component\Format\SerializeFormat;
@@ -44,8 +44,8 @@ $parser->setProcessor($processor);
 $newFile->setProcessor($processor);
 
 $compare = new Misery\Component\Csv\Compare\ItemCompare(
-   new Misery\Component\Csv\Reader\ItemReader($parser),
-   new Misery\Component\Csv\Reader\ItemReader($newFile)
+   new Misery\Component\Reader\ItemReader($parser),
+   new Misery\Component\Reader\ItemReader($newFile)
 );
 
 dump(
