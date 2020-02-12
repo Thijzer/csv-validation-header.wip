@@ -20,8 +20,8 @@ class ColumnFilter
         ;
     }
 
-    public static function filterItems(ReaderInterface $reader, string ...$columnName): array
+    public static function filterItems(ReaderInterface $reader, string ...$columnNames): array
     {
-        return self::filter($reader, $columnName)->getItems();
+        return self::filter($reader, ...$columnNames)->getItems();
     }
 }

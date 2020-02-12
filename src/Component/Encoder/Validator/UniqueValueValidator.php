@@ -1,8 +1,9 @@
 <?php
 
-namespace Misery\Component\Csv\Validator;
+namespace Misery\Component\Encoder\Validator;
 
 use Misery\Component\Filter\ColumnFilter;
+use Misery\Component\Item\Builder\ReferenceBuilder;
 use Misery\Component\Reader\ItemReaderAwareInterface;
 use Misery\Component\Reader\ItemReaderAwareTrait;
 use Misery\Component\Validator\AbstractValidator;
@@ -15,7 +16,7 @@ class UniqueValueValidator extends AbstractValidator implements ItemReaderAwareI
 
     public function validate($columnName, array $context = []): void
     {
-        $columnData = ColumnFilter::filterItems($this->getReader(), $columnName);
+        $columnData = ReferenceBuilder::build($this->getReader(), $columnName)[$columnName];
 
         $duplicates = array_unique($columnData);
         if (\count($columnData) !== \count($duplicates)) {

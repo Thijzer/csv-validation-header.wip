@@ -31,8 +31,8 @@ class CsvParser implements CursorInterface
         );
         $file->setCsvControl($delimiter, $enclosure, $escapeChar);
 
-        if ($row = $this->current()) {
-            $this->headers = $row;
+        if (null === $this->headers) {
+            $this->headers = $this->current();
             $this->next();
         }
     }
@@ -76,14 +76,19 @@ class CsvParser implements CursorInterface
     public function current()
     {
         $current = $this->file->current();
-        if (!$current) {
+        if (!$current || null === $this->headers) {
             return $current;
         }
 
         // here we need to use the filter
         $row = @array_combine($this->headers, $current);
         if (null === $row) {
-            throw new Exception\InvalidCsvElementSizeException($this->file->getFilename(), $this->key());
+            throw new Exception\InvalidCsvElementSizeException(
+                $this->file->getFilename(),
+                $this->key(),
+                $current,
+                $this->headers
+            );
         }
 
         return $row;

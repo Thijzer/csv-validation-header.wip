@@ -1,10 +1,10 @@
 <?php
 
-namespace Misery\Component\Csv\Validator;
+namespace Misery\Component\Encoder\Validator;
 
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
-use Misery\Component\Filter\ColumnFilter;
+use Misery\Component\Item\Builder\ReferenceBuilder;
 use Misery\Component\Reader\ItemReaderAwareInterface;
 use Misery\Component\Reader\ItemReaderAwareTrait;
 use Misery\Component\Validator\AbstractValidator;
@@ -28,7 +28,12 @@ class ReferencedColumnValidator extends AbstractValidator implements ItemReaderA
             return;
         }
 
-        if (!\in_array($cellValue, ColumnFilter::filterItems($this->getReader(), $this->options['reference']), true)) {
+        $referencedValues = ReferenceBuilder::build(
+            $this->getReader(),
+            $this->options['reference']
+        )[$this->options['reference']];
+
+        if (!\in_array($cellValue, $referencedValues, true)) {
             $this->getValidationCollector()->collect(
                 new Constraint\ReferencedColumnConstraint(),
                 sprintf(

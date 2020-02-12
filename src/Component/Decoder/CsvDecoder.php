@@ -1,6 +1,6 @@
 <?php
 
-namespace Misery\Component\Csv\Decoder;
+namespace Misery\Component\Decoder;
 
 interface CsvDecoder
 {

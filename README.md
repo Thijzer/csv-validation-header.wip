@@ -35,6 +35,6 @@ and can be replaced by ColumnValuesFetcher helper
 
 ## Tests
 ```shell script
-alias d_composer = docker-compose exec  fpm php -d memory_limit=-1 composer.phar $1
+alias d_composer="docker-compose exec fpm php -d memory_limit=-1 composer.phar $1"
 d_composer test 
 ```

@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Misery\Component\Csv\Compare;
+namespace Tests\Misery\Component\Compare;
 
-use Misery\Component\Csv\Compare\ItemCompare;
+use Misery\Component\Compare\ItemCompare;
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
 
-class CsvCompareTest extends TestCase
+class CompareTest extends TestCase
 {
     private $items = [
         [
@@ -35,5 +35,7 @@ class CsvCompareTest extends TestCase
         );
 
         $result = $tool->compare('id');
+
+        $this->assertCount(1, $result[ItemCompare::CHANGED]);
     }
 }

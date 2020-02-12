@@ -1,6 +1,6 @@
 <?php
 
-namespace Misery\Component\Csv\Validator\Constraint;
+namespace Misery\Component\Encoder\Validator\Constraint;
 
 use Misery\Component\Validator\Constraint\Constraint;
 

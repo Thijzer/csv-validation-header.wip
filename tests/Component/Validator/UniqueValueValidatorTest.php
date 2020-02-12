@@ -1,22 +1,38 @@
 <?php
 
-namespace Tests\Misery\Component\Csv\Validator;
+namespace Tests\Misery\Component\Validator;
 
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
-use Misery\Component\Csv\Validator\ReferencedColumnValidator;
+use Misery\Component\Encoder\Validator\UniqueValueValidator;
 use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
 
-class ReferencedColumnValidatorTest extends TestCase
+class UniqueValueValidatorTest extends TestCase
 {
     private $items = [
         [
-            'brand' => 'Nike',
+            'id' => '1',
+            'code' => 'A',
+            'first_name' => 'Gordie',
+            'last_name' => 'Ramsey',
+            'phone' => '5784467',
+
         ],
         [
-            'brand' => 'Puma',
-        ]
+            'id' => "2",
+            'code' => 'B',
+            'first_name' => 'Frans',
+            'last_name' => 'Merkel',
+            'phone' => '123456',
+        ],
+        [
+            'id' => "1",
+            'code' => 'C',
+            'first_name' => 'Mieke',
+            'last_name' => 'Cauter',
+            'phone' => '1234556356',
+        ],
     ];
 
     public function test_it_should_validate_referenced_columns(): void
@@ -24,13 +40,9 @@ class ReferencedColumnValidatorTest extends TestCase
         $reader = new ItemReader($items = new ItemCollection($this->items));
 
         $collector = new ValidationCollector();
-        $validator = new ReferencedColumnValidator($collector);
+        $validator = new UniqueValueValidator($collector);
         $validator->setReader($reader);
-        $validator->setOptions([
-            'reference' => 'brand',
-        ]);
-
-        $validator->validate('Puma');
+        $validator->validate('code');
 
         $this->assertFalse($collector->hasConstraints());
     }
@@ -40,12 +52,9 @@ class ReferencedColumnValidatorTest extends TestCase
         $reader = new ItemReader($items = new ItemCollection($this->items));
 
         $collector = new ValidationCollector();
-        $validator = new ReferencedColumnValidator($collector);
+        $validator = new UniqueValueValidator($collector);
         $validator->setReader($reader);
-        $validator->setOptions([
-            'reference' => 'brand',
-        ]);
-        $validator->validate('Reebok');
+        $validator->validate('id');
 
         $this->assertTrue($collector->hasConstraints());
     }

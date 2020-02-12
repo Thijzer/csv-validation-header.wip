@@ -8,7 +8,7 @@ use Misery\Component\Common\Registry\ReaderRegistryInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
 use Misery\Component\Reader\ReaderAwareInterface;
 use Misery\Component\Reader\ReaderInterface;
-use Misery\Component\Csv\Validator\UniqueValueValidator;
+use Misery\Component\Encoder\Validator\UniqueValueValidator;
 use Misery\Component\Validator\ValidatorInterface;
 
 class CsvValidationProcessor

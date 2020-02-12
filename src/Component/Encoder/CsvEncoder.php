@@ -1,6 +1,6 @@
 <?php
 
-namespace Misery\Component\Csv\Encoder;
+namespace Misery\Component\Encoder;
 
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
