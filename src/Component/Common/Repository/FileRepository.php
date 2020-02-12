@@ -3,9 +3,8 @@
 namespace Misery\Component\Common\Repository;
 
 use Misery\Component\Common\Cache\Local\NameSpacedPoolCache;
-use Misery\Component\Csv\Reader\ItemCollection;
-use Misery\Component\Csv\Reader\RowReader;
-use Misery\Component\Csv\Reader\RowReaderInterface;
+use Misery\Component\Reader\ItemReaderInterface;
+use Misery\Component\Item\Builder\ReferencedValueBuilder;
 
 /**
  * A doctrine compatible File Repository
@@ -16,7 +15,7 @@ class FileRepository
     private $reader;
     private $references;
 
-    public function __construct(RowReaderInterface $reader,string ...$references)
+    public function __construct(ItemReaderInterface $reader, string ...$references)
     {
         $this->cache = new NameSpacedPoolCache();
         $this->reader = $reader;
@@ -44,26 +43,12 @@ class FileRepository
         return current($this->findBy($criteria)) ?: [];
     }
 
-    private function indexColumnsReference(string ...$columnNames): array
+    private function indexColumnsReference(string ...$columnNames): void
     {
         $this->cache->set(
-            $uniqueReference = implode('|', $columnNames),
-            $references = $this->combineReferences($this->reader->getColumns(...$columnNames))
+            $uniqueReference = implode($sep = '|', $columnNames),
+            $references = ReferencedValueBuilder::combine($this->reader, ...$columnNames)
         );
-
-        return [$uniqueReference => $references];
-    }
-
-    private function combineReferences(RowReaderInterface $reader): array
-    {
-        $concat = [];
-        foreach ($reader->getIterator() as $array) {
-            foreach ($array as $pointer => $item) {
-                $concat[$pointer] = isset($concat[$pointer]) ? $concat[$pointer].'|'.$item : $item;
-            }
-        }
-
-        return $concat;
     }
 
     private function filter(callable $callable): array
@@ -75,7 +60,7 @@ class FileRepository
     {
         if ($this->cache->has($key)) {
             // cached lineNr to get rows per lineNr
-            $rows = $this->reader->getRows([$this->cache->get($key, $value)]);
+            $rows = $this->reader->index([$this->cache->get($key, $value)]);
         } else {
             $rows = $this->filter(static function ($row) use ($value, $key) {
                 return $row[$key] === $value;

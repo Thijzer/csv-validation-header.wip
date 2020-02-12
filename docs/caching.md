@@ -18,7 +18,7 @@ Here is an example where caching can be useful.
 $parserA = CsvParser::create(__DIR__ . '/products_aug.csv');
 $parserB = CachedCursor::create(CsvParser::create(__DIR__ . '/products_set.csv'));
 
-$compare = new Misery\Component\Csv\Compare\CsvCompare(
+$compare = new Misery\Component\Csv\Compare\ItemCompare(
     $parserA,
     $parserB
 );

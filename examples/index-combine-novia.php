@@ -1,14 +1,14 @@
 <?php
 
 use Misery\Component\Common\Cursor\CachedCursor;
-use Misery\Component\Csv\Reader\CsvParser;
-use Misery\Component\Csv\Reader\ItemCollection;
+use Misery\Component\Parser\CsvParser;
+use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Csv\Writer\CsvWriter;
 use Symfony\Component\Finder\Finder;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$combine = new Misery\Component\Csv\Combine\CsvCombine();
+$combine = new \Misery\Component\Combine\ItemCombine();
 
 $finder = new Finder();
 $finder->in(__DIR__.'/tmp/novia/')->name('*.csv')->sortByName();

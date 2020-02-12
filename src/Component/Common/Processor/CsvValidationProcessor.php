@@ -6,9 +6,9 @@ use Misery\Component\Common\Collection\ArrayCollection;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Registry\ReaderRegistryInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
-use Misery\Component\Csv\Reader\ReaderAwareInterface;
-use Misery\Component\Csv\Reader\ReaderInterface;
-use Misery\Component\Csv\Validator\UniqueValueValidator;
+use Misery\Component\Reader\ReaderAwareInterface;
+use Misery\Component\Reader\ReaderInterface;
+use Misery\Component\Encoder\Validator\UniqueValueValidator;
 use Misery\Component\Validator\ValidatorInterface;
 
 class CsvValidationProcessor

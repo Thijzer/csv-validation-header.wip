@@ -4,7 +4,7 @@ use Misery\Component\Common\Cache\Redis\RedisAccount;
 use Misery\Component\Common\Cache\Redis\RedisCacheFactory;
 use Misery\Component\Common\Cache\Redis\RedisNameSpacedCache;
 use Misery\Component\Common\Cursor\CachedCursor;
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Parser\CsvParser;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -53,7 +53,7 @@ $cachePool = new RedisNameSpacedCache($redisFactory->create($redisAccount), 'sal
 
 /** @var SplFileInfo $file */
 foreach ($finder->in($path)->name('*.csv') as $file) {
-    $reader = new Misery\Component\Csv\Reader\RowReader(
+    $reader = new Misery\Component\Reader\ItemReader(
         CachedCursor::create($parser = CsvParser::create($file->getRealPath(),',')),
     );
     #$reader->indexColumn('Order ID');

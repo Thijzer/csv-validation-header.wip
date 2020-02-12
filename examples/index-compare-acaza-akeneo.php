@@ -1,9 +1,9 @@
 <?php
 
 use Misery\Component\Common\Cursor\CachedCursor;
-use Misery\Component\Csv\Compare\CsvCompare;
-use Misery\Component\Csv\Reader\CsvParser;
-use Misery\Component\Csv\Reader\ItemCollection;
+use Misery\Component\Csv\Compare\ItemCompare;
+use Misery\Component\Parser\CsvParser;
+use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Csv\Writer\CsvWriter;
 use Symfony\Component\Finder\Finder;
 
@@ -75,13 +75,13 @@ foreach ($linkedFiles as $filename => $file) {
 
     $reference = $file['reference'];
 
-    $readerA = new Misery\Component\Csv\Reader\RowReader(CachedCursor::create($parser1));
+    $readerA = new Misery\Component\Reader\ItemReader(CachedCursor::create($parser1));
     $readerA->indexColumn($reference);
 
-    $readerB = new Misery\Component\Csv\Reader\RowReader(CachedCursor::create($parser2));
+    $readerB = new Misery\Component\Reader\ItemReader(CachedCursor::create($parser2));
     $readerB->indexColumn($reference);
 
-    $compare = new Misery\Component\Csv\Compare\CsvCompare(
+    $compare = new Misery\Component\Csv\Compare\ItemCompare(
         $readerA,
         $readerB,
         ['special_from_date', 'special_to_date']

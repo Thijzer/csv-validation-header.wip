@@ -21,7 +21,7 @@ Some files have multiple or joined references, so uniqueness is based on both re
 $parserA = CsvParser::create(__DIR__ . '/products_aug.csv');
 $parserB = CachedCursor::create(CsvParser::create(__DIR__ . '/products_set.csv'));
 
-$compare = new Misery\Component\Csv\Compare\CsvCompare(
+$compare = new Misery\Component\Csv\Compare\ItemCompare(
     $parserA,
     $parserB
 );

@@ -1,6 +1,6 @@
 <?php
 
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Parser\CsvParser;
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Format\FloatFormat;
 use Misery\Component\Format\IntFormat;
@@ -39,7 +39,7 @@ $parser = CsvParser::create(__DIR__ . '/akeneo/icecat_demo_dev/families.csv', ';
 
 //  To format (electronic data) according to a standard format.
 
-$encoder = new Misery\Component\Csv\Encoder\CsvEncoder($formatRegistry, $modifierRegistry);
+$encoder = new Misery\Component\Encoder\CsvEncoder($formatRegistry, $modifierRegistry);
 
 // apply format context
 
