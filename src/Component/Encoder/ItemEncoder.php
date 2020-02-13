@@ -2,22 +2,20 @@
 
 namespace Misery\Component\Encoder;
 
+use Misery\Component\Common\Format\Format;
+use Misery\Component\Common\Modifier\Modifier;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
 
-class CsvEncoder
+class ItemEncoder
 {
     public const FORMAT = 'csv';
 
-    /** @var RegistryInterface */
-    private $formatRegistry;
-    /** @var RegistryInterface */
-    private $modifierRegistry;
+    private $registryCollection;
 
-    public function __construct(RegistryInterface $formatRegistry, RegistryInterface $modifierRegistry)
+    public function addRegistry(RegistryInterface $registry)
     {
-        $this->modifierRegistry = $modifierRegistry;
-        $this->formatRegistry = $formatRegistry;
+        $this->registryCollection[$registry->getAlias()] = $registry;
     }
 
     public function encode(array $data, array $context = []): array
@@ -73,21 +71,23 @@ class CsvEncoder
             $class->setOptions($match['options']);
         }
 
-//        if ($type === Registry::NAME) {
-//            $row[$header] = $class->modify($row[$header]);
-//        }
+        if ($class instanceof Modifier) {
+            $row = $class->modify($row);
+        }
 
-        $row[$header] = $class->format($row[$header]);
+        if ($class instanceof Format) {
+            $row[$header] = $class->format($row[$header]);
+        }
     }
 
     private function getModifierClass(string $formatName)
     {
-        return $this->modifierRegistry->filterByAlias($formatName);
+        return $this->registryCollection['modifier']->filterByAlias($formatName);
     }
 
     private function getFormatClass(string $formatName)
     {
-        return $this->formatRegistry->filterByAlias($formatName);
+        return $this->registryCollection['format']->filterByAlias($formatName);
     }
 
     public function supports($format): bool

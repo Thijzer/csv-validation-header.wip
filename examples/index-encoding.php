@@ -13,7 +13,7 @@ use Misery\Component\Modifier\ArrayUnflattenModifier;
 use Misery\Component\Modifier\NullifyEmptyStringModifier;
 use Misery\Component\Modifier\StripSlashesModifier;
 
-$formatRegistry = new Registry();
+$formatRegistry = new Registry('format');
 $formatRegistry
     ->register(StringToSerializeFormat::NAME, new StringToSerializeFormat())
     ->register(FloatToStringFormat::NAME, new FloatToStringFormat())
@@ -24,7 +24,7 @@ $formatRegistry
     ->register(StringToStringFormat::NAME, new StringToStringFormat())
 ;
 
-$modifierRegistry = new Registry();
+$modifierRegistry = new Registry('modifier');
 $modifierRegistry
     ->register(StripSlashesModifier::NAME, new StripSlashesModifier())
     ->register(ArrayUnflattenModifier::NAME, new ArrayUnflattenModifier())
@@ -35,11 +35,12 @@ require __DIR__.'/../vendor/autoload.php';
 
 // parse Csv
 
+
 $parser = CsvParser::create(__DIR__ . '/akeneo/icecat_demo_dev/families.csv', ';');
 
 //  To format (electronic data) according to a standard format.
 
-$encoder = new Misery\Component\Encoder\CsvEncoder($formatRegistry, $modifierRegistry);
+$encoder = new Misery\Component\Encoder\ItemEncoder($formatRegistry, $modifierRegistry);
 
 // apply format context
 

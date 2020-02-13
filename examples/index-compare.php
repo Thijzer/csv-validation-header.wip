@@ -17,14 +17,14 @@ require __DIR__.'/../vendor/autoload.php';
 $parser = CsvParser::create(__DIR__ . '/private/family.csv', ';');
 $newFile = CsvParser::create(__DIR__ . '/private/family_new.csv', ';');
 
-$modifierRegistry = new Registry();
+$modifierRegistry = new Registry('modifier');
 $modifierRegistry
     ->register(StripSlashesModifier::NAME, new StripSlashesModifier())
     ->register(ArrayUnflattenModifier::NAME, new ArrayUnflattenModifier())
     ->register(NullifyEmptyStringModifier::NAME, new NullifyEmptyStringModifier())
 ;
 
-$formatRegistry = new Registry();
+$formatRegistry = new Registry('format');
 $formatRegistry
     ->register(StringToSerializeFormat::NAME, new StringToSerializeFormat())
     ->register(FloatToStringFormat::NAME, new FloatToStringFormat())
