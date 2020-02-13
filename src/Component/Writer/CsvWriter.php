@@ -13,12 +13,12 @@ class CsvWriter
     /** @var resource */
     private $handle;
     /** @var bool */
-    private $allowHeaders = true;
+    private $allowHeaders;
 
     public function __construct(
         string $filename,
         string $delimiter = self::DELIMITER,
-        bool $allowHeaders = false
+        bool $allowHeaders = true
     ) {
         $this->filename = $filename;
         $this->delimiter = $delimiter;
@@ -51,7 +51,8 @@ class CsvWriter
     public function setHeader(array $headers): void
     {
         if ($this->allowHeaders) {
-            $this->write($headers);
+            fputcsv($this->handle, $headers, $this->delimiter);
+            $this->allowHeaders = false;
         }
     }
 }

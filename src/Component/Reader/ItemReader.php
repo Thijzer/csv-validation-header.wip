@@ -41,6 +41,8 @@ class ItemReader implements ItemReaderInterface
             }
             $this->cursor->next();
         }
+
+        // @TODO throw outofboudexception
     }
 
     public function find(array $constraints): ReaderInterface
