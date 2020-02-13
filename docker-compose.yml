@@ -2,6 +2,7 @@ version: '2'
 
 services:
   fpm:
+    user: 1000:1000
     image: thijs/php:alpine-php-7.3
     volumes:
       - './:/app'
