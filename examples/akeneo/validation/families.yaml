@@ -8,8 +8,6 @@ columns:
   attribute_as_label:
     string:
 
-
-
 rows:
   unflatten:
     separator: '-'
