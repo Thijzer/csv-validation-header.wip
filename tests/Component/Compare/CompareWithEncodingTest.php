@@ -45,24 +45,12 @@ class CompareWithEncodingTest extends TestCase
         ;
         $encoder->addRegistry($formatRegistry);
 
-        $modifierRegistry = new Registry('modifier');
-        $modifierRegistry
-            ->register(NullifyEmptyStringModifier::NAME, new NullifyEmptyStringModifier())
-        ;
-        $encoder->addRegistry($modifierRegistry);
-
         $context = [
             'columns' => [
-                'id' => [
-                    'integer' => [],
-                ],
                 'codes' => [
                     'list' => [],
                 ],
             ],
-            'rows' => [
-                'nullify' => [],
-            ]
         ];
 
         $collectionA = new ItemCollection($this->items);
