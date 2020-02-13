@@ -2,22 +2,24 @@
 
 namespace Misery\Component\Format;
 
-use Misery\Component\Common\Format\Format;
+use Misery\Component\Common\Format\StringFormat;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 
-class BooleanFormat implements Format, OptionsInterface
+class BooleanToStringFormat implements StringFormat, OptionsInterface
 {
     use OptionsTrait;
 
     public const NAME = 'boolean';
 
+    /** @var array */
     private $options = [
         'true'  => '1',
         'false' => '0',
     ];
 
-    public function format($value):? bool
+    /** @inheritDoc */
+    public function format(string $value):? bool
     {
         if ($value === $this->options['true']) {
             return true;
@@ -30,7 +32,11 @@ class BooleanFormat implements Format, OptionsInterface
         return null;
     }
 
-    public function reverseFormat($value)
+    /**
+     * @param bool $value
+     * @return string
+     */
+    public function reverseFormat($value): string
     {
         if ($value === true) {
             return $this->options['true'];
@@ -39,7 +45,5 @@ class BooleanFormat implements Format, OptionsInterface
         if ($value === false) {
             return $this->options['false'];
         }
-
-        return null;
     }
 }

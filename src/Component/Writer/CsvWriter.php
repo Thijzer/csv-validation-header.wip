@@ -1,61 +1,41 @@
 <?php
 
-namespace Misery\Component\Csv\Writer;
+namespace Misery\Component\Writer;
 
 class CsvWriter
 {
     public const DELIMITER = ';';
-    public const UTF8_BOM = "\xEF\xBB\xBF";
-    public const LINE_ENDING = PHP_EOL;
 
+    /** @var string */
     private $delimiter;
+    /** @var string */
     private $filename;
-    private $bom;
+    /** @var resource */
     private $handle;
+    /** @var bool */
     private $allowHeaders = true;
-    private $headers;
 
     public function __construct(
         string $filename,
         string $delimiter = self::DELIMITER,
-        string $bom = null
+        bool $allowHeaders = false
     ) {
         $this->filename = $filename;
         $this->delimiter = $delimiter;
-        $this->bom = $bom;
-    }
-
-    public function disableHeaders(): self
-    {
-        $this->allowHeaders = false;
-
-        return $this;
-    }
-
-    private function getHandle()
-    {
-        if (!$this->handle) {
-            $this->handle = fopen($this->filename, 'wb+');
-            if ($this->bom) {
-                fwrite($this->handle, $this->bom);
-            }
-        }
-
-        return $this->handle;
+        $this->allowHeaders = $allowHeaders;
+        $this->handle = fopen($this->filename, 'wb+');
     }
 
     public function write(array $row): void
     {
-        $handle = $this->getHandle();
-
         $this->setHeader(array_keys($row));
 
-        fputcsv($handle, array_values($row), $this->delimiter);
+        fputcsv($this->handle, array_values($row), $this->delimiter);
     }
 
     public function close(): void
     {
-        fclose($this->getHandle());
+        fclose($this->handle);
     }
 
     public function clear(): void
@@ -70,8 +50,7 @@ class CsvWriter
 
     public function setHeader(array $headers): void
     {
-        if (null === $this->headers && $this->allowHeaders) {
-            $this->headers = $headers;
+        if ($this->allowHeaders) {
             $this->write($headers);
         }
     }

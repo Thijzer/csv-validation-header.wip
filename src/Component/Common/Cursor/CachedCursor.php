@@ -8,13 +8,18 @@ class CachedCursor implements CursorInterface
     const MEDIUM_CACHE_SIZE = 5000;
     const LARGE_CACHE_SIZE = 10000;
 
+    /** @var int|mixed */
     private $position = 0;
+    /** @var CursorInterface */
     private $cursor;
+    /** @var array */
     private $items = [];
 
+    /** @var array */
     private $options = [
         'cache_size' => self::MEDIUM_CACHE_SIZE,
     ];
+    /** @var array */
     private $range = [];
 
     public function __construct(CursorInterface $cursor, array $options = [])

@@ -18,15 +18,29 @@ class ItemReader implements ItemReaderInterface
 
     public function index(array $lines): ItemReaderInterface
     {
-        $items = [];
+        return new self($this->processIndex($lines));
+    }
+
+    private function processIndex(array $lines): \Generator
+    {
         foreach ($lines as $lineNr) {
-            $this->cursor->seek($lineNr);
-            $items[$lineNr] = $this->cursor->current();
+            $this->seek($lineNr);
+            yield $lineNr => $this->cursor->current();
         }
+    }
 
+    /**
+     * Adds seek support for \Iterator objects
+     */
+    public function seek($pointer): void
+    {
         $this->cursor->rewind();
-
-        return new self(new ItemCollection($items));
+        while ($this->cursor->valid()) {
+            if ($this->cursor->key() === $pointer) {
+                break;
+            }
+            $this->cursor->next();
+        }
     }
 
     public function find(array $constraints): ReaderInterface

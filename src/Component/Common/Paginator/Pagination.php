@@ -1,12 +1,12 @@
 <?php
 
-namespace Misery\Component\Paginator;
+namespace Misery\Component\Common\Paginator;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 
 // @todo implements Pagination Interface
 
-class Pagination 
+class Pagination
 {
     private $pageId = 0;
     private $limit = 0;

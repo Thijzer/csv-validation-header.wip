@@ -6,8 +6,11 @@ use Misery\Component\Common\Cache\SimpleCacheInterface;
 
 class NameSpacedCache implements SimpleCacheInterface
 {
+    /** @var string */
     private const SEPARATOR = '|';
+    /** @var SimpleCacheInterface */
     private $cache;
+    /** @var string */
     private $nameSpace;
 
     public function __construct(SimpleCacheInterface $cache, string $nameSpace)
@@ -33,21 +36,27 @@ class NameSpacedCache implements SimpleCacheInterface
     }
 
     /** @inheritDoc */
-    public function set($key, $value, $ttl = null)
+    public function set($key, $value, $ttl = null): bool
     {
         $this->cache->set($this->getNameSpaceKey($key), $value);
+
+        return true;
     }
 
     /** @inheritDoc */
-    public function delete($key): void
+    public function delete($key): bool
     {
         $this->cache->delete($this->getNameSpaceKey($key));
+
+        return true;
     }
 
     /** @inheritDoc */
-    public function clear(): void
+    public function clear(): bool
     {
         $this->cache->clear();
+
+        return true;
     }
 
     /** @inheritDoc */
@@ -61,11 +70,13 @@ class NameSpacedCache implements SimpleCacheInterface
     }
 
     /** @inheritDoc */
-    public function setMultiple($values, $ttl = null): void
+    public function setMultiple($values, $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             $this->cache->set($this->getNameSpaceKey($key), $value);
         }
+
+        return true;
     }
 
     /** @inheritDoc */

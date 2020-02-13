@@ -4,8 +4,6 @@ namespace Misery\Component\Common\Processor;
 
 use Misery\Component\Common\Collection\ArrayCollection;
 use Misery\Component\Common\Options\OptionsInterface;
-use Misery\Component\Common\Registry\FormatRegistryInterface;
-use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Common\Registry\RegistryInterface;
 
 class CsvDataProcessor implements CsvDataProcessorInterface
@@ -38,7 +36,7 @@ class CsvDataProcessor implements CsvDataProcessorInterface
                     $items = $registry->filterByAlias($converterName);
                     if ($items->hasValues()) {
                         $headers[$header][$converterName][] = [
-                            'type' => $registry::NAME,
+                            'type' => $registry->getAlias(),
                             'class' => $items->first(),
                             'options' => $converterOptions,
                         ];

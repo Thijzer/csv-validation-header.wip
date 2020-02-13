@@ -10,8 +10,11 @@ class ItemCollection implements CursorInterface
     public const ENCLOSURE = '"';
     public const ESCAPE = '\\';
 
+    /** @var int */
     private $position = 0;
+    /** @var array */
     private $items;
+    /** @var array */
     private $keys;
 
     public function __construct(array $items = [])
@@ -21,10 +24,14 @@ class ItemCollection implements CursorInterface
         $this->keys = array_keys($items);
     }
 
+    /**
+     * @param string|int $key
+     * @param mixed $value
+     */
     public function set($key, $value): void
     {
         $this->items[$key] = $value;
-        $this->keys[$key];
+        $this->keys = array_keys($this->items);
     }
 
     /**
@@ -35,7 +42,6 @@ class ItemCollection implements CursorInterface
         foreach ($this->getIterator() as $row) {
             $callable($row);
         }
-        $this->rewind();
     }
 
     /**

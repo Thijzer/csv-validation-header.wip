@@ -9,7 +9,9 @@ class CsvEncoder
 {
     public const FORMAT = 'csv';
 
+    /** @var RegistryInterface */
     private $formatRegistry;
+    /** @var RegistryInterface */
     private $modifierRegistry;
 
     public function __construct(RegistryInterface $formatRegistry, RegistryInterface $modifierRegistry)
@@ -18,7 +20,7 @@ class CsvEncoder
         $this->formatRegistry = $formatRegistry;
     }
 
-    public function encode($data, array $context = []): array
+    public function encode(array $data, array $context = []): array
     {
         // preparation
         $context = $this->parseContext($context);

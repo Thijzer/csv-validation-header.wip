@@ -4,7 +4,7 @@ namespace Misery\Component\Compare;
 
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
 use Misery\Component\Item\Builder\ReferenceBuilder;
-use Misery\Component\Reader\ReaderInterface;
+use Misery\Component\Reader\ItemReaderInterface;
 
 class ItemCompare
 {
@@ -12,14 +12,14 @@ class ItemCompare
     public const REMOVED = 'REMOVED';
     public const CHANGED = 'CHANGED';
 
+    /** @var ItemReaderInterface */
     private $old;
+    /** @var ItemReaderInterface */
     private $new;
-    /**
-     * @var array
-     */
+    /** @var array|null*/
     private $excludes;
 
-    public function __construct(ReaderInterface $old, ReaderInterface $new, array $excludes = null)
+    public function __construct(ItemReaderInterface $old, ItemReaderInterface $new, array $excludes = null)
     {
         $this->old = $old;
         $this->new = $new;

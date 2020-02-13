@@ -2,11 +2,11 @@
 
 namespace Misery\Component\Format;
 
-use Misery\Component\Common\Format\Format;
+use Misery\Component\Common\Format\StringFormat;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 
-class SerializeFormat implements Format, OptionsInterface
+class StringToSerializeFormat implements StringFormat, OptionsInterface
 {
     use OptionsTrait;
 
@@ -16,11 +16,16 @@ class SerializeFormat implements Format, OptionsInterface
         'allowed_classes' => false,
     ];
 
-    public function format($value)
+    /** @inheritDoc */
+    public function format(string $value)
     {
         return \unserialize($value, $this->options) ?? $value;
     }
 
+    /**
+     * @param array $value
+     * @return string
+     */
     public function reverseFormat($value)
     {
         return \serialize($value);

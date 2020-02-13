@@ -6,6 +6,7 @@ use Misery\Component\Common\Cache\SimpleCacheInterface;
 
 class InMemoryCache implements SimpleCacheInterface
 {
+    /** @var array */
     private $cache = [];
 
     public function getIterator(): \Generator
@@ -30,16 +31,20 @@ class InMemoryCache implements SimpleCacheInterface
         return $collection;
     }
 
-    public function set($key, $value, $ttl = null): void
+    public function set($key, $value, $ttl = null): bool
     {
         $this->cache[$key] = $value;
+
+        return true;
     }
 
-    public function setMultiple($values, $ttl = null): void
+    public function setMultiple($values, $ttl = null): bool
     {
         foreach ($values as $key => $data) {
             $this->set($key, $data);
         }
+
+        return true;
     }
 
     public function has($key): bool
@@ -47,16 +52,20 @@ class InMemoryCache implements SimpleCacheInterface
         return isset($this->cache[$key]);
     }
 
-    public function delete($key): void
+    public function delete($key): bool
     {
         unset($this->cache[$key]);
+
+        return true;
     }
 
-    public function deleteMultiple($keys): void
+    public function deleteMultiple($keys): bool
     {
         foreach ($keys as $key) {
             $this->delete($key);
         }
+
+        return true;
     }
 
     public function getItems()
@@ -64,10 +73,12 @@ class InMemoryCache implements SimpleCacheInterface
         return $this->cache;
     }
 
-    public function clear(): void
+    public function clear(): bool
     {
         unset($this->cache);
         $this->cache = [];
+
+        return true;
     }
 
     private function filterKeys(array $keys): array

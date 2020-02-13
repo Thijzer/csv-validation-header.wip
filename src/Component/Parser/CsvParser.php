@@ -10,8 +10,11 @@ class CsvParser implements CursorInterface
     public const ENCLOSURE = '"';
     public const ESCAPE = '\\';
 
+    /** @var array|false|mixed|string */
     private $headers;
+    /** @var \SplFileObject */
     private $file;
+    /** @var int|null */
     private $count;
 
     public function __construct(
@@ -21,7 +24,7 @@ class CsvParser implements CursorInterface
         string $escapeChar = self::ESCAPE
     ) {
         $this->file = $file;
-        ini_set('auto_detect_line_endings', true);
+        ini_set('auto_detect_line_endings', '1');
 
         $file->setFlags(
             \SplFileObject::READ_CSV |
@@ -72,17 +75,18 @@ class CsvParser implements CursorInterface
     /**
      * {@inheritDoc}
      * @throws Exception\InvalidCsvElementSizeException
+     * @return false|array
      */
     public function current()
     {
         $current = $this->file->current();
-        if (!$current || null === $this->headers) {
+        if (false === $current || null === $this->headers) {
             return $current;
         }
 
         // here we need to use the filter
         $row = @array_combine($this->headers, $current);
-        if (null === $row) {
+        if (false === $row) {
             throw new Exception\InvalidCsvElementSizeException(
                 $this->file->getFilename(),
                 $this->key(),

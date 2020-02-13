@@ -6,6 +6,7 @@ use Misery\Component\Validator\ValidatorInterface;
 
 abstract class AbstractValidator implements ValidatorInterface
 {
+    /** @var ValidationCollector */
     private $collector;
 
     public function __construct(ValidationCollector $collector)
@@ -18,5 +19,6 @@ abstract class AbstractValidator implements ValidatorInterface
         return $this->collector;
     }
 
+    /** @inheritDoc */
     abstract function validate($value, array $context = []): void;
 }

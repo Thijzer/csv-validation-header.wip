@@ -2,23 +2,25 @@
 
 namespace Misery\Component\Format;
 
-use Misery\Component\Common\Format\Format;
+use Misery\Component\Common\Format\StringFormat;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 
-class JsonFormat implements Format, OptionsInterface
+class JsonToStringFormat implements StringFormat, OptionsInterface
 {
     use OptionsTrait;
 
     public const NAME = 'json_decode';
 
+    /** @var array */
     private $options = [
         'associative' => true,
         'depth' => 512,
         'options' => [],
     ];
 
-    public function format($value)
+    /** @inheritDoc */
+    public function format(string $value)
     {
         return \json_decode(
             $value,
@@ -28,6 +30,10 @@ class JsonFormat implements Format, OptionsInterface
         ) ?? $value;
     }
 
+    /**
+     * @param array $value
+     * @return false|string
+     */
     public function reverseFormat($value)
     {
         return \json_encode(

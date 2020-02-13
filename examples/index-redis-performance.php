@@ -32,12 +32,12 @@ $modifierRegistry
 ;
 $formatRegistry = new Misery\Component\Common\Registry\Registry();
 $formatRegistry
-    ->registerNamedObject(new Misery\Component\Format\SerializeFormat())
-    ->registerNamedObject(new Misery\Component\Format\FloatFormat())
-    ->registerNamedObject(new Misery\Component\Format\IntFormat())
-    ->registerNamedObject(new Misery\Component\Format\BooleanFormat())
-    ->registerNamedObject(new Misery\Component\Format\DateTimeFormat())
-    ->registerNamedObject(new Misery\Component\Format\ListFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToSerializeFormat())
+    ->registerNamedObject(new Misery\Component\Format\FloatToStringFormat())
+    ->registerNamedObject(new Misery\Component\Format\IntToStringFormat())
+    ->registerNamedObject(new Misery\Component\Format\BooleanToStringFormat())
+    ->registerNamedObject(new Misery\Component\Format\DateTimeToStringFormat())
+    ->registerNamedObject(new Misery\Component\Format\ListStringFormat())
 ;
 
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();

@@ -32,7 +32,8 @@
         "test": [
             "php vendor/bin/phpunit",
             "php vendor/bin/phpspec run",
-            "vendor/bin/phpstan analyse -l 1 src tests"
+            "vendor/bin/phpstan analyse -l 5 src",
+            "vendor/bin/phpstan analyse -l 3 tests"
         ]
     }
 }

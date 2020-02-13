@@ -4,11 +4,12 @@ namespace Misery\Component\Combine;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Functions\ArrayFunctions;
-use Misery\Component\Csv\Compare\ItemCompare;
+use Misery\Component\Compare\ItemCompare;
 use Misery\Component\Reader\ItemReader;
 
 class ItemCombine
 {
+    /** @var bool */
     private $shouldDiffer = false;
 
     public function combineInto(CursorInterface $cursorA, CursorInterface $cursorB, string $reference, callable $call): void
@@ -26,13 +27,6 @@ class ItemCombine
         );
         $combinedHeaderRow = array_combine($combinedHeaders, array_fill(0, \count($combinedHeaders), null));
 
-//        if ($cursorA instanceof ProcessorAwareInterface) {
-//            $cursorA->setProcessor(new NullDataProcessor());
-//        }
-//        if ($cursorB instanceof ProcessorAwareInterface) {
-//            $cursorB->setProcessor(new NullDataProcessor());
-//        }
-
         if (false === $this->shouldDiffer) {
             $cursorA->loop(function ($row) use ($call, $reference, $combinedHeaderRow, $differences) {
                 if (!array_key_exists($row[$reference], $differences[ItemCompare::CHANGED])) {
@@ -41,7 +35,7 @@ class ItemCombine
             });
         }
 
-        foreach ($readerB->index(array_keys($differences[ItemCompare::ADDED])) as $lineNumber => $row) {
+        foreach ($readerB->index(array_keys($differences[ItemCompare::ADDED]))->getIterator() as $lineNumber => $row) {
             $call(array_merge($combinedHeaderRow, $row));
         }
 

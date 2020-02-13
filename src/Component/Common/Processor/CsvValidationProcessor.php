@@ -4,7 +4,6 @@ namespace Misery\Component\Common\Processor;
 
 use Misery\Component\Common\Collection\ArrayCollection;
 use Misery\Component\Common\Options\OptionsInterface;
-use Misery\Component\Common\Registry\ReaderRegistryInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
 use Misery\Component\Reader\ReaderAwareInterface;
 use Misery\Component\Reader\ReaderInterface;
@@ -44,7 +43,7 @@ class CsvValidationProcessor
                     $items = $registry->filterByAlias($converterName);
                     if ($items->hasValues()) {
                         $headers[$header][$converterName] = [
-                            'type' => $registry::NAME,
+                            'type' => $registry->getAlias(),
                             'class' => $items->first(),
                             'options' => $converterOptions,
                         ];
@@ -94,8 +93,7 @@ class CsvValidationProcessor
                     // part of how we validate should be inside the validator
                     // uses 2 readers on for looping another for matching
                     $reader = $this->getRegistry('todo_alias')->filterByAlias($file)->first();
-                    /** @var $reader ReaderInterface */
-                    $reader->loop(function ($row) use ($property, $reader, $class, $context) {
+                    foreach ($reader->getIterator() as $row) {
                         // @TODO row not found should be validated
                         if (isset($row[$property])) {
                             $context['line'] = $reader->getIterator()->key();
@@ -103,7 +101,7 @@ class CsvValidationProcessor
 
                             $class->validate($row[$property], $context);
                         }
-                    });
+                    };
                 }
             }
         }
