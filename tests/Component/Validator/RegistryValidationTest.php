@@ -101,7 +101,7 @@ class RegistryValidationTest extends TestCase
         $expectedErrors = [
             "The value REMOVED is not listed as an option {\"property\":\"status\",\"value\":\"REMOVED\"}",
             "Invalid format found for snake_case value : C {\"property\":\"code\",\"value\":\"C\"}",
-            "Value cannot be blank {\"property\":\"phone\",\"value\":\"\"}",
+            "Value cannot be blank {\"property\":\"phone\"}",
         ];
 
         $this->assertSame($expectedErrors, $collector->getErrors());

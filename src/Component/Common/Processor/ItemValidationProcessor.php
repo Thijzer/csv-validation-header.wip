@@ -2,7 +2,6 @@
 
 namespace Misery\Component\Common\Processor;
 
-use Misery\Component\Common\Collection\ArrayCollection;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
 use Misery\Component\Reader\ItemReaderAwareInterface;
@@ -11,7 +10,9 @@ use Misery\Component\Validator\ValidatorInterface;
 
 class ItemValidationProcessor
 {
+    /** @var RegistryInterface */
     private $registry;
+    /** @var array */
     private $readers;
 
     public function setRegistry(RegistryInterface $registry)
@@ -32,11 +33,12 @@ class ItemValidationProcessor
     private function parseContext(array $context): array
     {
         $rules = [];
+        $rules['name'] = $context['name'] ?? null;
+
         foreach ($context['validations']['property'] ?? [] as $property => $converters) {
             foreach ($converters as $converterName => $converterOptions) {
-                $registry = $this->getRegistry();
-                if ($class = $registry->filterByAlias($converterName)) {
-                    $rules[$property][$converterName] = [
+                if ($class = $this->getValidationClass($converterName)) {
+                    $rules['validations'][$property][$converterName] = [
                         'class' => $class,
                         'options' => $converterOptions,
                     ];
@@ -63,8 +65,6 @@ class ItemValidationProcessor
     {
         // register the reader with a name
         $this->readers['current'] = $reader;
-        $this->readers[$context['resource']] = $reader;
-
         // process reader
         // process item
         while ($item = $reader->read()) {
@@ -77,14 +77,14 @@ class ItemValidationProcessor
         // preparation
         $context = $this->parseContext($context);
 
-        foreach ($context as $property => $namedMatches) {
+        foreach ($context['validations'] as $property => $namedMatches) {
             foreach ($namedMatches as $columnName => $matches) {
-                $this->processMatch($data, $property, $matches);
+                $this->processMatch($data, $property, $matches, $context['name']);
             }
         }
     }
 
-    private function processMatch(array &$data, string $property, $match)
+    private function processMatch(array &$data, string $property, $match, string $name = null)
     {
         /** @var ValidatorInterface $class */
         $class = $match['class'];
@@ -98,9 +98,10 @@ class ItemValidationProcessor
             return;
         }
 
-        $class->validate($data[$property], [
+        $class->validate($data[$property], array_filter([
             'property' => $property,
             'value' => $data[$property],
-        ]);
+            'name' => $name,
+        ]));
     }
 }
