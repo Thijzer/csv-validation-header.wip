@@ -8,7 +8,6 @@ use Misery\Component\Compare\ItemCompare;
 use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Format\IntToStringFormat;
 use Misery\Component\Format\ListStringFormat;
-use Misery\Component\Modifier\NullifyEmptyStringModifier;
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;

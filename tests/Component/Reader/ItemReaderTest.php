@@ -7,7 +7,7 @@ use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
 
-class ReaderTest extends TestCase
+class ItemReaderTest extends TestCase
 {
     private $items = [
         [
@@ -147,6 +147,28 @@ class ReaderTest extends TestCase
                 'first_name' => 'Frans',
                 'last_name' => 'Merkel',
                 'phone' => '123456',
+            ],
+        ];
+
+        $this->assertSame($result, $reader->getItems());
+    }
+
+    public function test_map_items(): void
+    {
+        $reader = new ItemReader($items = new ItemCollection([$this->items[0]]));
+
+        $reader = $reader
+            ->map(function ($row) {
+                unset($row['phone']);
+                return $row;
+            })
+        ;
+
+        $result = [
+            0 => [
+                'id' => '1',
+                'first_name' => 'Gordie',
+                'last_name' => 'Ramsey',
             ],
         ];
 

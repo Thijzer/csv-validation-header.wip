@@ -11,9 +11,13 @@ class ItemReader implements ItemReaderInterface
         $this->cursor = $cursor;
     }
 
-    public function read(): \Iterator
+    /** @inheritDoc */
+    public function read()
     {
-        return $this->cursor;
+        $item = $this->cursor->current();
+        $this->cursor->next();
+
+        return $item;
     }
 
     public function index(array $lines): ItemReaderInterface

@@ -4,7 +4,8 @@ namespace Misery\Component\Reader;
 
 interface ReaderInterface
 {
-    public function read(): \Iterator;
+    /** @return array|false */
+    public function read();
     public function getIterator(): \Iterator;
     public function find(array $constraints): self;
     public function filter(callable $callable): self;

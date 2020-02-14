@@ -17,9 +17,9 @@ $validationRegistry->registerNamedObject(new Misery\Component\Validator\IntegerV
 
 $readerRegistry = new Misery\Component\Common\Registry\Registry();
 
-$processor = new Misery\Component\Common\Processor\CsvValidationProcessor();
+$processor = new Misery\Component\Common\Processor\ItemValidationProcessor();
 $processor
-    ->addRegistry($validationRegistry)
+    ->setRegistry($validationRegistry)
     ->addRegistry($readerRegistry)
 ;
 
