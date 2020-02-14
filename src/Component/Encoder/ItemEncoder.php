@@ -42,7 +42,6 @@ class ItemEncoder
                 if ($class = $this->getFormatClass($formatName)) {
                     $rules['format'][$columnName][$formatName] = [
                         'class' => $class,
-                        'type' => 'format',
                         'options' => $formatOptions,
                     ];
                 }
@@ -52,7 +51,6 @@ class ItemEncoder
         foreach ($context['rows'] ?? [] as $modifierName => $modifierOptions) {
             if ($class = $this->getModifierClass($modifierName)) {
                 $rules['format'][$modifierName][] = [
-                    'type' => 'modifier',
                     'class' => $class,
                     'options' => $modifierOptions,
                 ];
@@ -65,27 +63,24 @@ class ItemEncoder
     private function processMatch(array &$row, string $property, array $match): void
     {
         $class = $match['class'];
-//        $type = $match['type'];
 
         if ($class instanceof OptionsInterface && !empty($match['options'])) {
             $class->setOptions($match['options']);
         }
 
-        if ($class instanceof CellModifier) {
-            $row[$property] = $class->modify($row[$property]);
-        }
-
-        if ($class instanceof StringFormat) {
-            $row[$property] = $class->format($row[$property]);
-        }
-
-        // string vs Array should not be in the same process
-        if ($class instanceof RowModifier) {
-            $row = $class->modify($row);
-        }
-
-        if ($class instanceof ArrayFormat) {
-            $row = $class->format($row);
+        switch (true) {
+            case $class instanceof CellModifier:
+                $row[$property] = $class->modify($row[$property]);
+                break;
+            case $class instanceof StringFormat:
+                $row[$property] = $class->format($row[$property]);
+                break;
+            case $class instanceof RowModifier:
+                $row = $class->modify($row);
+                break;
+            case $class instanceof ArrayFormat:
+                $row = $class->format($row);
+                break;
         }
     }
 
