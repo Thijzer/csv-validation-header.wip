@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/thijzer/csv-validation-header.svg?branch=master)](https://travis-ci.org/thijzer/csv-validation-header)
+
 # Item processor
 
 ## require this into your project 
