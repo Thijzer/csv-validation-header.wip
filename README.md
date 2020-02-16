@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/thijzer/csv-validation-header.svg?branch=master)](https://travis-ci.org/thijzer/csv-validation-header)
+[![Build Status](https://travis-ci.org/Thijzer/csv-validation-header.wip.svg?branch=master)](https://travis-ci.org/Thijzer/csv-validation-header.wip)
 
 # Item processor
 
