@@ -1,8 +1,6 @@
 <?php
 
-namespace Misery\Component\Encoder\Validator\Constraint;
-
-use Misery\Component\Validator\Constraint\Constraint;
+namespace Misery\Component\Validator\Constraint;
 
 class UniqueValueConstraint implements Constraint
 {

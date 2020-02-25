@@ -4,7 +4,7 @@ namespace Tests\Misery\Component\Validator;
 
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
-use Misery\Component\Encoder\Validator\UniqueValueValidator;
+use Misery\Component\Validator\UniqueValueValidator;
 use Misery\Component\Validator\ValidationCollector;
 use PHPUnit\Framework\TestCase;
 

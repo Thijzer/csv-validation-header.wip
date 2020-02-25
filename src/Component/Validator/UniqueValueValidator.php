@@ -1,12 +1,11 @@
 <?php
 
-namespace Misery\Component\Encoder\Validator;
+namespace Misery\Component\Validator;
 
-use Misery\Component\Filter\ColumnFilter;
+use Misery\Component\Encoder\Validator\Constraint;
 use Misery\Component\Item\Builder\ReferenceBuilder;
 use Misery\Component\Reader\ItemReaderAwareInterface;
 use Misery\Component\Reader\ItemReaderAwareTrait;
-use Misery\Component\Validator\AbstractValidator;
 
 class UniqueValueValidator extends AbstractValidator implements ItemReaderAwareInterface
 {
@@ -21,9 +20,9 @@ class UniqueValueValidator extends AbstractValidator implements ItemReaderAwareI
         $duplicates = array_unique($columnData);
         if (\count($columnData) !== \count($duplicates)) {
             $this->getValidationCollector()->collect(
-                new Constraint\UniqueValueConstraint(),
+                new \Misery\Component\Validator\Constraint\UniqueValueConstraint(),
                 sprintf(
-                    Constraint\UniqueValueConstraint::UNIQUE_VALUE,
+                    \Misery\Component\Validator\Constraint\UniqueValueConstraint::UNIQUE_VALUE,
                     implode(', ', array_unique(array_diff_assoc($columnData, $duplicates)))
                 ),
                 $context

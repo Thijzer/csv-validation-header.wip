@@ -4,8 +4,8 @@ namespace Tests\Misery\Component\Encoding;
 
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Encoder\ItemEncoder;
-use Misery\Component\Format\IntToStringFormat;
-use Misery\Component\Format\ListStringFormat;
+use Misery\Component\Format\StringToIntFormat;
+use Misery\Component\Format\StringToListFormat;
 use Misery\Component\Modifier\NullifyEmptyStringModifier;
 use Misery\Component\Reader\ItemCollection;
 use PHPUnit\Framework\TestCase;
@@ -43,8 +43,8 @@ class EncodingTest extends TestCase
 
         $formatRegistry = new Registry('format');
         $formatRegistry
-            ->register(ListStringFormat::NAME, new ListStringFormat())
-            ->register(IntToStringFormat::NAME, new IntToStringFormat())
+            ->register(StringToListFormat::NAME, new StringToListFormat())
+            ->register(StringToIntFormat::NAME, new StringToIntFormat())
         ;
 
         $encoder->addRegistry($formatRegistry);

@@ -6,8 +6,8 @@ use Misery\Component\Common\Cursor\FunctionalCursor;
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Compare\ItemCompare;
 use Misery\Component\Encoder\ItemEncoder;
-use Misery\Component\Format\IntToStringFormat;
-use Misery\Component\Format\ListStringFormat;
+use Misery\Component\Format\StringToIntFormat;
+use Misery\Component\Format\StringToListFormat;
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
@@ -39,8 +39,8 @@ class CompareWithEncodingTest extends TestCase
 
         $formatRegistry = new Registry('format');
         $formatRegistry
-            ->register(ListStringFormat::NAME, new ListStringFormat())
-            ->register(IntToStringFormat::NAME, new IntToStringFormat())
+            ->register(StringToListFormat::NAME, new StringToListFormat())
+            ->register(StringToIntFormat::NAME, new StringToIntFormat())
         ;
         $encoder->addRegistry($formatRegistry);
 

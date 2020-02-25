@@ -4,18 +4,18 @@ namespace Misery\Component\Format;
 
 use Misery\Component\Common\Format\StringFormat;
 
-class IntToStringFormat implements StringFormat
+class StringToFloatFormat implements StringFormat
 {
-    public const NAME = 'integer';
+    public const NAME = 'float';
 
     /** @inheritDoc */
-    public function format(string $value): int
+    public function format(string $value): float
     {
-        return (int) $value;
+        return (float) $value;
     }
 
     /**
-     * @param int $value
+     * @param float $value
      * @return string
      */
     public function reverseFormat($value): string

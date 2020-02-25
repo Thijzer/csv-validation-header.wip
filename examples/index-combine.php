@@ -4,8 +4,8 @@ use Misery\Component\Common\Registry\FormatRegistryInterface;
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Parser\CsvParser;
 use Misery\Component\Csv\Writer\CsvWriter;
-use Misery\Component\Format\FloatToStringFormat;
-use Misery\Component\Format\IntToStringFormat;
+use Misery\Component\Format\StringToFloatFormat;
+use Misery\Component\Format\StringToIntFormat;
 use Misery\Component\Format\StringToSerializeFormat;
 use Misery\Component\Modifier\StripSlashesModifier;
 
@@ -23,11 +23,11 @@ $modifierRegistry
 $formatRegistry = new Registry();
 $formatRegistry
     ->registerNamedObject(new StringToSerializeFormat())
-    ->registerNamedObject(new FloatToStringFormat())
-    ->registerNamedObject(new IntToStringFormat())
-    ->registerNamedObject(new Misery\Component\Format\BooleanToStringFormat())
-    ->registerNamedObject(new Misery\Component\Format\DateTimeToStringFormat())
-    ->registerNamedObject(new Misery\Component\Format\ListStringFormat())
+    ->registerNamedObject(new StringToFloatFormat())
+    ->registerNamedObject(new StringToIntFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToBooleanFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToDatetimeFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToListFormat())
 ;
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
 $processor

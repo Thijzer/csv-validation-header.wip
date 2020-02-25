@@ -4,10 +4,10 @@ namespace Tests\Misery\Component\Validator;
 
 use Misery\Component\Common\Processor\ItemValidationProcessor;
 use Misery\Component\Common\Registry\Registry;
-use Misery\Component\Encoder\Validator\ReferencedColumnValidator;
+use Misery\Component\Validator\ReferenceExistValidator;
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
-use Misery\Component\Encoder\Validator\UniqueValueValidator;
+use Misery\Component\Validator\UniqueValueValidator;
 use Misery\Component\Validator\InArrayValidator;
 use Misery\Component\Validator\IntegerValidator;
 use Misery\Component\Validator\RequiredValidator;
@@ -48,7 +48,7 @@ class RegistryValidationTest extends TestCase
     {
         $registry = new Registry('validations');
         $registry
-            ->register(ReferencedColumnValidator::NAME, new ReferencedColumnValidator($collector))
+            ->register(ReferenceExistValidator::NAME, new ReferenceExistValidator($collector))
             ->register(UniqueValueValidator::NAME, new UniqueValueValidator($collector))
             ->register(RequiredValidator::NAME, new RequiredValidator($collector))
             ->register(InArrayValidator::NAME, new InArrayValidator($collector))

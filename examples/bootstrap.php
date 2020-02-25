@@ -2,8 +2,8 @@
 
 use Misery\Component\Common\Registry\FormatRegistryInterface;
 use Misery\Component\Common\Registry\Registry;
-use Misery\Component\Format\FloatToStringFormat;
-use Misery\Component\Format\IntToStringFormat;
+use Misery\Component\Format\StringToFloatFormat;
+use Misery\Component\Format\StringToIntFormat;
 use Misery\Component\Format\StringToSerializeFormat;
 use Misery\Component\Modifier\StripSlashesModifier;
 
@@ -18,11 +18,11 @@ $modifierRegistry
 $formatRegistry = new FormatRegistryInterface();
 $formatRegistry
     ->register(new StringToSerializeFormat())
-    ->register(new FloatToStringFormat())
-    ->register(new IntToStringFormat())
-    ->register(new Misery\Component\Format\BooleanToStringFormat())
-    ->register(new Misery\Component\Format\DateTimeToStringFormat())
-    ->register(new Misery\Component\Format\ListStringFormat())
+    ->register(new StringToFloatFormat())
+    ->register(new StringToIntFormat())
+    ->register(new Misery\Component\Format\StringToBooleanFormat())
+    ->register(new Misery\Component\Format\StringToDatetimeFormat())
+    ->register(new Misery\Component\Format\StringToListFormat())
 ;
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
 $processor

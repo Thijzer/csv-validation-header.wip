@@ -2,13 +2,13 @@
 
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Parser\CsvParser;
-use Misery\Component\Format\FloatToStringFormat;
-use Misery\Component\Format\IntToStringFormat;
+use Misery\Component\Format\StringToFloatFormat;
+use Misery\Component\Format\StringToIntFormat;
 use Misery\Component\Format\StringToSerializeFormat;
 use Misery\Component\Modifier\StripSlashesModifier;
-use Misery\Component\Format\BooleanToStringFormat;
-use Misery\Component\Format\DateTimeToStringFormat;
-use Misery\Component\Format\ListStringFormat;
+use Misery\Component\Format\StringToBooleanFormat;
+use Misery\Component\Format\StringToDatetimeFormat;
+use Misery\Component\Format\StringToListFormat;
 use Misery\Component\Modifier\ArrayUnflattenModifier;
 use Misery\Component\Modifier\NullifyEmptyStringModifier;
 
@@ -27,11 +27,11 @@ $modifierRegistry
 $formatRegistry = new Registry('format');
 $formatRegistry
     ->register(StringToSerializeFormat::NAME, new StringToSerializeFormat())
-    ->register(FloatToStringFormat::NAME, new FloatToStringFormat())
-    ->register(IntToStringFormat::NAME, new IntToStringFormat())
-    ->register(BooleanToStringFormat::NAME, new BooleanToStringFormat())
-    ->register(DateTimeToStringFormat::NAME, new DateTimeToStringFormat())
-    ->register(ListStringFormat::NAME, new ListStringFormat())
+    ->register(StringToFloatFormat::NAME, new StringToFloatFormat())
+    ->register(StringToIntFormat::NAME, new StringToIntFormat())
+    ->register(StringToBooleanFormat::NAME, new StringToBooleanFormat())
+    ->register(StringToDatetimeFormat::NAME, new StringToDatetimeFormat())
+    ->register(StringToListFormat::NAME, new StringToListFormat())
 ;
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
 $processor

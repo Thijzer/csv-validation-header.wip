@@ -6,7 +6,7 @@ use Misery\Component\Common\Format\StringFormat;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 
-class JsonToStringFormat implements StringFormat, OptionsInterface
+class StringToJsonFormat implements StringFormat, OptionsInterface
 {
     use OptionsTrait;
 

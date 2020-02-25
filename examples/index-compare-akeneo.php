@@ -3,8 +3,8 @@
 use Misery\Component\Common\Registry\FormatRegistryInterface;
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Parser\CsvParser;
-use Misery\Component\Format\FloatToStringFormat;
-use Misery\Component\Format\IntToStringFormat;
+use Misery\Component\Format\StringToFloatFormat;
+use Misery\Component\Format\StringToIntFormat;
 use Misery\Component\Format\StringToSerializeFormat;
 use Misery\Component\Modifier\StripSlashesModifier;
 use Symfony\Component\Finder\Finder;

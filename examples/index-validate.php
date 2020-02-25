@@ -8,8 +8,8 @@ $exampleDir = __DIR__.'/akeneo/icecat_demo_dev';
 $collector = new Misery\Component\Validator\ValidationCollector();
 
 $validationRegistry = new Misery\Component\Common\Registry\Registry();
-$validationRegistry->registerNamedObject(new Misery\Component\Encoder\Validator\ReferencedColumnValidator($collector));
-$validationRegistry->registerNamedObject(new Misery\Component\Encoder\Validator\UniqueValueValidator($collector));
+$validationRegistry->registerNamedObject(new \Misery\Component\Validator\ReferenceExistValidator($collector));
+$validationRegistry->registerNamedObject(new \Misery\Component\Validator\UniqueValueValidator($collector));
 $validationRegistry->registerNamedObject(new Misery\Component\Validator\RequiredValidator($collector));
 $validationRegistry->registerNamedObject(new Misery\Component\Validator\InArrayValidator($collector));
 $validationRegistry->registerNamedObject(new Misery\Component\Validator\SnakeCaseValidator($collector));
