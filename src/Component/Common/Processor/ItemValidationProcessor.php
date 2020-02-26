@@ -61,17 +61,6 @@ class ItemValidationProcessor
         }
     }
 
-    private function processReader(ReaderInterface $reader, array $context)
-    {
-        // register the reader with a name
-        $this->readers['current'] = $reader;
-        // process reader
-        // process item
-        while ($item = $reader->read()) {
-            $this->processItem($item, $context);
-        }
-    }
-
     private function processItem(array $data, $context)
     {
         // preparation

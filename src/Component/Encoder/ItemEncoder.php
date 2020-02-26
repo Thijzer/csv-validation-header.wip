@@ -8,6 +8,8 @@ use Misery\Component\Common\Modifier\CellModifier;
 use Misery\Component\Common\Modifier\RowModifier;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
+use Misery\Component\Reader\ReaderInterface;
+use Misery\Component\Validator\ValidatorInterface;
 
 class ItemEncoder
 {
@@ -18,31 +20,63 @@ class ItemEncoder
         $this->registryCollection[$registry->getAlias()] = $registry;
     }
 
-    public function encode(array $data, array $context = []): array
+    public function encode(array $item, array $context = []): array
     {
         // preparation
         $context = $this->parseContext($context);
 
-        foreach ($context as $header => $namedMatches) {
+        $this->processValidations($item, $context);
+
+        $item = $this->processEncoding($item, $context);
+
+        return $item;
+    }
+
+    private function processEncoding(array $item, array $context): array
+    {
+        foreach ($context['encode'] as $header => $namedMatches) {
             foreach ($namedMatches as $property => $matches) {
                 foreach ($matches as $match) {
-                    $this->processMatch($data, $property, $match);
+                    $this->processMatch($item, $property, $match, $context['name']);
                 }
             }
         }
 
-        return $data;
+        return $item;
+    }
+
+    private function processValidations(array $data, $context)
+    {
+        // process validations
+        foreach ($context['validations'] as $property => $namedMatches) {
+            foreach ($namedMatches as $columnName => $matches) {
+                $this->processMatch($data, $property, $matches, $context['name']);
+            }
+        }
     }
 
     public function parseContext(array $context): array
     {
         $rules = [];
+        $rules['name'] = $context['name'] ?? null;
+
         foreach ($context['columns'] ?? [] as $columnName => $formatters) {
             foreach ($formatters as $formatName => $formatOptions) {
                 if ($class = $this->getFormatClass($formatName)) {
                     $rules['format'][$columnName][$formatName] = [
                         'class' => $class,
                         'options' => $formatOptions,
+                    ];
+                }
+            }
+        }
+
+        foreach ($context['validations']['property'] ?? [] as $property => $converters) {
+            foreach ($converters as $converterName => $converterOptions) {
+                if ($class = $this->getValidationClass($converterName)) {
+                    $rules['validations'][$property][$converterName] = [
+                        'class' => $class,
+                        'options' => $converterOptions,
                     ];
                 }
             }
@@ -60,7 +94,7 @@ class ItemEncoder
         return $rules;
     }
 
-    private function processMatch(array &$row, string $property, array $match): void
+    private function processMatch(array &$item, string $property, array $match, string $name = null): void
     {
         $class = $match['class'];
 
@@ -68,18 +102,29 @@ class ItemEncoder
             $class->setOptions($match['options']);
         }
 
+//        if ($class instanceof ItemReaderAwareInterface) {
+//            //  $class->setReader($this->readers['current']);
+//            return;
+//        }
+
         switch (true) {
             case $class instanceof CellModifier:
-                $row[$property] = $class->modify($row[$property]);
+                $item[$property] = $class->modify($item[$property]);
                 break;
             case $class instanceof StringFormat:
-                $row[$property] = $class->format($row[$property]);
+                $item[$property] = $class->format($item[$property]);
                 break;
             case $class instanceof RowModifier:
-                $row = $class->modify($row);
+                $item = $class->modify($item);
                 break;
             case $class instanceof ArrayFormat:
-                $row = $class->format($row);
+                $item = $class->format($item);
+            case $class instanceof ValidatorInterface:
+                $class->validate($item[$property], array_filter([
+                    'property' => $property,
+                    'value' => $item[$property],
+                    //'name' => $name, source_name
+                ]));
                 break;
         }
     }
@@ -92,5 +137,10 @@ class ItemEncoder
     private function getFormatClass(string $formatName)
     {
         return $this->registryCollection['format']->filterByAlias($formatName);
+    }
+
+    private function getValidationClass(string $alias)
+    {
+        return $this->registryCollection['validations']->filterByAlias($alias);
     }
 }

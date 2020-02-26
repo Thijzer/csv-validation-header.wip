@@ -1,0 +1,22 @@
+source:
+  categories:
+    encode:
+      code:
+        string:
+      parent:
+        string:
+    parse:
+      unflatten:
+        separator: '-'
+      nullify: ~
+      reference: code
+      format:
+        delimiter: ';'
+        enclosure: '"'
+    validations:
+      property:
+        code:
+          unique:
+        parent:
+          reference_exist:
+            source: categories
