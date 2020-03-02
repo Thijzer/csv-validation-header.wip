@@ -1,13 +1,24 @@
-# csv-validation-header.RFC
+[![Build Status](https://travis-ci.org/Thijzer/csv-validation-header.wip.svg?branch=master)](https://travis-ci.org/Thijzer/csv-validation-header.wip)
 
-# see the docs for documentation
+# Item processor
 
-## 2 Value processing patterns
-We have 2 distinct ways to format our values. Destructive and none destructive.
-It's very important that you know that difference because you can not recover for a destructive pattern.
+## require this into your project 
+```shell script
+composer require thijzer/csv-validation-header
+```
 
-The Csv File is a file that creates adds more Contextual elements like 
-- references
-- delimiter, enclosure, escapeChar
-- validation rules
+## Documentation
+You can find the documentation in the `/docs` directory.
 
+## Development
+
+### Before you start
+This branch is using docker for development.
+```shell script
+alias d_composer="docker-compose exec fpm php -d memory_limit=-1 /usr/bin/composer $1"
+```
+### Installation and testing for development
+```shell script
+d_composer install -o 
+d_composer test 
+```

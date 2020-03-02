@@ -8,8 +8,8 @@ $exampleDir = __DIR__.'/akeneo/icecat_demo_dev';
 $collector = new Misery\Component\Validator\ValidationCollector();
 
 $validationRegistry = new Misery\Component\Common\Registry\Registry();
-$validationRegistry->registerNamedObject(new Misery\Component\Csv\Validator\ReferencedColumnValidator($collector));
-$validationRegistry->registerNamedObject(new Misery\Component\Csv\Validator\UniqueValueValidator($collector));
+$validationRegistry->registerNamedObject(new \Misery\Component\Validator\ReferenceExistValidator($collector));
+$validationRegistry->registerNamedObject(new \Misery\Component\Validator\UniqueValueValidator($collector));
 $validationRegistry->registerNamedObject(new Misery\Component\Validator\RequiredValidator($collector));
 $validationRegistry->registerNamedObject(new Misery\Component\Validator\InArrayValidator($collector));
 $validationRegistry->registerNamedObject(new Misery\Component\Validator\SnakeCaseValidator($collector));
@@ -17,9 +17,9 @@ $validationRegistry->registerNamedObject(new Misery\Component\Validator\IntegerV
 
 $readerRegistry = new Misery\Component\Common\Registry\Registry();
 
-$processor = new Misery\Component\Common\Processor\CsvValidationProcessor();
+$processor = new Misery\Component\Common\Processor\ItemValidationProcessor();
 $processor
-    ->addRegistry($validationRegistry)
+    ->setRegistry($validationRegistry)
     ->addRegistry($readerRegistry)
 ;
 
@@ -29,8 +29,8 @@ $finder = new Symfony\Component\Finder\Finder();
 foreach ($finder->in($exampleDir)->name('*.csv') as $file) {
     $foundFile = str_replace('.'.$file->getExtension(), '', $file->getFilename());
 
-    $reader = new Misery\Component\Csv\Reader\RowReader(
-        Misery\Component\Csv\Reader\CsvParser::create($file->getRealPath(),';')
+    $reader = new Misery\Component\Reader\ItemReader(
+        \Misery\Component\Parser\CsvParser::create($file->getRealPath(),';')
     );
     $readerRegistry->register($reader, $foundFile);
 

@@ -2,11 +2,11 @@
 
 use Misery\Component\Common\Registry\FormatRegistryInterface;
 use Misery\Component\Common\Registry\Registry;
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Parser\CsvParser;
 use Misery\Component\Csv\Writer\CsvWriter;
-use Misery\Component\Format\FloatFormat;
-use Misery\Component\Format\IntFormat;
-use Misery\Component\Format\SerializeFormat;
+use Misery\Component\Format\StringToFloatFormat;
+use Misery\Component\Format\StringToIntFormat;
+use Misery\Component\Format\StringToSerializeFormat;
 use Misery\Component\Modifier\StripSlashesModifier;
 
 require __DIR__.'/../vendor/autoload.php';
@@ -22,12 +22,12 @@ $modifierRegistry
 ;
 $formatRegistry = new Registry();
 $formatRegistry
-    ->registerNamedObject(new SerializeFormat())
-    ->registerNamedObject(new FloatFormat())
-    ->registerNamedObject(new IntFormat())
-    ->registerNamedObject(new Misery\Component\Format\BooleanFormat())
-    ->registerNamedObject(new Misery\Component\Format\DateTimeFormat())
-    ->registerNamedObject(new Misery\Component\Format\ListFormat())
+    ->registerNamedObject(new StringToSerializeFormat())
+    ->registerNamedObject(new StringToFloatFormat())
+    ->registerNamedObject(new StringToIntFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToBooleanFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToDatetimeFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToListFormat())
 ;
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
 $processor
@@ -39,13 +39,13 @@ $processor->filterSubjects(Symfony\Component\Yaml\Yaml::parseFile(__DIR__ . '/pr
 $parser->setProcessor($processor);
 $newFile->setProcessor($processor);
 
-$compare = new Misery\Component\Csv\Combine\CsvCombine();
+$compare = new \Misery\Component\Combine\ItemCombine();
 
 $csvWriter = new CsvWriter(__DIR__ . '/private/family_difference.csv');
 
 $compare->differInto(
-    new Misery\Component\Csv\Reader\RowReader($parser),
-    new Misery\Component\Csv\Reader\RowReader($newFile),
+    new Misery\Component\Reader\ItemReader($parser),
+    new Misery\Component\Reader\ItemReader($newFile),
     'code',
     function ($row) use ($csvWriter) {
         $csvWriter->write($row);
@@ -55,8 +55,8 @@ $compare->differInto(
 $csvWriter = new CsvWriter(__DIR__ . '/private/family_combined.csv');
 
 $compare->combineInto(
-    new Misery\Component\Csv\Reader\RowReader($parser),
-    new Misery\Component\Csv\Reader\RowReader($newFile),
+    new Misery\Component\Reader\ItemReader($parser),
+    new Misery\Component\Reader\ItemReader($newFile),
     'code',
     function ($row) use ($csvWriter) {
         $csvWriter->write($row);

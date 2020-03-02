@@ -6,8 +6,11 @@ use Misery\Component\Common\Cache\SimpleCacheInterface;
 
 class RedisNameSpacedCache implements SimpleCacheInterface
 {
+    /** @var string */
     private const SEPARATOR = '|';
+    /** @var RedisCache */
     private $cache;
+    /** @var string */
     private $nameSpace;
 
     public function __construct(RedisCache $cache, string $nameSpace)
@@ -21,32 +24,27 @@ class RedisNameSpacedCache implements SimpleCacheInterface
         return static::SEPARATOR . $this->nameSpace . static::SEPARATOR . $key;
     }
 
-    /** @inheritDoc */
     public function get($key, $default = null)
     {
         return $this->cache->get($this->getNameSpaceKey($key));
     }
 
-    /** @inheritDoc */
-    public function set($key, $value, $ttl = null)
+    public function set($key, $value, $ttl = null): bool
     {
-        $this->cache->set($this->getNameSpaceKey($key), $value);
+        return $this->cache->set($this->getNameSpaceKey($key), $value);
     }
 
-    /** @inheritDoc */
-    public function delete($key): void
+    public function delete($key): bool
     {
-        $this->cache->del($this->getNameSpaceKey($key));
+        return $this->cache->del($this->getNameSpaceKey($key));
     }
 
-    /** @inheritDoc */
-    public function clear(): void
+    public function clear(): bool
     {
-        $this->cache->clear();
+        return $this->cache->clear();
     }
 
-    /** @inheritDoc */
-    public function getMultiple($keys, $default = null)
+    public function getMultiple($keys, $default = null): \Iterator
     {
         foreach ($keys as &$key) {
             $key = $this->getNameSpaceKey($key);
@@ -55,21 +53,20 @@ class RedisNameSpacedCache implements SimpleCacheInterface
         return $this->cache->getMultiple((array) $keys);
     }
 
-    /** @inheritDoc */
-    public function setMultiple($values, $ttl = null): void
+    public function setMultiple($values, $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             $this->cache->set($this->getNameSpaceKey($key), $value);
         }
+
+        return true;
     }
 
-    /** @inheritDoc */
-    public function deleteMultiple($keys): int
+    public function deleteMultiple($keys): bool
     {
         return $this->cache->deleteMultiple(...$keys);
     }
 
-    /** @inheritDoc */
     public function has($key): bool
     {
         return $this->cache->has($this->getNameSpaceKey($key));

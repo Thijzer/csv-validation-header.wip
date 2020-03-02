@@ -2,10 +2,10 @@
 
 use Misery\Component\Common\Registry\FormatRegistry;
 use Misery\Component\Common\Registry\ModifierRegistry;
-use Misery\Component\Csv\Reader\CsvParser;
-use Misery\Component\Format\FloatFormat;
-use Misery\Component\Format\IntFormat;
-use Misery\Component\Format\SerializeFormat;
+use Misery\Component\Parser\CsvParser;
+use Misery\Component\Format\StringToFloatFormat;
+use Misery\Component\Format\StringToIntFormat;
+use Misery\Component\Format\StringToSerializeFormat;
 use Misery\Component\Modifier\StripSlashesModifier;
 
 require __DIR__.'/../vendor/autoload.php';
@@ -22,12 +22,12 @@ $modifierRegistry
 ;
 $formatRegistry = new Misery\Component\Common\Registry\Registry();
 $formatRegistry
-    ->registerNamedObject(new SerializeFormat())
-    ->registerNamedObject(new FloatFormat())
-    ->registerNamedObject(new IntFormat())
-    ->registerNamedObject(new Misery\Component\Format\BooleanFormat())
-    ->registerNamedObject(new Misery\Component\Format\DateTimeFormat())
-    ->registerNamedObject(new Misery\Component\Format\ListFormat())
+    ->registerNamedObject(new StringToSerializeFormat())
+    ->registerNamedObject(new StringToFloatFormat())
+    ->registerNamedObject(new StringToIntFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToBooleanFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToDatetimeFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToListFormat())
 ;
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
 $processor
@@ -39,9 +39,9 @@ $processor->filterSubjects(Symfony\Component\Yaml\Yaml::parseFile(__DIR__ . '/pr
 $parser->setProcessor($processor);
 $newFile->setProcessor($processor);
 
-$compare = new Misery\Component\Csv\Compare\CsvCompare(
-   new Misery\Component\Csv\Reader\CsvReader($parser),
-   new Misery\Component\Csv\Reader\CsvReader($newFile)
+$compare = new Misery\Component\Csv\Compare\ItemCompare(
+   new Misery\Component\Reader\CsvReader($parser),
+   new Misery\Component\Reader\CsvReader($newFile)
 );
 
 dump(

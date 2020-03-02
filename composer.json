@@ -1,5 +1,6 @@
 {
     "name": "thijzer/csv-validation-header",
+    "license": "MIT",
     "description": "",
     "authors": [
         {
@@ -8,15 +9,14 @@
         }
     ],
     "require": {
-        "php": "7.1.*|7.2.*|7.3.*",
-        "symfony/yaml": "^3.4",
+        "php": "7.4.*|7.3.*|7.2.*|7.1.*",
         "ext-json": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "symfony/var-dumper": "^3.4",
-        "phpspec/phpspec": "~3.4.2",
-        "phpunit/phpunit": "6.5.3",
+        "symfony/var-dumper": "5.*|^v4.3|^3.4",
+        "symfony/yaml": "5.*|^v4.3|^3.4",
+        "phpunit/phpunit": "~8.3.4",
         "phpstan/phpstan": "^0.12.7"
     },
     "autoload": {
@@ -31,8 +31,8 @@
     "scripts": {
         "test": [
             "php vendor/bin/phpunit",
-            "php vendor/bin/phpspec run",
-            "vendor/bin/phpstan analyse -l 1 src tests"
+            "vendor/bin/phpstan analyse -l 5 src",
+            "vendor/bin/phpstan analyse -l 3 tests"
         ]
     }
 }

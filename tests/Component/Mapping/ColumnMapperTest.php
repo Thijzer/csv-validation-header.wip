@@ -14,22 +14,22 @@ class ColumnMapperTest extends TestCase
         $mappings = [
             'Code' => 'code',
             'Wassen' => 'wash',
-            'fail' => 'fail',
+            'Hi Temp' => 'hi_temp',
         ];
 
-        $item = [
+        $data = [
             'Code' => '1',
             'Wassen' => 'B',
             'not_mapped' => 'C',
         ];
 
-        $result = [
+        $expected = [
             'code'=> '1',
             'wash' => 'B',
             'not_mapped' => 'C',
         ];
 
-        $this->assertSame($result, $mapper->map($item, $mappings));
+        $this->assertSame($expected, $mapper->map($data, $mappings));
     }
 
     public function test_it_should_thrown_exception_if_column_names_are_wrong_mapped(): void
@@ -42,11 +42,11 @@ class ColumnMapperTest extends TestCase
             'Temp' => 'temperature'
         ];
 
-        $item = [
+        $data = [
             'code' => '1',
             'Wassen' => 'B'
         ];
 
-        $mapper->map($item, $mappings);
+        $mapper->map($data, $mappings);
     }
 }

@@ -5,7 +5,7 @@ use Misery\Component\Common\Cursor\RedisAccount;
 use Misery\Component\Common\Cursor\RedisCacheFactory;
 use Misery\Component\Common\Cursor\RedisNameSpacedCache;
 use Misery\Component\Common\Cursor\SimpleCachedCursor;
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Parser\CsvParser;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -33,12 +33,12 @@ $modifierRegistry
 ;
 $formatRegistry = new Misery\Component\Common\Registry\Registry();
 $formatRegistry
-    ->registerNamedObject(new Misery\Component\Format\SerializeFormat())
-    ->registerNamedObject(new Misery\Component\Format\FloatFormat())
-    ->registerNamedObject(new Misery\Component\Format\IntFormat())
-    ->registerNamedObject(new Misery\Component\Format\BooleanFormat())
-    ->registerNamedObject(new Misery\Component\Format\DateTimeFormat())
-    ->registerNamedObject(new Misery\Component\Format\ListFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToSerializeFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToFloatFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToIntFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToBooleanFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToDatetimeFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToListFormat())
 ;
 
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
@@ -51,7 +51,7 @@ $processor->filterSubjects($validationFile);
 
 /** @var SplFileInfo $file */
 foreach ($finder->in($path)->name('*.csv') as $file) {
-    $reader = new Misery\Component\Csv\Reader\RowReader(
+    $reader = new Misery\Component\Reader\ItemReader(
         CachedCursor::create($parser = CsvParser::create($file->getRealPath(),',')),
     );
     $parser->setProcessor($processor);

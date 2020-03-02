@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 class ArrayFunctionsTest extends TestCase
 {
     private $item = [
-        'id' => "1",
+        'id' => '1',
         'user' => ['first_name' => 'Simon'],
     ];
 

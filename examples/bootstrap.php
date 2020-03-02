@@ -2,9 +2,9 @@
 
 use Misery\Component\Common\Registry\FormatRegistryInterface;
 use Misery\Component\Common\Registry\Registry;
-use Misery\Component\Format\FloatFormat;
-use Misery\Component\Format\IntFormat;
-use Misery\Component\Format\SerializeFormat;
+use Misery\Component\Format\StringToFloatFormat;
+use Misery\Component\Format\StringToIntFormat;
+use Misery\Component\Format\StringToSerializeFormat;
 use Misery\Component\Modifier\StripSlashesModifier;
 
 require __DIR__.'/../vendor/autoload.php';
@@ -17,12 +17,12 @@ $modifierRegistry
 ;
 $formatRegistry = new FormatRegistryInterface();
 $formatRegistry
-    ->register(new SerializeFormat())
-    ->register(new FloatFormat())
-    ->register(new IntFormat())
-    ->register(new Misery\Component\Format\BooleanFormat())
-    ->register(new Misery\Component\Format\DateTimeFormat())
-    ->register(new Misery\Component\Format\ListFormat())
+    ->register(new StringToSerializeFormat())
+    ->register(new StringToFloatFormat())
+    ->register(new StringToIntFormat())
+    ->register(new Misery\Component\Format\StringToBooleanFormat())
+    ->register(new Misery\Component\Format\StringToDatetimeFormat())
+    ->register(new Misery\Component\Format\StringToListFormat())
 ;
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
 $processor

@@ -6,16 +6,19 @@ use Misery\Component\Modifier\SnakeCaseModifier;
 
 class SnakeCaseValidator extends AbstractValidator
 {
+    /** @var string */
     public const NAME = 'snake_case';
 
-    public function validate($value, array $options = []): void
+    /** @inheritDoc */
+    public function validate($value, array $context = []): void
     {
         $formatter = new SnakeCaseModifier();
-        if ($formatter->modify($value) !== $value) {
+        if (is_string($value) && $formatter->modify($value) !== $value) {
             // constraint
             $this->getValidationCollector()->collect(
                 new Constraint\SnakeCaseConstraint(),
-                sprintf(Constraint\SnakeCaseConstraint::INVALID_FORMAT, $value)
+                sprintf(Constraint\SnakeCaseConstraint::INVALID_FORMAT, $value),
+                $context
             );
         }
     }

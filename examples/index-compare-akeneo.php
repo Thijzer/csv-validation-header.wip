@@ -2,10 +2,10 @@
 
 use Misery\Component\Common\Registry\FormatRegistryInterface;
 use Misery\Component\Common\Registry\Registry;
-use Misery\Component\Csv\Reader\CsvParser;
-use Misery\Component\Format\FloatFormat;
-use Misery\Component\Format\IntFormat;
-use Misery\Component\Format\SerializeFormat;
+use Misery\Component\Parser\CsvParser;
+use Misery\Component\Format\StringToFloatFormat;
+use Misery\Component\Format\StringToIntFormat;
+use Misery\Component\Format\StringToSerializeFormat;
 use Misery\Component\Modifier\StripSlashesModifier;
 use Symfony\Component\Finder\Finder;
 

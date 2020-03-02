@@ -2,26 +2,29 @@
 
 namespace Misery\Component\Format;
 
-use Misery\Component\Common\Format\Format;
+use Misery\Component\Common\Format\ArrayFormat;
 use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 
-class ArrayFlattenFormat implements Format, OptionsInterface
+class ArrayFlattenFormat implements ArrayFormat, OptionsInterface
 {
     use OptionsTrait;
 
     public const NAME = 'unflatten';
 
+    /** @var array */
     private $options = [
         'separator' => '.',
     ];
 
-    public function format($item): array
+    /** @inheritDoc */
+    public function format(array $item): array
     {
         return ArrayFunctions::unflatten($item, $this->options['separator']);
     }
 
+    /** @inheritDoc */
     public function reverseFormat($value): array
     {
         return ArrayFunctions::flatten($value, $this->options['separator']);

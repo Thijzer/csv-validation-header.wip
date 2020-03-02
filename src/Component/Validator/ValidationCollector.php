@@ -6,6 +6,7 @@ use Misery\Component\Validator\Constraint\Constraint;
 
 class ValidationCollector
 {
+    /** @var array */
     private $constraints = [];
 
     public function collect(Constraint $constraint, string $message = null, array $context = []): void

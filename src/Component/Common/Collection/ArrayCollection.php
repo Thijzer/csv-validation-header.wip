@@ -4,6 +4,7 @@ namespace Misery\Component\Common\Collection;
 
 class ArrayCollection
 {
+    /** @var array */
     private $items = [];
 
     public function __construct(array $items = [])

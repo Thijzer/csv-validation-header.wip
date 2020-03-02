@@ -1,30 +1,30 @@
 <?php
 
-use Misery\Component\Csv\Reader\CsvParser;
+use Misery\Component\Parser\CsvParser;
 use Misery\Component\Common\Registry\Registry;
-use Misery\Component\Format\FloatFormat;
-use Misery\Component\Format\IntFormat;
-use Misery\Component\Format\SerializeFormat;
-use Misery\Component\Format\BooleanFormat;
-use Misery\Component\Format\DateTimeFormat;
-use Misery\Component\Format\ListFormat;
-use Misery\Component\Format\StringFormat;
+use Misery\Component\Format\StringToFloatFormat;
+use Misery\Component\Format\StringToIntFormat;
+use Misery\Component\Format\StringToSerializeFormat;
+use Misery\Component\Format\StringToBooleanFormat;
+use Misery\Component\Format\StringToDatetimeFormat;
+use Misery\Component\Format\StringToListFormat;
+use Misery\Component\Format\StringToStringFormat;
 use Misery\Component\Modifier\ArrayUnflattenModifier;
 use Misery\Component\Modifier\NullifyEmptyStringModifier;
 use Misery\Component\Modifier\StripSlashesModifier;
 
-$formatRegistry = new Registry();
+$formatRegistry = new Registry('format');
 $formatRegistry
-    ->register(SerializeFormat::NAME, new SerializeFormat())
-    ->register(FloatFormat::NAME, new FloatFormat())
-    ->register(IntFormat::NAME, new IntFormat())
-    ->register(BooleanFormat::NAME, new BooleanFormat())
-    ->register(DateTimeFormat::NAME, new DateTimeFormat())
-    ->register(ListFormat::NAME, new ListFormat())
-    ->register(StringFormat::NAME, new StringFormat())
+    ->register(StringToSerializeFormat::NAME, new StringToSerializeFormat())
+    ->register(StringToFloatFormat::NAME, new StringToFloatFormat())
+    ->register(StringToIntFormat::NAME, new StringToIntFormat())
+    ->register(StringToBooleanFormat::NAME, new StringToBooleanFormat())
+    ->register(StringToDatetimeFormat::NAME, new StringToDatetimeFormat())
+    ->register(StringToListFormat::NAME, new StringToListFormat())
+    ->register(StringToStringFormat::NAME, new StringToStringFormat())
 ;
 
-$modifierRegistry = new Registry();
+$modifierRegistry = new Registry('modifier');
 $modifierRegistry
     ->register(StripSlashesModifier::NAME, new StripSlashesModifier())
     ->register(ArrayUnflattenModifier::NAME, new ArrayUnflattenModifier())
@@ -35,11 +35,12 @@ require __DIR__.'/../vendor/autoload.php';
 
 // parse Csv
 
+
 $parser = CsvParser::create(__DIR__ . '/akeneo/icecat_demo_dev/families.csv', ';');
 
 //  To format (electronic data) according to a standard format.
 
-$encoder = new Misery\Component\Csv\Encoder\CsvEncoder($formatRegistry, $modifierRegistry);
+$encoder = new Misery\Component\Encoder\ItemEncoder($formatRegistry, $modifierRegistry);
 
 // apply format context
 

@@ -10,12 +10,12 @@ $modifierRegistry
 ;
 $formatRegistry = new Misery\Component\Common\Registry\Registry();
 $formatRegistry
-    ->registerNamedObject(new Misery\Component\Format\SerializeFormat())
-    ->registerNamedObject(new Misery\Component\Format\FloatFormat())
-    ->registerNamedObject(new Misery\Component\Format\IntFormat())
-    ->registerNamedObject(new Misery\Component\Format\BooleanFormat())
-    ->registerNamedObject(new Misery\Component\Format\DateTimeFormat())
-    ->registerNamedObject(new Misery\Component\Format\ListFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToSerializeFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToFloatFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToIntFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToBooleanFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToDatetimeFormat())
+    ->registerNamedObject(new Misery\Component\Format\StringToListFormat())
 ;
 
 $processor = new Misery\Component\Common\Processor\CsvDataProcessor();
@@ -25,8 +25,8 @@ $processor
 ;
 $processor->filterSubjects(Symfony\Component\Yaml\Yaml::parseFile(__DIR__ . '/akeneo/validation/products.yaml'));
 
-$reader = new Misery\Component\Csv\Reader\RowReader(
-    $parser = Misery\Component\Csv\Reader\CsvParser::create(__DIR__ . '/akeneo/icecat_demo_dev/products.csv', ';')
+$reader = new Misery\Component\Reader\ItemReader(
+    $parser = \Misery\Component\Parser\CsvParser::create(__DIR__ . '/akeneo/icecat_demo_dev/products.csv', ';')
 );
 $parser->setProcessor($processor);
 

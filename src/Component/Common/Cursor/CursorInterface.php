@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Common\Cursor;
 
-interface CursorInterface extends \Countable, \SeekableIterator
+interface CursorInterface extends \SeekableIterator, \Countable
 {
     /**
      * Iterate over items  with a Generator and do something
