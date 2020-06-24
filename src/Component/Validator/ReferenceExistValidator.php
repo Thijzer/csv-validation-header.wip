@@ -33,7 +33,7 @@ class ReferenceExistValidator extends AbstractValidator implements ItemReaderAwa
             $this->options['reference']
         )[$this->options['reference']];
 
-        if (!\in_array($cellValue, $referencedValues, true)) {
+        if (!\in_array(strtolower($cellValue), $referencedValues, true)) {
             $this->getValidationCollector()->collect(
                 new \Misery\Component\Validator\Constraint\ReferencedColumnConstraint(),
                 sprintf(
