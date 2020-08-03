@@ -34,9 +34,8 @@ class SnakeCaseModifier implements CellModifier
                     $value
                 ) ?? '');
 
-            $value = FileNameSanitizer::sanitize($value, $delimiter);
         }
-        /^[a-zA-Z0-9_]+$/
+
         return $value;
     }
 }
