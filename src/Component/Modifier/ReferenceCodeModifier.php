@@ -7,15 +7,15 @@ use Misery\Component\Common\Modifier\CellModifier;
 use Misery\Component\Common\Sanitizer\FileNameSanitizer;
 
 /**
- * Class SnakeCaseModifier
+ * Class ReferenceCodeModifier
  * @package Misery\Component\Modifier
  *
  * value response may contain only letters, numbers and underscores
  * value is unrecoverable after modification
  */
-class SnakeCaseModifier implements CellModifier
+class ReferenceCodeModifier implements CellModifier
 {
-    public const NAME = 'snake_case';
+    public const NAME = 'reference_code';
 
     /**
      *
@@ -28,15 +28,9 @@ class SnakeCaseModifier implements CellModifier
 
         if (false === ctype_lower($value)) {
             $value = (string) \preg_replace('/\s+/u', '', \ucwords($value));
-            $value = (string) \mb_strtolower(\preg_replace(
-                    '/(.)(?=[A-Z])/u',
-                    '$1' . $delimiter,
-                    $value
-                ) ?? '');
-
-            $value = FileNameSanitizer::sanitize($value, $delimiter);
+            $value = FileNameSanitizer::sanitize($value, '');
         }
-        /^[a-zA-Z0-9_]+$/
+
         return $value;
     }
 }
