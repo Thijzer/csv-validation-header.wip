@@ -2,9 +2,7 @@
 
 namespace Misery\Component\Modifier;
 
-use Induxx\Component\HotFolder\Finder\FileNameValidator;
 use Misery\Component\Common\Modifier\CellModifier;
-use Misery\Component\Common\Sanitizer\FileNameSanitizer;
 
 /**
  * Class ReferenceCodeModifier
@@ -27,8 +25,8 @@ class ReferenceCodeModifier implements CellModifier
         $delimiter = '_';
 
         if (false === ctype_lower($value)) {
-            $value = (string) \preg_replace('/\s+/u', '', \ucwords($value));
-            $value = FileNameSanitizer::sanitize($value, '');
+            $value = (string) \preg_replace('/[^a-zA-Z0-9\._]/',$delimiter, $value);
+            $value = trim($value, $delimiter);
         }
 
         return $value;
