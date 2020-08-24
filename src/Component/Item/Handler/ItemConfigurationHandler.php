@@ -35,13 +35,13 @@ class ItemConfigurationHandler
 
     public function handle($configuration, SourceCollection $sources = null): void
     {
-        if (is_file($configuration)) {
-            $configuration = Yaml::parseFile($configuration);
-        }
-
-        // TODO validate configuration here
-
         try {
+            if (false === is_array($configuration) && is_file($configuration)) {
+                $configuration = Yaml::parseFile($configuration);
+            }
+
+            // TODO validate configuration here
+
             if (null === $sources) {
                 // if no Sources are given as a Collection, we expect that we are dealing with Akeneo\Pim sources.
                 $sourcePaths = CreateSourcePaths::create(
@@ -64,8 +64,9 @@ class ItemConfigurationHandler
             foreach ($source->getReader()->getIterator() as $item) {
                 $writer->write($source->decode($actionProcessor->process($item)));
             }
+
         } catch (\Exception $e) {
-            throw new \Exception('Invalid Configuration File', 0, $e);
+            throw new \Exception(sprintf('Invalid Configuration File : %s : %s',  $e->getMessage(), \json_encode($configuration)), 0, $e);
         }
     }
 }
