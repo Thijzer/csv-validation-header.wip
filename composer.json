@@ -11,11 +11,11 @@
     "require": {
         "php": "7.4.*|7.3.*|7.2.*|7.1.*",
         "ext-json": "*",
-        "symfony/yaml": "^4.4.7"
+        "symfony/yaml": "5.*|^4.3|^3.4"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "symfony/var-dumper": "5.*|^v4.3|^3.4",
+        "symfony/var-dumper": "5.*|^4.3|^3.4",
         "phpunit/phpunit": "~8.3.4",
         "phpstan/phpstan": "^0.12.7",
         "jangregor/phpstan-prophecy": "^0.8.0"
