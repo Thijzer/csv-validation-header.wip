@@ -6,6 +6,7 @@ use Misery\Component\Common\Cursor\FunctionalCursor;
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Compare\ItemCompare;
 use Misery\Component\Encoder\ItemEncoder;
+use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Format\StringToIntFormat;
 use Misery\Component\Format\StringToListFormat;
 use Misery\Component\Reader\ItemCollection;
@@ -35,17 +36,17 @@ class CompareWithEncodingTest extends TestCase
     public function test_encode_and_compare(): void
     {
         // SETUP
-        $encoder = new ItemEncoder();
+        $encoderFactory = new ItemEncoderFactory();
 
         $formatRegistry = new Registry('format');
         $formatRegistry
             ->register(StringToListFormat::NAME, new StringToListFormat())
             ->register(StringToIntFormat::NAME, new StringToIntFormat())
         ;
-        $encoder->addRegistry($formatRegistry);
+        $encoderFactory->addRegistry($formatRegistry);
 
         $context = [
-            'columns' => [
+            'encode' => [
                 'codes' => [
                     'list' => [],
                 ],
@@ -60,11 +61,13 @@ class CompareWithEncodingTest extends TestCase
             'codes' => 'E,F,G,Z',
         ]);
 
-        $setA = new FunctionalCursor($collectionA, (function($item) use ($encoder, $context) {
-            return $encoder->encode($item, $context);
+        $encoder = $encoderFactory->createItemEncoder($context);
+
+        $setA = new FunctionalCursor($collectionA, (function($item) use ($encoder) {
+            return $encoder->encode($item);
         }));
-        $setB = new FunctionalCursor($collectionB, (function($item) use ($encoder, $context) {
-            return $encoder->encode($item, $context);
+        $setB = new FunctionalCursor($collectionB, (function($item) use ($encoder) {
+            return $encoder->encode($item);
         }));
 
         $tool = new ItemCompare(

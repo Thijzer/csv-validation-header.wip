@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Item\Builder;
 
-use Misery\Component\Filter\ColumnFilter;
+use Misery\Component\Filter\ColumnReduces;
 use Misery\Component\Reader\ReaderInterface;
 
 class ReferencedValueBuilder
@@ -10,7 +10,7 @@ class ReferencedValueBuilder
     public static function combine(ReaderInterface $reader, string ...$references)
     {
         $concat = [];
-        foreach (ColumnFilter::filter($reader, ...$references)->getIterator() as $array) {
+        foreach (ColumnReduces::reduce($reader, ...$references)->getIterator() as $array) {
             foreach ($array as $pointer => $item) {
                 $concat[$pointer] = isset($concat[$pointer]) ? $concat[$pointer].'|'.$item : $item;
             }

@@ -1,0 +1,26 @@
+encode:
+  sku:
+    string: ~
+  categories:
+    list: ~
+  enabled:
+    boolean: ~
+  family:
+    string: ~
+  parent:
+    string: ~
+  groups:
+    list: ~
+
+parse:
+  type: csv
+  unflatten:
+    separator: '-'
+  nullify: ~
+  reference: sku
+  format:
+    delimiter: ';'
+    enclosure: '"'
+
+validations:
+  include: 'validation/product.yaml'

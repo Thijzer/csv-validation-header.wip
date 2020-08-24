@@ -18,4 +18,10 @@ class NullifyEmptyStringModifier implements RowModifier
 
         return '' === $value ? null : $value;
     }
+
+    /** @inheritDoc */
+    public function reverseModify(array $item): array
+    {
+        return $item;
+    }
 }

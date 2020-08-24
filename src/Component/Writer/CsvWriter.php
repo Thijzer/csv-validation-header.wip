@@ -26,6 +26,14 @@ class CsvWriter
         $this->handle = fopen($this->filename, 'wb+');
     }
 
+    public static function createFromArray(array $setup)
+    {
+        return new self(
+            $setup['filename'],
+            $setup['format']['delimiter']
+        );
+    }
+
     public function write(array $row): void
     {
         $this->setHeader(array_keys($row));

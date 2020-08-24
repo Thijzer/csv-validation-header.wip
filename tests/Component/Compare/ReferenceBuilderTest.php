@@ -27,8 +27,12 @@ class ReferenceBuilderTest extends TestCase
 
         $items = ReferenceBuilder::build(new ItemReader($itemCollection), 'code');
 
-        $lowerItems = ["code" => [0 => 'code',1 => 'hallo',2=> 'blabla']];
-
-        $this->assertEquals($items, $lowerItems);
+        $this->assertEquals($items, [
+            'code' => [
+                'CODE',
+                'HALLO',
+                'BLAbla',
+            ]
+        ]);
     }
 }

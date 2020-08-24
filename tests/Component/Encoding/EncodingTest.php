@@ -4,6 +4,7 @@ namespace Tests\Misery\Component\Encoding;
 
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Encoder\ItemEncoder;
+use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Format\StringToIntFormat;
 use Misery\Component\Format\StringToListFormat;
 use Misery\Component\Modifier\NullifyEmptyStringModifier;
@@ -39,7 +40,7 @@ class EncodingTest extends TestCase
             'codes' => 'E,F,G,H',
         ]);
 
-        $encoder = new ItemEncoder();
+        $encoderFactory = new ItemEncoderFactory();
 
         $formatRegistry = new Registry('format');
         $formatRegistry
@@ -47,10 +48,10 @@ class EncodingTest extends TestCase
             ->register(StringToIntFormat::NAME, new StringToIntFormat())
         ;
 
-        $encoder->addRegistry($formatRegistry);
+        $encoderFactory->addRegistry($formatRegistry);
 
-        $encodedItem = $encoder->encode($this->items[0], [
-            'columns' => [
+        $encoder = $encoderFactory->createItemEncoder([
+            'encode' => [
                 'id' => [
                     'integer' => []
                 ],
@@ -59,6 +60,8 @@ class EncodingTest extends TestCase
                 ],
             ]
         ]);
+
+        $encodedItem = $encoder->encode($this->items[0]);
 
         $this->assertSame($encodedItem, [
             'id' => 1,
@@ -76,20 +79,22 @@ class EncodingTest extends TestCase
             'codes' => 'E,F,G,H',
         ]);
 
-        $encoder = new ItemEncoder();
+        $encoderFactory = new ItemEncoderFactory();
 
         $modifierRegistry = new Registry('modifier');
         $modifierRegistry
             ->register(NullifyEmptyStringModifier::NAME, new NullifyEmptyStringModifier())
         ;
 
-        $encoder->addRegistry($modifierRegistry);
+        $encoderFactory->addRegistry($modifierRegistry);
 
-        $encodedItem = $encoder->encode($this->items[2], [
-            'rows' => [
+        $encoder = $encoderFactory->createItemEncoder([
+            'parse' => [
                 'nullify' => [],
             ]
         ]);
+
+        $encodedItem = $encoder->encode($this->items[2]);
 
         $this->assertSame($encodedItem, [
             'id' => '3',

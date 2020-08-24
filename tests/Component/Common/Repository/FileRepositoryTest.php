@@ -31,6 +31,17 @@ class FileRepositoryTest extends TestCase
         $this->assertSame($items->getItems()[0], $data);
     }
 
+    public function test_find_with_multiple_references_from_file_repository(): void
+    {
+        $reader = new ItemReader($items = new ItemCollection($this->items));
+
+        $repository = new FileRepository($reader, 'id', 'first_name');
+
+        $data = $repository->find('1', 'Gordie');
+
+        $this->assertSame($items->getItems()[0], $data);
+    }
+
     public function test_find_one_by_from_file_repository(): void
     {
         $reader = new ItemReader($items = new ItemCollection($this->items));
