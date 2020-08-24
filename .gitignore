@@ -4,3 +4,4 @@
 /vendor/
 .phpunit.result.cache
 /examples/tmp/*
+composer.lock
