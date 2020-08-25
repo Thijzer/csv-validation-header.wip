@@ -53,6 +53,7 @@ class Source
     public function getReader(): ItemReaderInterface
     {
         if (false === isset($this->readers[$this->input])) {
+
             if ($this->type->is('file')) {
                 $this->readers[$this->input] = new ItemReader(new FunctionalCursor(new CachedCursor(CsvParser::create($this->input)), function($item) {
                     return $this->encode($item);

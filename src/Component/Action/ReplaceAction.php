@@ -23,14 +23,28 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
         'method' => null,
         'source' => null,
         'key' => null,
+        'reference' => 'code',
+        'locales' => null,
     ];
 
     public function apply(array $item): array
     {
         if (isset($item[$this->options['key']])) {
             if ($this->options['method'] === 'getLabel') {
+
+                // Todo needs improvement?
                 if ($sourceItem = $this->getItem($item[$this->options['key']])) {
-                    $item[$this->options['key']] = AkeneoValuePicker::pick($sourceItem, 'label', $this->options);
+
+                    if (is_array($this->options['locales'])) {
+                        $tmp = [];
+                        foreach ($this->options['locales'] as $locale) {
+                            $tmp[$locale] = AkeneoValuePicker::pick($sourceItem, 'label', ['locale' => $locale]);
+                        }
+                        $item[$this->options['key']] = $tmp;
+
+                    } else {
+                        $item[$this->options['key']] = AkeneoValuePicker::pick($sourceItem, 'label', $this->options);
+                    }
                 }
             }
         }
@@ -40,6 +54,11 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
 
     private function getItem($reference)
     {
-        return current($this->getReader()->find(['code' => $reference])->getItems());
+        return $this
+            ->getReader()
+            ->find([$this->options['reference'] => $reference])
+            ->getIterator()
+            ->current()
+        ;
     }
 }
