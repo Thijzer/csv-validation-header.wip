@@ -35,7 +35,7 @@ class ItemConfigurationHandler
 
     public function handle($configuration, SourceCollection $sources = null): void
     {
-        //try {
+        try {
             if (false === is_array($configuration) && is_file($configuration)) {
                 $configuration = Yaml::parseFile($configuration);
             }
@@ -62,14 +62,18 @@ class ItemConfigurationHandler
 
             // decoder needs to happen before write
             foreach ($source->getReader()->getIterator() as $item) {
-                var_dump(
-                    $source->decode($actionProcessor->process($item))
-                );exit;
                 $writer->write($source->decode($actionProcessor->process($item)));
             }
 
-        //} catch (\Exception $e) {
-        //    throw new \Exception(sprintf('Invalid Configuration File : %s : %s',  $e->getMessage(), \json_encode($configuration)), 0, $e);
-        //}
+        } catch (\Exception $e) {
+            throw new \Exception(
+                sprintf(
+                    'Invalid Configuration File : %s : %s : %s : %s',
+                    $e->getMessage(),
+                    $e->getLine(),
+                    $e->getFile(),
+                    \json_encode($configuration)
+                ), $e->getCode(), $e);
+        }
     }
 }

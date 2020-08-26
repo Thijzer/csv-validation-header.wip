@@ -36,10 +36,20 @@ class StringToListFormat implements StringFormat, OptionsInterface
 
     /**
      * @param array $value
-     * @return string
      */
-    public function reverseFormat($value): string
+    public function reverseFormat($value)
     {
-        return implode($this->options['separator'], $value);
+        $val = [];
+        while ($item = current($value)) {
+            $key = key($value);
+            if (is_string($key)) {
+                $val[$key] = $this->reverseFormat($item);
+            } elseif (is_int($key)) {
+                return implode($this->options['separator'], $value);
+            }
+            next($value);
+        }
+
+        return $val;
     }
 }

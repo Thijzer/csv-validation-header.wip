@@ -19,17 +19,17 @@ class ItemEncoder
 
     public function encode(array $item): array
     {
+        foreach ($this->configurationRules['item'] ?? [] as $property => $matches) {
+            foreach ($matches as $match) {
+                $this->processMatch($item, $property, $match);
+            }
+        }
+
         foreach ($this->configurationRules['property'] ?? [] as $property => $matches) {
             if (isset($item[$property])) {
                 foreach ($matches as $match) {
                     $this->processMatch($item, $property, $match);
                 }
-            }
-        }
-
-        foreach ($this->configurationRules['item'] ?? [] as $property => $matches) {
-            foreach ($matches as $match) {
-                $this->processMatch($item, $property, $match);
             }
         }
 
