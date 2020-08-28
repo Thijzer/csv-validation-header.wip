@@ -48,8 +48,8 @@ class CachedCursor implements CursorInterface
      */
     public function getIterator(): \Generator
     {
-        while ($this->valid()) {
-            yield $this->key() => $this->current();
+        while ($item = $this->current()) {
+            yield $this->key() => $item;
             $this->next();
         }
         $this->rewind();
@@ -67,7 +67,7 @@ class CachedCursor implements CursorInterface
 
     /**
      * Cursor is not rewind
-     * so it could keep fetches in chuncks without reset
+     * so it could keep fetches in chunks without reset
      * @param int $i position
      */
     private function prefetch(int $i): void
