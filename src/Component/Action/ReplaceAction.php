@@ -36,15 +36,15 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
             switch ($this->options['method']) {
 
                 case "getLabel":
-                    $sourceItem = $this->getItem($item[$this->options['key']]);
-                    $item[$this->options['key']] = AkeneoValuePicker::pick($sourceItem, $label, $this->options);
+                    $sourceItem = $this->getItem($listItem = $item[$this->options['key']]);
+                    $item[$this->options['key']] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, $this->options) : sprintf('[%s]', $listItem);
                     break;
 
                 case "getLabels":
-                    $sourceItem = $this->getItem($item[$this->options['key']]);
+                    $sourceItem = $this->getItem($listItem = $item[$this->options['key']]);
                     $tmp = [];
                     foreach ($this->options['locales'] as $locale) {
-                        $tmp[$locale] = AkeneoValuePicker::pick($sourceItem, $label, ['locale' => $locale]);
+                        $tmp[$locale] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, ['locale' => $locale]) : sprintf('[%s]', $listItem);
                     }
                     $item[$this->options['key']] = $tmp;
                     break;
@@ -53,7 +53,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
                     $tmp = [];
                     foreach ($item[$this->options['key']] as $key => $listItem) {
                         $sourceItem = $this->getItem($listItem);
-                        $tmp[$key] = AkeneoValuePicker::pick($sourceItem, $label, $this->options);
+                        $tmp[$key] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, $this->options) : sprintf('[%s]', $listItem);
                     }
 
                     $item[$this->options['key']] = $tmp;
@@ -65,7 +65,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
                         $tmp[$locale] = [];
                         foreach ($item[$this->options['key']] as $listItem) {
                             $sourceItem = $this->getItem($listItem);
-                            $tmp[$locale][] = AkeneoValuePicker::pick($sourceItem, $label, ['locale' => $locale]);
+                            $tmp[$locale][] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, ['locale' => $locale]) : sprintf('[%s]', $listItem);
                         }
                     }
                     $item[$this->options['key']] = $tmp;
