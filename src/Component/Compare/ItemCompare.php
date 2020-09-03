@@ -36,8 +36,8 @@ class ItemCompare
         } else {
             $reference = current($references);
             // compare the old with the new
-            $oldCodes = ReferenceBuilder::build($this->old, $reference)[$reference];
-            $newCodes = ReferenceBuilder::build($this->new, $reference)[$reference];
+            $oldCodes = ReferenceBuilder::buildValues($this->old, $reference);
+            $newCodes = ReferenceBuilder::buildValues($this->new, $reference);
         }
 
         $changes = [

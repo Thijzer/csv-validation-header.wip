@@ -2,7 +2,7 @@
 
 namespace Tests\Misery\Component\Reader;
 
-use Misery\Component\Filter\ColumnReduces;
+use Misery\Component\Filter\ColumnReducer;
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
@@ -35,7 +35,7 @@ class ItemReaderTest extends TestCase
     {
         $reader = new ItemReader($items = new ItemCollection($this->items));
 
-        $filteredReader = ColumnReduces::reduce($reader, 'first_name');
+        $filteredReader = ColumnReducer::reduce($reader, 'first_name');
 
         $expected = [
             [
@@ -56,7 +56,7 @@ class ItemReaderTest extends TestCase
     {
         $reader = new ItemReader($items = new ItemCollection($this->items));
 
-        $filteredReader = ColumnReduces::reduce($reader, 'first_name', 'last_name');
+        $filteredReader = ColumnReducer::reduce($reader, 'first_name', 'last_name');
 
         $this->assertSame(
             array_keys(current($filteredReader->getItems())), ['first_name', 'last_name']
@@ -96,7 +96,7 @@ class ItemReaderTest extends TestCase
         $reader = $reader
             ->index([0, 1])
         ;
-        $filteredReader = ColumnReduces::reduce($reader, 'first_name', 'last_name');
+        $filteredReader = ColumnReducer::reduce($reader, 'first_name', 'last_name');
 
         $result = [
             0 => [
@@ -119,7 +119,7 @@ class ItemReaderTest extends TestCase
         $reader = $reader
             ->find(['first_name' => 'Frans'])
         ;
-        $filteredReader = ColumnReduces::reduce($reader, 'first_name', 'last_name');
+        $filteredReader = ColumnReducer::reduce($reader, 'first_name', 'last_name');
 
         $result = [
             1 => [

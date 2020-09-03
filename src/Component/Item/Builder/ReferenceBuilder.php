@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Item\Builder;
 
-use Misery\Component\Filter\ColumnReduces;
+use Misery\Component\Filter\ColumnReducer;
 use Misery\Component\Reader\ReaderInterface;
 
 class ReferenceBuilder
@@ -10,7 +10,7 @@ class ReferenceBuilder
     public static function build(ReaderInterface $reader, string ...$references)
     {
         $concat = [];
-        foreach (ColumnReduces::reduce($reader, ...$references)->getIterator() as $index => $array) {
+        foreach (ColumnReducer::reduce($reader, ...$references)->getIterator() as $index => $array) {
             $concat[implode('-', array_keys($array))][$index] = implode('-', array_values($array));
         }
 
