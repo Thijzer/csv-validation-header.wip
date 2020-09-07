@@ -15,6 +15,7 @@ class FilterAction implements OptionsInterface
     private $options = [
         'match' => null,
         'key' => null,
+        'case-sensitive' => false,
     ];
 
     public function apply($item)
@@ -40,6 +41,8 @@ class FilterAction implements OptionsInterface
 
     private function hasMatch($listItem)
     {
-        return strpos($listItem, $this->options['match']) === false;
+        return $this->options['case-sensitive'] ?
+            strpos($listItem, $this->options['match']) === false :
+            strpos(strtolower($listItem), strtolower($this->options['match'])) === false;
     }
 }
