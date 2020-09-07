@@ -78,7 +78,7 @@ class ArrayFunctionsTest extends TestCase
                 ArrayFunctions::flatten($item);
             }
         }
-        $this->assertLessThan(2, $check = $tracker->check());
+        $this->assertLessThan(5, $check = $tracker->check());
 
         print_r('flatten:'.$check);
     }
@@ -95,7 +95,7 @@ class ArrayFunctionsTest extends TestCase
                 ArrayFunctions::unflatten($item);
             }
         }
-        $this->assertLessThan(5, $check = $tracker->check());
+        $this->assertLessThan(12, $check = $tracker->check());
 
         print_r('unflatten:'.$check);
     }

@@ -23,6 +23,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
         'method' => null,
         'source' => null,
         'key' => null,
+        'format' => '[%s]',
         'reference' => 'code',
         'content' => 'label',
         'locales' => null,
@@ -37,14 +38,14 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
 
                 case "getLabel":
                     $sourceItem = $this->getItem($listItem = $item[$this->options['key']]);
-                    $item[$this->options['key']] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, $this->options) : sprintf('[%s]', $listItem);
+                    $item[$this->options['key']] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, $this->options) : $this->format($listItem);
                     break;
 
                 case "getLabels":
                     $sourceItem = $this->getItem($listItem = $item[$this->options['key']]);
                     $tmp = [];
                     foreach ($this->options['locales'] as $locale) {
-                        $tmp[$locale] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, ['locale' => $locale]) : sprintf('[%s]', $listItem);
+                        $tmp[$locale] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, ['locale' => $locale]) : $this->format($listItem);
                     }
                     $item[$this->options['key']] = $tmp;
                     break;
@@ -53,7 +54,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
                     $tmp = [];
                     foreach ($item[$this->options['key']] as $key => $listItem) {
                         $sourceItem = $this->getItem($listItem);
-                        $tmp[$key] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, $this->options) : sprintf('[%s]', $listItem);
+                        $tmp[$key] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, $this->options) : $this->format($listItem);
                     }
 
                     $item[$this->options['key']] = $tmp;
@@ -65,7 +66,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
                         $tmp[$locale] = [];
                         foreach ($item[$this->options['key']] as $listItem) {
                             $sourceItem = $this->getItem($listItem);
-                            $tmp[$locale][] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, ['locale' => $locale]) : sprintf('[%s]', $listItem);
+                            $tmp[$locale][] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, ['locale' => $locale]) : $this->format($listItem);
                         }
                     }
                     $item[$this->options['key']] = $tmp;
@@ -77,6 +78,11 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
         }
 
         return $item;
+    }
+
+    private function format(string $item = null)
+    {
+        return $item && $this->options['format'] ? sprintf($this->options['format'], $item) : null;
     }
 
     private function getItem($reference)

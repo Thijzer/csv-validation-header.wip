@@ -30,7 +30,7 @@ use Misery\Component\Reader\ReaderInterface;
  *  ],
  *
  */
-class ColumnReduces
+class ColumnReducer
 {
     public static function reduce(ReaderInterface $reader, string ...$columnNames): ReaderInterface
     {
