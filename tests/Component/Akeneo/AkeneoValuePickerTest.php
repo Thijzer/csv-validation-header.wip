@@ -31,11 +31,11 @@ class AkeneoValuePickerTest extends TestCase
         );
 
         $this->assertSame(
-            'louis', AkeneoValuePicker::pick($this->item, $key = 'brand', ['locale' => 'nl_BE'])
+            null, AkeneoValuePicker::pick($this->item, $key = 'brand', ['locale' => 'nl_BE'])
         );
 
         $this->assertSame(
-            'louis', AkeneoValuePicker::pick($this->item, $key = 'brand', ['locale' => 'nl_BE', 'scope' => 'pim'])
+            null, AkeneoValuePicker::pick($this->item, $key = 'brand', ['locale' => 'nl_BE', 'scope' => 'pim'])
         );
     }
 
