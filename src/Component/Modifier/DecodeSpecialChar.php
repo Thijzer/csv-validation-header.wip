@@ -4,7 +4,7 @@ namespace Misery\Component\Modifier;
 
 use Misery\Component\Common\Modifier\CellModifier;
 
-class ValueDecodeSpecialChar implements CellModifier
+class DecodeSpecialChar implements CellModifier
 {
     const UTF8 = 'decode_special_char';
 

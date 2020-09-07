@@ -2,14 +2,14 @@
 
 namespace Tests\Misery\Component\Modifier;
 
-use Misery\Component\Modifier\ValueDecodeSpecialChar;
+use Misery\Component\Modifier\DecodeSpecialChar;
 use PHPUnit\Framework\TestCase;
 
-class ValueDecodeSpecialCharTest extends TestCase
+class DecodeSpecialCharTest extends TestCase
 {
     function test_it_should_snake_case_a_value(): void
     {
-        $modifier = new ValueDecodeSpecialChar();
+        $modifier = new DecodeSpecialChar();
 
         $this->assertEquals('Test&Test', $modifier->modify('Test&amp;Test'));
         $this->assertEquals('§èé&çà', $modifier->modify('&sect;&egrave;&eacute;&amp;&ccedil;&agrave;'));
