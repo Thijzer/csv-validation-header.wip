@@ -31,7 +31,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
 
     public function apply(array $item): array
     {
-        if (isset($item[$this->options['key']])) {
+        if (array_key_exists($this->options['key'], $item)) {
             $label = $this->options['content'];
 
             switch ($this->options['method']) {
