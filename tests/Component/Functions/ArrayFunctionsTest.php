@@ -99,4 +99,27 @@ class ArrayFunctionsTest extends TestCase
 
         print_r('unflatten:'.$check);
     }
+
+    public function test_it_should_flatten_list_types(): void
+    {
+        $item = [
+            'brand' => [
+                'nl_BE' => [],
+                'fr_BE' => [],
+                'en_US' => [],
+            ],
+            'description' => 'LV',
+            'sku' => '1',
+        ];
+
+        $result = ArrayFunctions::flatten($item);
+
+        $this->assertSame([
+            'brand.nl_BE' => [],
+            'brand.fr_BE' => [],
+            'brand.en_US' => [],
+            'description' => 'LV',
+            'sku' => '1',
+        ], $result);
+    }
 }

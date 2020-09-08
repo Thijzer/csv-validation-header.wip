@@ -269,4 +269,34 @@ class ReplaceActionTest extends TestCase
             'sku' => '1',
         ], $action->apply($item));
     }
+
+    public function test_it_should_prep_the_labels_when_no_item_is_found(): void
+    {
+        $reader = new ItemReader(new ItemCollection($this->brands));
+
+        $action = new ReplaceAction();
+        $action->setReader($reader);
+
+        $item = [
+            'brand' => [],
+            'description' => 'LV',
+            'sku' => '1',
+        ];
+
+        $action->setOptions([
+            'method' => 'getLabelsFromList',
+            'locales' => ['nl_BE', 'fr_BE', 'en_US'],
+            'key' => 'brand'
+        ]);
+
+        $this->assertEquals([
+            'brand' => [
+                'nl_BE' => [],
+                'fr_BE' => [],
+                'en_US' => [],
+            ],
+            'description' => 'LV',
+            'sku' => '1',
+        ], $action->apply($item));
+    }
 }

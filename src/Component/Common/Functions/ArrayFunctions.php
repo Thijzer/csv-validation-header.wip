@@ -50,7 +50,7 @@ class ArrayFunctions
     {
         $result = [];
         foreach ($array as $key => $value) {
-            if (\is_array($value)) {
+            if (\is_array($value) && !empty($value)) {
                 $result += static::flatten($value, $separator, $prefix . $key . $separator);
                 continue;
             }
