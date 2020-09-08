@@ -59,5 +59,14 @@ class ListFormatTest extends TestCase
                 'fr_BE' => 'd4,e5,f6',
             ],
         ]);
+
+        $localizedFormat = [
+            'nl_BE' => ['a', 'b', 'c'],
+            'fr_BE' => [],
+        ];
+        $this->assertSame($format->reverseFormat($localizedFormat), [
+            'nl_BE' => 'a,b,c',
+            'fr_BE' => null,
+        ]);
     }
 }
