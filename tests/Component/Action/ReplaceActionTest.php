@@ -2,9 +2,8 @@
 
 namespace Tests\Misery\Component\Action;
 
-use Misery\Component\Action\CopyAction;
-use Misery\Component\Action\RenameAction;
 use Misery\Component\Action\ReplaceAction;
+use Misery\Component\Common\Repository\ItemRepository;
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
@@ -35,12 +34,15 @@ class ReplaceActionTest extends TestCase
         ],
     ];
 
+    private function getRepo(): ItemRepository
+    {
+        return new ItemRepository(new ItemReader(new ItemCollection($this->brands)), 'code');
+    }
+
     public function test_it_should_do_a_replace_a_label_action(): void
     {
-        $reader = new ItemReader(new ItemCollection($this->brands));
-
         $format = new ReplaceAction();
-        $format->setReader($reader);
+        $format->setRepository($this->getRepo());
 
         $item = [
             'brand' => '_nike_',
@@ -78,10 +80,8 @@ class ReplaceActionTest extends TestCase
 
     public function test_it_should_do_a_replace_labels_action(): void
     {
-        $reader = new ItemReader(new ItemCollection($this->brands));
-
         $action = new ReplaceAction();
-        $action->setReader($reader);
+        $action->setRepository($this->getRepo());
 
         $item = [
             'brand' => '_nike_',
@@ -141,10 +141,8 @@ class ReplaceActionTest extends TestCase
 
     public function test_it_should_do_a_replace_labels_in_list_action(): void
     {
-        $reader = new ItemReader(new ItemCollection($this->brands));
-
         $action = new ReplaceAction();
-        $action->setReader($reader);
+        $action->setRepository($this->getRepo());
 
         $item = [
             'brand' => ['_nike_','_adi_'],
@@ -202,10 +200,8 @@ class ReplaceActionTest extends TestCase
 
     public function test_it_should_do_a_replace_label_in_list_action(): void
     {
-        $reader = new ItemReader(new ItemCollection($this->brands));
-
         $action = new ReplaceAction();
-        $action->setReader($reader);
+        $action->setRepository($this->getRepo());
 
         $item = [
             'brand' => ['_nike_','_adi_'],
@@ -242,10 +238,8 @@ class ReplaceActionTest extends TestCase
 
     public function test_it_should_find_the_label_match_or_null(): void
     {
-        $reader = new ItemReader(new ItemCollection($this->brands));
-
         $action = new ReplaceAction();
-        $action->setReader($reader);
+        $action->setRepository($this->getRepo());
 
         $item = [
             'brand' => '_newb_',
@@ -272,10 +266,8 @@ class ReplaceActionTest extends TestCase
 
     public function test_it_should_prep_the_labels_when_no_item_is_found(): void
     {
-        $reader = new ItemReader(new ItemCollection($this->brands));
-
         $action = new ReplaceAction();
-        $action->setReader($reader);
+        $action->setRepository($this->getRepo());
 
         $item = [
             'brand' => [],
@@ -294,6 +286,56 @@ class ReplaceActionTest extends TestCase
                 'nl_BE' => [],
                 'fr_BE' => [],
                 'en_US' => [],
+            ],
+            'description' => 'LV',
+            'sku' => '1',
+        ], $action->apply($item));
+    }
+
+    public function test_it_should_prep_the_reference_from_a_combined_index(): void
+    {
+        $brands =  [
+            [
+                'code' => '1',
+                'attr' => 'first',
+                'label' => [
+                    'nl_BE' => 'prime',
+                    'fr_BE' => 'Primero',
+                ],
+            ],
+            [
+                'code' => '1',
+                'attr' => 'brand',
+                'label' => [
+                    'nl_BE' => 'Nike',
+                    'fr_BE' => 'Nikell',
+                ],
+            ],
+        ];
+
+        $repo = new ItemRepository(new ItemReader(new ItemCollection($brands)), 'code', 'attr');
+
+        $action = new ReplaceAction();
+        $action->setRepository($repo);
+
+        $item = [
+            'brand' => '1',
+            'description' => 'LV',
+            'sku' => '1',
+        ];
+
+        $action->setOptions([
+            'method' => 'getLabels',
+            'guide' => ['attr' => 'brand'],
+            'locales' => ['nl_BE', 'fr_BE', 'en_US'],
+            'key' => 'brand'
+        ]);
+
+        $this->assertEquals([
+            'brand' => [
+                'nl_BE' => 'Nike',
+                'fr_BE' => 'Nikell',
+                'en_US' => null,
             ],
             'description' => 'LV',
             'sku' => '1',

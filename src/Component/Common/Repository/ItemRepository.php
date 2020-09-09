@@ -5,9 +5,9 @@ namespace Misery\Component\Common\Repository;
 use Misery\Component\Reader\ItemReaderInterface;
 
 /**
- * A doctrine compatible File Repository
+ * A doctrine compatible Item Repository
  */
-class FileRepository
+class ItemRepository
 {
     private $reader;
     private $references;
@@ -16,6 +16,11 @@ class FileRepository
     {
         $this->reader = $reader;
         $this->references = $references;
+    }
+
+    public function getReferences()
+    {
+        return $this->references;
     }
 
     public function find(string ...$ids): array
