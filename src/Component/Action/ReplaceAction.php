@@ -24,7 +24,7 @@ class ReplaceAction implements OptionsInterface, ItemRepositoryAwareInterface
         'source' => null,
         'key' => null,
         'format' => '[%s]',
-        'reference' => [],
+        'guide' => [],
         'content' => 'label',
         'locale' => null,
         'locales' => null,
@@ -93,7 +93,7 @@ class ReplaceAction implements OptionsInterface, ItemRepositoryAwareInterface
         }
 
         $references = [$reference];
-        if ($this->options['guide']) {
+        if (!empty($this->options['guide'])) {
             // find matching key position
             foreach ($this->options['guide'] as $key => $ref) {
                 if ($nKey = array_flip($this->getRepository()->getReferences())[$key] ?? false) {
