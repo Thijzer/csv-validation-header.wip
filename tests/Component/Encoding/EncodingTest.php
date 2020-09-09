@@ -4,6 +4,7 @@ namespace Tests\Misery\Component\Encoding;
 
 use Misery\Component\Action\ReplaceAction;
 use Misery\Component\Common\Registry\Registry;
+use Misery\Component\Common\Repository\ItemRepository;
 use Misery\Component\Decoder\ItemDecoderFactory;
 use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
@@ -178,7 +179,7 @@ class EncodingTest extends TestCase
 
         $reader = new ItemReader(new ItemCollection($category));
         $format = new ReplaceAction();
-        $format->setReader($reader);
+        $format->setRepository(new ItemRepository($reader, 'code'));
 
         $format->setOptions([
             'method' => 'getLabelsFromList',

@@ -5,15 +5,15 @@ namespace Misery\Component\Action;
 use Misery\Component\Akeneo\AkeneoValuePicker;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
-use Misery\Component\Reader\ItemReaderAwareInterface;
-use Misery\Component\Reader\ItemReaderAwareTrait;
+use Misery\Component\Reader\ItemRepositoryAwareInterface;
+use Misery\Component\Reader\ItemRepositoryAwareTrait;
 
 // TODO we are stuck on 'code' source -> getReference or SourceRepository in favor of reader are other options
 
-class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
+class ReplaceAction implements OptionsInterface, ItemRepositoryAwareInterface
 {
     use OptionsTrait;
-    use ItemReaderAwareTrait;
+    use ItemRepositoryAwareTrait;
     private $repo;
 
     public const NAME = 'replace';
@@ -24,8 +24,9 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
         'source' => null,
         'key' => null,
         'format' => '[%s]',
-        'reference' => 'code',
+        'reference' => [],
         'content' => 'label',
+        'locale' => null,
         'locales' => null,
     ];
 
@@ -87,11 +88,23 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
 
     private function getItem($reference)
     {
+        if (null === $reference) {
+            return null;
+        }
+
+        $references = [$reference];
+        if ($this->options['guide']) {
+            // find matching key position
+            foreach ($this->options['guide'] as $key => $ref) {
+                if ($nKey = array_flip($this->getRepository()->getReferences())[$key] ?? false) {
+                    $references[$nKey] = $ref;
+                }
+            }
+        }
+
         return $this
-            ->getReader()
-            ->find([$this->options['reference'] => $reference])
-            ->getIterator()
-            ->current()
+            ->getRepository()
+            ->find(...$references)
         ;
     }
 }

@@ -17,9 +17,9 @@ class SourceCollectionFactory
             if (is_file($file)) {
                 $configuration = self::createConfigurationFromBluePrint($bluePrintDir, $reference);
                 $sources->add(new Source(
-                    SourceType::file(),
                     $encoderFactory->createItemEncoder($configuration),
                     $decoderFactory->createItemDecoder($configuration),
+                    $configuration,
                     $file,
                     $reference
                 ));

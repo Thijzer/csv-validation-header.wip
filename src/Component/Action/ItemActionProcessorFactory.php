@@ -4,7 +4,7 @@ namespace Misery\Component\Action;
 
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
-use Misery\Component\Reader\ItemReaderAwareInterface;
+use Misery\Component\Reader\ItemRepositoryAwareInterface;
 use Misery\Component\Source\SourceCollection;
 
 class ItemActionProcessorFactory
@@ -38,8 +38,10 @@ class ItemActionProcessorFactory
                     $action->setOptions($value);
                 }
 
-                if ($action instanceof ItemReaderAwareInterface && isset($value['source'])) {
-                    $action->setReader($sources->get($value['source'])->getReader());
+                if ($action instanceof ItemRepositoryAwareInterface && isset($value['source'])) {
+                    $action->setRepository(
+                        $sources->get($value['source'])->getRepository()
+                    );
                 }
 
                 $rules[$name] = $action;
