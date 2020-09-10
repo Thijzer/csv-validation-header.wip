@@ -10,12 +10,14 @@ class CreateSourcePaths
     {
         $references = [];
         foreach ($sources as $source) {
+            $tmp = [];
             if (is_file($file = sprintf($sourcePath, $source))) {
-                $references[$source]['source'] = $file;
+                $tmp['source'] = $file;
             }
             if (is_file($file = sprintf($bluePrintPath, $source))) {
-                $references[$source]['blueprint'] = Yaml::parseFile($file);
+                $tmp['blueprint'] = Yaml::parseFile($file);
             }
+            $references[$source] = $tmp;
         }
 
         return $references;
