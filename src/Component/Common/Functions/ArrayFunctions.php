@@ -61,6 +61,11 @@ class ArrayFunctions
         return $result;
     }
 
+    public static function merge(array $a, array $b)
+    {
+        return static::unflatten(array_merge(static::flatten($a), static::flatten($b)));
+    }
+
     public static function multiCompare(array $a, array $b): array
     {
         $a = static::flatten($a);

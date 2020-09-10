@@ -9,12 +9,14 @@ class CreateSourcePathsTest extends TestCase
 {
     public function test_init_create_source_paths(): void
     {
-        $path = __DIR__ . '/../../examples/%s.csv';
+        $sourcePath = __DIR__ . '/../../examples/%s.csv';
 
-        $sourcePaths = createSourcePaths::create(['users'], $path);
+        $sourcePaths = createSourcePaths::create(['users'], $sourcePath);
 
         $this->assertSame($sourcePaths, [
-            'users' => sprintf($path, 'users'),
+            'users' => [
+                'source' => sprintf($sourcePath, 'users'),
+            ]
         ]);
     }
 }

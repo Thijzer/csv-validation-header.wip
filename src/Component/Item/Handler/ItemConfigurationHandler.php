@@ -46,10 +46,11 @@ class ItemConfigurationHandler
                 // if no Sources are given as a Collection, we expect that we are dealing with Akeneo\Pim sources.
                 $sourcePaths = CreateSourcePaths::create(
                     $configuration['sources'],
-                    $configuration['source_path'] . '/%s.csv'
+                    $configuration['source_path'] . '/%s.csv',
+                    $configuration['blueprint_path'] . '/%s.yaml'
                 );
 
-                $sources = SourceCollectionFactory::create($this->encoderFactory, $this->decoderFactory, $sourcePaths, $configuration['blueprint_path']);
+                $sources = SourceCollectionFactory::create($this->encoderFactory, $this->decoderFactory, $sourcePaths);
             }
 
             // blend client configuration and customer configuration
