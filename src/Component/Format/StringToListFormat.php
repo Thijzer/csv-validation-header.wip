@@ -39,6 +39,10 @@ class StringToListFormat implements StringFormat, OptionsInterface
      */
     public function reverseFormat($value)
     {
+        if (empty($value)) {
+            return '';
+        }
+
         $val = [];
         foreach ($value as $key => $item) {
             if  (empty($item)) {
