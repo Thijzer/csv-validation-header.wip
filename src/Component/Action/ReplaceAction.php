@@ -5,15 +5,15 @@ namespace Misery\Component\Action;
 use Misery\Component\Akeneo\AkeneoValuePicker;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
-use Misery\Component\Reader\ItemRepositoryAwareInterface;
-use Misery\Component\Reader\ItemRepositoryAwareTrait;
+use Misery\Component\Reader\ItemReaderAwareInterface;
+use Misery\Component\Reader\ItemReaderAwareTrait;
 
 // TODO we are stuck on 'code' source -> getReference or SourceRepository in favor of reader are other options
 
-class ReplaceAction implements OptionsInterface, ItemRepositoryAwareInterface
+class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
 {
     use OptionsTrait;
-    use ItemRepositoryAwareTrait;
+    use ItemReaderAwareTrait;
     private $repo;
 
     public const NAME = 'replace';
@@ -22,9 +22,10 @@ class ReplaceAction implements OptionsInterface, ItemRepositoryAwareInterface
     private $options = [
         'method' => null,
         'source' => null,
+        'source_filter' => [],
+        'source_reference' => 'code',
         'key' => null,
         'format' => '[%s]',
-        'guide' => [],
         'content' => 'label',
         'locale' => null,
         'locales' => null,
@@ -92,19 +93,16 @@ class ReplaceAction implements OptionsInterface, ItemRepositoryAwareInterface
             return null;
         }
 
-        $references = [$reference];
-        if (!empty($this->options['guide'])) {
-            // find matching key position
-            foreach ($this->options['guide'] as $key => $ref) {
-                if ($nKey = array_flip($this->getRepository()->getReferences())[$key] ?? false) {
-                    $references[$nKey] = $ref;
-                }
-            }
+        // @todo make a prep reader
+        $reader = $this->getReader();
+        if (!empty($this->options['source_filter'])) {
+            $reader = $reader->find($this->options['source_filter']);
         }
 
-        return $this
-            ->getRepository()
-            ->find(...$references)
+        return $reader
+            ->find([$this->options['source_reference'] => $reference])
+            ->getIterator()
+            ->current()
         ;
     }
 }

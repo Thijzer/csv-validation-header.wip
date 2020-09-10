@@ -6,7 +6,6 @@ use Misery\Component\Action\ReplaceAction;
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Common\Repository\ItemRepository;
 use Misery\Component\Decoder\ItemDecoderFactory;
-use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Format\StringToIntFormat;
 use Misery\Component\Format\StringToListFormat;
@@ -179,7 +178,7 @@ class EncodingTest extends TestCase
 
         $reader = new ItemReader(new ItemCollection($category));
         $format = new ReplaceAction();
-        $format->setRepository(new ItemRepository($reader, 'code'));
+        $format->setReader($reader);
 
         $format->setOptions([
             'method' => 'getLabelsFromList',

@@ -34,15 +34,15 @@ class ReplaceActionTest extends TestCase
         ],
     ];
 
-    private function getRepo(): ItemRepository
+    private function getReader(): ItemReader
     {
-        return new ItemRepository(new ItemReader(new ItemCollection($this->brands)), 'code');
+        return new ItemReader(new ItemCollection($this->brands));
     }
 
     public function test_it_should_do_a_replace_a_label_action(): void
     {
         $format = new ReplaceAction();
-        $format->setRepository($this->getRepo());
+        $format->setReader($this->getReader());
 
         $item = [
             'brand' => '_nike_',
@@ -81,7 +81,7 @@ class ReplaceActionTest extends TestCase
     public function test_it_should_do_a_replace_labels_action(): void
     {
         $action = new ReplaceAction();
-        $action->setRepository($this->getRepo());
+        $action->setReader($this->getReader());
 
         $item = [
             'brand' => '_nike_',
@@ -142,7 +142,7 @@ class ReplaceActionTest extends TestCase
     public function test_it_should_do_a_replace_labels_in_list_action(): void
     {
         $action = new ReplaceAction();
-        $action->setRepository($this->getRepo());
+        $action->setReader($this->getReader());
 
         $item = [
             'brand' => ['_nike_','_adi_'],
@@ -201,7 +201,7 @@ class ReplaceActionTest extends TestCase
     public function test_it_should_do_a_replace_label_in_list_action(): void
     {
         $action = new ReplaceAction();
-        $action->setRepository($this->getRepo());
+        $action->setReader($this->getReader());
 
         $item = [
             'brand' => ['_nike_','_adi_'],
@@ -239,7 +239,7 @@ class ReplaceActionTest extends TestCase
     public function test_it_should_find_the_label_match_or_null(): void
     {
         $action = new ReplaceAction();
-        $action->setRepository($this->getRepo());
+        $action->setReader($this->getReader());
 
         $item = [
             'brand' => '_newb_',
@@ -267,7 +267,7 @@ class ReplaceActionTest extends TestCase
     public function test_it_should_prep_the_labels_when_no_item_is_found(): void
     {
         $action = new ReplaceAction();
-        $action->setRepository($this->getRepo());
+        $action->setReader($this->getReader());
 
         $item = [
             'brand' => [],
@@ -313,10 +313,10 @@ class ReplaceActionTest extends TestCase
             ],
         ];
 
-        $repo = new ItemRepository(new ItemReader(new ItemCollection($brands)), 'code', 'attr');
+        $repo = new ItemReader(new ItemCollection($brands));
 
         $action = new ReplaceAction();
-        $action->setRepository($repo);
+        $action->setReader($repo);
 
         $item = [
             'brand' => '1',
@@ -326,7 +326,7 @@ class ReplaceActionTest extends TestCase
 
         $action->setOptions([
             'method' => 'getLabels',
-            'guide' => ['attr' => 'brand'],
+            'source_filter' => ['attr' => 'brand'],
             'locales' => ['nl_BE', 'fr_BE', 'en_US'],
             'key' => 'brand'
         ]);
