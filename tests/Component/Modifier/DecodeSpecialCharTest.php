@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class DecodeSpecialCharTest extends TestCase
 {
-    function test_it_should_snake_case_a_value(): void
+    function test_it_should_decode_all_chars_and_quotes(): void
     {
         $modifier = new DecodeSpecialChar();
 
@@ -22,5 +22,27 @@ class DecodeSpecialCharTest extends TestCase
 
         $this->assertEquals('I\'ll "walk" the <b>dog</b> now',
             $modifier->modify('I\'ll &quot;walk&quot; the &lt;b&gt;dog&lt;/b&gt; now'));
+    }
+
+    function test_it_should_decode_all_chars_and_double_quotes(): void
+    {
+        $modifier = new DecodeSpecialChar();
+
+        $this->assertEquals('Albert Einstein said: "E=MC²"',
+            $modifier->modify('Albert Einstein said: &quot;E=MC&sup2;&quot;', ENT_COMPAT));
+
+        $this->assertEquals('My name is Øyvind Åsane. I&#039;m Norwegian.',
+            $modifier->modify('My name is &Oslash;yvind &Aring;sane. I&#039;m Norwegian.', ENT_COMPAT));
+    }
+
+    function test_it_should_decode_all_chars_and_no_quotes(): void
+    {
+        $modifier = new DecodeSpecialChar();
+
+        $this->assertEquals('Albert Einstein said: &quot;E=MC²&quot;',
+            $modifier->modify('Albert Einstein said: &quot;E=MC&sup2;&quot;', ENT_NOQUOTES));
+
+        $this->assertEquals('My name is Øyvind Åsane. I&#039;m Norwegian.',
+            $modifier->modify('My name is &Oslash;yvind &Aring;sane. I&#039;m Norwegian.', ENT_NOQUOTES));
     }
 }

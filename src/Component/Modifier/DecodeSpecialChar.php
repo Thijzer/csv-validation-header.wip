@@ -2,14 +2,14 @@
 
 namespace Misery\Component\Modifier;
 
-use Misery\Component\Common\Modifier\CellModifier;
+use Misery\Component\Common\Modifier\SpecialModifier;
 
-class DecodeSpecialChar implements CellModifier
+class DecodeSpecialChar implements SpecialModifier
 {
-    const UTF8 = 'decode_special_char';
+    const NAME = 'decode_special_char';
 
-    public function modify(string $value)
+    public function modify(string $value, int $flag = ENT_QUOTES)
     {
-        return html_entity_decode($value,ENT_QUOTES);
+        return html_entity_decode($value,$flag);
     }
 }
