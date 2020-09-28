@@ -108,4 +108,38 @@ class ModifierActionTest extends TestCase
 
         $this->assertEquals($expected, $format->apply($item));
     }
+
+    public function test_it_should_modify_single_key_with_empty_values_action(): void
+    {
+        $registry = new Registry('modifier');
+        $modifier = new ReplaceCharacterModifier();
+        $registry->register($modifier::NAME, $modifier);
+        $format = new ModifierAction($registry);
+
+        $format->setOptions(
+            [
+                'modifier' => $modifier::NAME,
+                'keys' => 'short_description',
+                'characters' => ['á' => 'a', 'é' => 'e'],
+            ]
+        );
+
+        $item = [
+            'description' => [
+                'nl_BE' => 'áááááábéééééé',
+                'fr_BE' => null,
+            ],
+            'sku' => '1',
+        ];
+
+        $expected = [
+            'description' => [
+                'nl_BE' => 'áááááábéééééé',
+                'fr_BE' => null,
+            ],
+            'sku' => '1',
+        ];
+
+        $this->assertEquals($expected, $format->apply($item));
+    }
 }
