@@ -3,6 +3,8 @@ enode:
     string: ~
   attribute:
     string: ~
+    decode_special:
+      decoder: 'quotes'
   sort_order:
     integer: ~
 
