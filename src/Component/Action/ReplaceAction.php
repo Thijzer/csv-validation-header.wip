@@ -54,7 +54,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
 
                 case "getLabelFromList":
                     $tmp = [];
-                    foreach ($item[$this->options['key']] as $key => $listItem) {
+                    foreach ($item[$this->options['key']] ?? [] as $key => $listItem) {
                         $sourceItem = $this->getItem($listItem);
                         $tmp[$key] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, $this->options) : $this->format($listItem);
                     }
@@ -66,7 +66,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
                     $tmp = [];
                     foreach ($this->options['locales'] as $locale) {
                         $tmp[$locale] = [];
-                        foreach ($item[$this->options['key']] as $listItem) {
+                        foreach ($item[$this->options['key']] ?? [] as $listItem) {
                             $sourceItem = $this->getItem($listItem);
                             $tmp[$locale][] = $sourceItem ? AkeneoValuePicker::pick($sourceItem, $label, ['locale' => $locale]) : $this->format($listItem);
                         }

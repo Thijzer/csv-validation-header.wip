@@ -83,7 +83,10 @@ class Source
                             ), function ($item) {
                             return $this->encode($item);
                         }
-                        )
+                        ),
+                        [
+                            'cache_size' => CachedCursor::LARGE_CACHE_SIZE,
+                        ]
                     )
                 );
             }
