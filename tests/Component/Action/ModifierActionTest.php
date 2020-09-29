@@ -119,7 +119,7 @@ class ModifierActionTest extends TestCase
         $format->setOptions(
             [
                 'modifier' => $modifier::NAME,
-                'keys' => 'short_description',
+                'keys' => 'description',
                 'characters' => ['á' => 'a', 'é' => 'e'],
             ]
         );
@@ -134,7 +134,7 @@ class ModifierActionTest extends TestCase
 
         $expected = [
             'description' => [
-                'nl_BE' => 'áááááábéééééé',
+                'nl_BE' => 'aaaaaabeeeeee',
                 'fr_BE' => null,
             ],
             'sku' => '1',
