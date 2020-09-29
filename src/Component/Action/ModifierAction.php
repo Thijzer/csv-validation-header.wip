@@ -43,7 +43,7 @@ class ModifierAction implements OptionsInterface
             if ($listItem && $modifier = $this->getModifier()) {
                 if (is_array($listItem)) {
                     $item[$key] = array_map(function ($itemValue) use ($modifier) {
-                        return $modifier->modify($itemValue);
+                        return is_string($listItem) ? $modifier->modify($itemValue) : null;
                     }, $listItem);
                 }
                 if (is_string($listItem)) {
