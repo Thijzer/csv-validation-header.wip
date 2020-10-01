@@ -14,6 +14,7 @@ class IconvEncodingModifier implements CellModifier, OptionsInterface
     private $options = [
         'in_charset' => 'utf-8',
         'out_charset' => null,
+        'locale' => 'en_US.utf8',
     ];
 
     public function modify(string $value)
@@ -26,7 +27,7 @@ class IconvEncodingModifier implements CellModifier, OptionsInterface
     // this supports methods might help the validation step
     public function supports(string $value = null): bool
     {
-        setlocale(LC_ALL, 'en_US.utf8');
+        setlocale(LC_ALL, $this->options['locale']);
 
         return extension_loaded('iconv');
     }
