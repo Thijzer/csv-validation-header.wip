@@ -15,6 +15,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
     use OptionsTrait;
     use ItemReaderAwareTrait;
     private $repo;
+    private $prepReader;
 
     public const NAME = 'replace';
 
@@ -87,6 +88,23 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
         return $item && $this->options['format'] ? sprintf($this->options['format'], $item) : null;
     }
 
+    private function getSource()
+    {
+        // this is a tmp performance improvement
+        // todo create a in de Source Collection named filters per source,
+        // example de filter name attribute_option/attribute:brand is a subset collection of attribute_option where attribute = brand
+        // this will effect the find performance method that no longer needs to loop the whole attribute_option file.
+        // these named filters should be stored automatically as collections per Source.
+        if (null === $this->prepReader) {
+            $this->prepReader = $this->getReader();
+            if (!empty($this->options['source_filter'])) {
+                $this->prepReader = $this->prepReader->find($this->options['source_filter']);
+            }
+        }
+
+        return $this->prepReader;
+    }
+
     private function getItem($reference)
     {
         if (null === $reference) {
@@ -94,12 +112,8 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
         }
 
         // @todo make a prep reader
-        $reader = $this->getReader();
-        if (!empty($this->options['source_filter'])) {
-            $reader = $reader->find($this->options['source_filter']);
-        }
 
-        return $reader
+        return $this->getSource()
             ->find([$this->options['source_reference'] => $reference])
             ->getIterator()
             ->current()

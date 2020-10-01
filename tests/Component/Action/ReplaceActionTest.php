@@ -311,18 +311,20 @@ class ReplaceActionTest extends TestCase
                     'fr_BE' => 'Nikell',
                 ],
             ],
+            [
+                'code' => '2',
+                'attr' => 'brand',
+                'label' => [
+                    'nl_BE' => 'Reebok_nl',
+                    'fr_BE' => 'Reebok_fr',
+                ],
+            ],
         ];
 
         $repo = new ItemReader(new ItemCollection($brands));
 
         $action = new ReplaceAction();
         $action->setReader($repo);
-
-        $item = [
-            'brand' => '1',
-            'description' => 'LV',
-            'sku' => '1',
-        ];
 
         $action->setOptions([
             'method' => 'getLabels',
@@ -331,10 +333,32 @@ class ReplaceActionTest extends TestCase
             'key' => 'brand'
         ]);
 
+        $item = [
+            'brand' => '1',
+            'description' => 'LV',
+            'sku' => '1',
+        ];
+
         $this->assertEquals([
             'brand' => [
                 'nl_BE' => 'Nike',
                 'fr_BE' => 'Nikell',
+                'en_US' => null,
+            ],
+            'description' => 'LV',
+            'sku' => '1',
+        ], $action->apply($item));
+
+        $item = [
+            'brand' => '2',
+            'description' => 'LV',
+            'sku' => '1',
+        ];
+
+        $this->assertEquals([
+            'brand' => [
+                'nl_BE' => 'Reebok_nl',
+                'fr_BE' => 'Reebok_fr',
                 'en_US' => null,
             ],
             'description' => 'LV',
