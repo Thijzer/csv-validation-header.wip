@@ -22,6 +22,19 @@ class ReplaceCharacterModifierTest extends TestCase
         );
     }
 
+    function test_it_should_replace_all_multi_chars(): void
+    {
+        $modifier = new ReplaceCharacterModifier();
+        $modifier->setOptions(['characters' => [
+            'áé' => 'ae',
+        ]]);
+
+        $this->assertSame(
+            'áááááaeéééééZRT.',
+            $modifier->modify('ááááááééééééZRT.')
+        );
+    }
+
     function test_it_should_replace_no_chars(): void
     {
         $modifier = new ReplaceCharacterModifier();
