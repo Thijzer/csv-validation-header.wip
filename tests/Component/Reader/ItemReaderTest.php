@@ -29,6 +29,12 @@ class ItemReaderTest extends TestCase
             'last_name' => 'Cauter',
             'phone' => '1234556356',
         ],
+        [
+            'id' => "4",
+            'first_name' => 'Mieke',
+            'last_name' => 'Paepe',
+            'phone' => '12345563567',
+        ],
     ];
 
     public function test_parse_a_column(): void
@@ -43,6 +49,9 @@ class ItemReaderTest extends TestCase
             ],
             [
                 'first_name' => 'Frans',
+            ],
+            [
+                'first_name' => 'Mieke',
             ],
             [
                 'first_name' => 'Mieke',
@@ -147,6 +156,40 @@ class ItemReaderTest extends TestCase
                 'first_name' => 'Frans',
                 'last_name' => 'Merkel',
                 'phone' => '123456',
+            ],
+        ];
+
+        $this->assertSame($result, $reader->getItems());
+    }
+
+    public function test_double_filter_items(): void
+    {
+        $reader = new ItemReader($items = new ItemCollection($this->items));
+
+        $reader = $reader
+            ->filter(function ($row) {
+                return $row['first_name'] === 'Mieke';
+            })
+        ;
+
+        $reader = $reader
+            ->filter(function ($row) {
+                return $row['last_name'] === 'Paepe';
+            })
+        ;
+
+        $reader = $reader
+            ->filter(function ($row) {
+                return $row['last_name'] === 'Paepe';
+            })
+        ;
+
+        $result = [
+            3 => [
+                'id' => "4",
+                'first_name' => 'Mieke',
+                'last_name' => 'Paepe',
+                'phone' => '12345563567',
             ],
         ];
 

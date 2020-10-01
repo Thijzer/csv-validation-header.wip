@@ -64,6 +64,7 @@ class ArrayFunctionsTest extends TestCase
         $this->assertSame($item, $result);
     }
 
+    /** @group performance */
     public function test_flatten_performance(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../examples/users.csv');
@@ -83,6 +84,7 @@ class ArrayFunctionsTest extends TestCase
         print_r('flatten:'.$check);
     }
 
+    /** @group performance */
     public function test_unflatten_performance(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../examples/users.csv');

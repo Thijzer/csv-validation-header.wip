@@ -5,6 +5,8 @@ namespace Misery\Component\Action;
 use Misery\Component\Akeneo\AkeneoValuePicker;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
+use Misery\Component\Reader\ItemCollection;
+use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ItemReaderAwareInterface;
 use Misery\Component\Reader\ItemReaderAwareTrait;
 
@@ -98,7 +100,11 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
         if (null === $this->prepReader) {
             $this->prepReader = $this->getReader();
             if (!empty($this->options['source_filter'])) {
-                $this->prepReader = $this->prepReader->find($this->options['source_filter']);
+                $this->prepReader = new ItemReader(
+                    new ItemCollection(
+                        $this->prepReader->find($this->options['source_filter'])->getItems()
+                    )
+                );
             }
         }
 
