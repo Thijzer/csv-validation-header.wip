@@ -11,7 +11,7 @@ use Misery\Component\Source\SourceCollectionFactory;
 use Misery\Component\Writer\CsvWriter;
 use Symfony\Component\Yaml\Yaml;
 
-class ItemConfigurationHandler
+class ApiItemConfigurationHandler
 {
     /**
      * @var ItemEncoderFactory
@@ -33,7 +33,7 @@ class ItemConfigurationHandler
         $this->actionFactory = $actionFactory;
     }
 
-    public function handle($configuration): void
+    public function handle($configuration, SourceCollection $sources = null): void
     {
         try {
             if (false === is_array($configuration) && is_file($configuration)) {
@@ -42,7 +42,16 @@ class ItemConfigurationHandler
 
             // TODO validate configuration here
 
-            $sources = SourceCollectionFactory::create($this->encoderFactory, $this->decoderFactory, $configuration['sources']);
+            if (null === $sources) {
+                // if no Sources are given as a Collection, we expect that we are dealing with Akeneo\Pim sources.
+                $sourcePaths = CreateSourcePaths::create(
+                    $configuration['sources'],
+                    $configuration['source_path'] . '/%s.csv',
+                    $configuration['blueprint_path'] . '/%s.yaml'
+                );
+
+                $sources = SourceCollectionFactory::create($this->encoderFactory, $this->decoderFactory, $sourcePaths);
+            }
 
             // blend client configuration and customer configuration
             $actionProcessor = $this->actionFactory->createActionProcessor($sources, $configuration['conversion']['actions'] ?? []);
