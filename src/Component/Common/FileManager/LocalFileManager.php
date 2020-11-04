@@ -30,6 +30,16 @@ class LocalFileManager implements FileManagerInterface
         return $this->workingDirectory;
     }
 
+    public function copyFile(string $filename, string $newFilename)
+    {
+        copy($this->getAbsolutePath($filename), $this->getAbsolutePath($newFilename));
+    }
+
+    public function moveFile(string $filename, string $newFilename)
+    {
+        rename($this->getAbsolutePath($filename), $this->getAbsolutePath($newFilename));
+    }
+
     public function addFile(string $filename, $content)
     {
         file_put_contents($this->getAbsolutePath($filename), $content);
@@ -42,10 +52,13 @@ class LocalFileManager implements FileManagerInterface
 
     public function removeFile(string $filename): void
     {
-        unlink($fullPath = $this->getAbsolutePath($filename));
+        $filename = $this->getAbsolutePath($filename);
+        if (is_file($filename)) {
+            unlink($filename);
+        }
 
         if ($this->removeEmptyDir) {
-            $this->removeEmptyDirectory(pathinfo($fullPath)['dirname']);
+            $this->removeEmptyDirectory(pathinfo($filename)['dirname']);
         }
     }
 
@@ -77,7 +90,7 @@ class LocalFileManager implements FileManagerInterface
      * @param string $filename
      * @return string
      */
-    private function getAbsolutePath(string $filename): string
+    public function getAbsolutePath(string $filename): string
     {
         if (strpos($filename, $this->workingDirectory) === false) {
             return $this->workingDirectory. DIRECTORY_SEPARATOR . $filename;

@@ -17,9 +17,11 @@ class CompressedTarArchiver implements ArchiverInterface
     /** @inheritDoc */
     public function compress(string $filePath): void
     {
-        $tarPath = $this->getTarPath($filePath);
+        $files = iterator_to_array($this->fileManager->listFiles());
 
-        $files = $this->fileManager->listFiles();
+        $filePath = $this->fileManager->getAbsolutePath($filePath);
+
+        $tarPath = $this->getTarPath($filePath);
 
         $p = new \PharData($tarPath);
 
@@ -36,6 +38,8 @@ class CompressedTarArchiver implements ArchiverInterface
     /** @inheritDoc */
     public function decompress(string $filePath): void
     {
+        $filePath = $this->fileManager->getAbsolutePath($filePath);
+
         // '/path/to/my.tar.gz'
         $p = new \PharData($filePath);
 
