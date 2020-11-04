@@ -4,14 +4,9 @@ namespace Misery\Component\Common\Archiver;
 
 interface ArchiverInterface
 {
-    public function compress(string $filePath);
+    /** @param string $filePath /path/to/compressed.tar.gz file you wish to compress into */
+    public function compress(string $filePath): void;
 
-    /**
-     * returns absolute file list
-     *
-     * @param string $filePath
-     *
-     * @return array
-     */
-    public function decompress(string $filePath);
+    /** @param string $filePath /path/to/compressed.tar.gz file you wish to decompress */
+    public function decompress(string $filePath): void;
 }

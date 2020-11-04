@@ -7,15 +7,23 @@ use Misery\Component\Common\FileManager\LocalFileManager;
 class CompressedTarArchiver implements ArchiverInterface
 {
     /** @var LocalFileManager */
-    private LocalFileManager $fileManager;
+    private $fileManager;
 
     public function __construct(LocalFileManager $fileManager)
     {
         $this->fileManager = $fileManager;
     }
 
-    public function compress(string $filePath)
+    /** @inheritDoc */
+    public function compress(string $filePath): void
     {
+        $tarPath = $this->getTarPath($filePath);
+
+        $p = new \PharData($tarPath);
+
+        $p->buildFromDirectory($this->fileManager->getWorkingDirectory());
+
+        $p->compress(\Phar::GZ);
     }
 
     /** @inheritDoc */
@@ -27,14 +35,19 @@ class CompressedTarArchiver implements ArchiverInterface
         // creates /path/to/my.tar
         $p->decompress();
 
-        // unarchive from the tar
-        $tarPath = substr($filePath, 0 , (strrpos($filePath, ".")));
+        // unarchived from the tar
+        $tarPath = $this->getTarPath($filePath);
         $phar = new \PharData($tarPath);
 
         $phar->extractTo($this->fileManager->getWorkingDirectory());
 
-        // succes then remove
+        // success then remove residu
         $this->fileManager->removeFile($filePath);
         $this->fileManager->removeFile($tarPath);
+    }
+
+    private function getTarPath(string $filePath): string
+    {
+        return substr($filePath, 0 , (strrpos($filePath, '.')));
     }
 }
