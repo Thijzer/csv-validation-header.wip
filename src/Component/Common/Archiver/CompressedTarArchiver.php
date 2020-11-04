@@ -19,11 +19,18 @@ class CompressedTarArchiver implements ArchiverInterface
     {
         $tarPath = $this->getTarPath($filePath);
 
+        $files = $this->fileManager->listFiles();
+
         $p = new \PharData($tarPath);
 
         $p->buildFromDirectory($this->fileManager->getWorkingDirectory());
 
         $p->compress(\Phar::GZ);
+
+        foreach ($files as $file) {
+            $this->fileManager->removeFile($file);
+        }
+        $this->fileManager->removeFile($tarPath);
     }
 
     /** @inheritDoc */

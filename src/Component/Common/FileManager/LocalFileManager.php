@@ -13,7 +13,7 @@ class LocalFileManager implements FileManagerInterface
         $this->removeEmptyDir = $removeEmptyDir;
     }
 
-    public function appendDirectory(string $workingDirectory)
+    public function createSub(string $workingDirectory)
     {
         $directory = $this->workingDirectory . DIRECTORY_SEPARATOR . $workingDirectory;
         $this->makePath($directory);
@@ -52,7 +52,9 @@ class LocalFileManager implements FileManagerInterface
     public function listFiles(): \Generator
     {
         foreach (glob($this->workingDirectory."/*") as $file) {
-            yield $file;
+            if (is_file($file)) {
+                yield $file;
+            }
         }
     }
 
