@@ -2,6 +2,7 @@
 
 namespace Misery\Component\Common\Archiver;
 
+use Misery\Component\Common\FileManager\Exeption\FileNotFoundException;
 use Misery\Component\Common\FileManager\LocalFileManager;
 
 class CompressedTarArchiver implements ArchiverInterface
@@ -19,11 +20,9 @@ class CompressedTarArchiver implements ArchiverInterface
     {
         $files = iterator_to_array($this->fileManager->listFiles());
 
-        $filePath = $this->fileManager->getAbsolutePath($filePath);
+        $pseudoFile = $this->fileManager->getAbsolutePath(uniqid(). '.tar');
 
-        $tarPath = $this->getTarPath($filePath);
-
-        $p = new \PharData($tarPath);
+        $p = new \PharData($pseudoFile);
 
         $p->buildFromDirectory($this->fileManager->getWorkingDirectory());
 
@@ -32,12 +31,20 @@ class CompressedTarArchiver implements ArchiverInterface
         foreach ($files as $file) {
             $this->fileManager->removeFile($file);
         }
-        $this->fileManager->removeFile($tarPath);
+        $this->fileManager->removeFile($pseudoFile);
+
+        $this->fileManager->moveFile($pseudoFile.'.gz', $filePath);
     }
 
-    /** @inheritDoc */
+    /** @inheritDoc
+     * @throws FileNotFoundException
+     */
     public function decompress(string $filePath): void
     {
+        if (false === $this->fileManager->isFile($filePath)) {
+            throw new FileNotFoundException($filePath);
+        }
+
         $filePath = $this->fileManager->getAbsolutePath($filePath);
 
         // '/path/to/my.tar.gz'

@@ -38,13 +38,7 @@ class TarArchiverTest extends TestCase
 
         $archiver->compress('test.tar.gz');
 
-        self::assertFileNotExists($manager->getAbsolutePath('test.nothing'));
-
-        // we need to move the file else the archiver sees it as a double from creation
-        // ERROR : BadMethodCallException: Unable to add newly converted phar "test.tar" to the list of phars,
-        $manager->moveFile('test.tar.gz', 'new.tar.gz');
-
-        $archiver->decompress('new.tar.gz');
+        $archiver->decompress('test.tar.gz');
 
         self::assertFileExists($manager->getAbsolutePath('test.nothing'));
 

@@ -45,6 +45,11 @@ class LocalFileManager implements FileManagerInterface
         file_put_contents($this->getAbsolutePath($filename), $content);
     }
 
+    public function isFile(string $filename): bool
+    {
+        return file_exists($this->getAbsolutePath($filename));
+    }
+
     public function getFileContent(string $filename)
     {
         file_get_contents($this->getAbsolutePath($filename));
@@ -58,7 +63,7 @@ class LocalFileManager implements FileManagerInterface
         }
 
         if ($this->removeEmptyDir) {
-            $this->removeEmptyDirectory(pathinfo($filename)['dirname']);
+            $this->removeEmptyDirectory($this->getDirectory($filename));
         }
     }
 
@@ -84,6 +89,15 @@ class LocalFileManager implements FileManagerInterface
     }
 
     /**
+     * @param string $filename
+     * @return mixed|string
+     */
+    private function getDirectory(string $filename)
+    {
+        return pathinfo($filename)['dirname'];
+    }
+
+    /**
      * Returns Absolute paths even when entering Relative ones.
      * Only Local FS required absoluteness
      *
@@ -92,6 +106,8 @@ class LocalFileManager implements FileManagerInterface
      */
     public function getAbsolutePath(string $filename): string
     {
+        $this->makePath($this->getDirectory($filename));
+
         if (strpos($filename, $this->workingDirectory) === false) {
             return $this->workingDirectory. DIRECTORY_SEPARATOR . $filename;
         }
