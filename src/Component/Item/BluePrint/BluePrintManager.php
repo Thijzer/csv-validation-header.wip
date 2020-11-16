@@ -33,7 +33,7 @@ class BluePrintManager
         $this->itemConfigurationHandler = $itemConfigurationHandler;
     }
 
-    private function prepare(array $configuration, FileManagerInterface $manager)
+    public function prepareAndHandle(array $configuration, FileManagerInterface $manager)
     {
         // todo we need a blueprint manager that arranges this
         // that can create source Collections from blueprints and files
