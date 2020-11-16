@@ -13,7 +13,7 @@ class LocalFileManager implements FileManagerInterface
         $this->removeEmptyDir = $removeEmptyDir;
     }
 
-    public function createSub(string $workingDirectory)
+    public function createSub(string $workingDirectory): self
     {
         $directory = $this->workingDirectory . DIRECTORY_SEPARATOR . $workingDirectory;
         $this->makePath($directory);
@@ -53,6 +53,13 @@ class LocalFileManager implements FileManagerInterface
     public function getFileContent(string $filename)
     {
         file_get_contents($this->getAbsolutePath($filename));
+    }
+
+    public function removeFiles(...$filenames): void
+    {
+        foreach ($filenames as $filename) {
+            $this->removeFile($filename);
+        }
     }
 
     public function removeFile(string $filename): void
