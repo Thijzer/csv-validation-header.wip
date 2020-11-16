@@ -16,21 +16,18 @@ class BluePrintManager
     private $encoderFactory;
     private $decoderFactory;
     private $actionFactory;
-    private $itemConfigurationHandler;
     private $bluePrintPath;
 
     public function __construct(
         ItemEncoderFactory $encoderFactory,
         ItemDecoderFactory $decoderFactory,
         ItemActionProcessorFactory $actionFactory,
-        ItemConfigurationHandler $itemConfigurationHandler,
         ParameterBagInterface $parameterBag
     ) {
         $this->encoderFactory = $encoderFactory;
         $this->decoderFactory = $decoderFactory;
         $this->actionFactory = $actionFactory;
         $this->bluePrintPath = $parameterBag->get('default_blue_print_path');
-        $this->itemConfigurationHandler = $itemConfigurationHandler;
     }
 
     public function prepareAndHandle(array $configuration, FileManagerInterface $manager)
