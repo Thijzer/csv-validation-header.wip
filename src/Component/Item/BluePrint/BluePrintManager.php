@@ -3,14 +3,12 @@
 namespace Misery\Component\Item\BluePrint;
 
 use Misery\Component\Action\ItemActionProcessorFactory;
-use Misery\Component\Common\FileManager\FileManagerInterface;
 use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Decoder\ItemDecoderFactory;
 use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Item\Handler\ItemConfigurationHandler;
 use Misery\Component\Source\CreateSourcePaths;
 use Misery\Component\Source\SourceCollectionFactory;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class BluePrintManager
 {
