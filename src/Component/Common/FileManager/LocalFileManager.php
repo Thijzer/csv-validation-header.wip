@@ -52,7 +52,7 @@ class LocalFileManager implements FileManagerInterface
 
     public function getFileContent(string $filename)
     {
-        file_get_contents($this->getAbsolutePath($filename));
+        return file_get_contents($this->getAbsolutePath($filename));
     }
 
     public function removeFiles(...$filenames): void
