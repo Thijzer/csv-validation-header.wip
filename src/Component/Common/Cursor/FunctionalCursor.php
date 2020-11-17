@@ -45,7 +45,8 @@ class FunctionalCursor implements CursorInterface
     public function current()
     {
         $function = $this->function;
-        return $function($this->cursor->current());
+        $item = $this->cursor->current();
+        return $item ? $function($item) : false;
     }
 
     /**

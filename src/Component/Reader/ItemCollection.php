@@ -6,10 +6,6 @@ use Misery\Component\Common\Cursor\CursorInterface;
 
 class ItemCollection implements CursorInterface
 {
-    public const DELIMITER = ';';
-    public const ENCLOSURE = '"';
-    public const ESCAPE = '\\';
-
     /** @var int */
     private $position = 0;
     /** @var array */

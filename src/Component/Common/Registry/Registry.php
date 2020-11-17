@@ -29,6 +29,13 @@ class Registry implements RegistryInterface
         return $this;
     }
 
+    public function registerAll(array $objects): void
+    {
+        foreach ($objects as $object) {
+            $this->register($object::NAME, $object);
+        }
+    }
+
     public function filterByAlias(string $alias)
     {
         return $this->collection->get($alias)->first();
