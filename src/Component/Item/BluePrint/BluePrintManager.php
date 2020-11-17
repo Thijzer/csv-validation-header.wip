@@ -4,6 +4,7 @@ namespace Misery\Component\Item\BluePrint;
 
 use Misery\Component\Action\ItemActionProcessorFactory;
 use Misery\Component\Common\FileManager\FileManagerInterface;
+use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Decoder\ItemDecoderFactory;
 use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Item\Handler\ItemConfigurationHandler;
@@ -22,15 +23,15 @@ class BluePrintManager
         ItemEncoderFactory $encoderFactory,
         ItemDecoderFactory $decoderFactory,
         ItemActionProcessorFactory $actionFactory,
-        ParameterBagInterface $parameterBag
+        string $bluePrintPath
     ) {
         $this->encoderFactory = $encoderFactory;
         $this->decoderFactory = $decoderFactory;
         $this->actionFactory = $actionFactory;
-        $this->bluePrintPath = $parameterBag->get('default_blue_print_path');
+        $this->bluePrintPath = $bluePrintPath;
     }
 
-    public function prepareAndHandle(array $configuration, FileManagerInterface $manager)
+    public function prepareAndHandle(array $configuration, LocalFileManager $manager)
     {
         // todo we need a blueprint manager that arranges this
         // that can create source Collections from blueprints and files
