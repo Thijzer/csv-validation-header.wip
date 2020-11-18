@@ -29,7 +29,7 @@ class Registry implements RegistryInterface
         return $this;
     }
 
-    public function registerAll(array $objects): void
+    public function registerAll(...$objects): void
     {
         foreach ($objects as $object) {
             $this->register($object::NAME, $object);
