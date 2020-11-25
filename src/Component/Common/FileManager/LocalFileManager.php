@@ -30,6 +30,11 @@ class LocalFileManager implements FileManagerInterface
         return $this->workingDirectory;
     }
 
+    public function provisionPath(string $filename): string
+    {
+        return $this->getAbsolutePath($filename);
+    }
+
     public function copyFile(string $filename, string $newFilename)
     {
         copy($this->getAbsolutePath($filename), $this->getAbsolutePath($newFilename));
@@ -38,6 +43,11 @@ class LocalFileManager implements FileManagerInterface
     public function moveFile(string $filename, string $newFilename)
     {
         rename($this->getAbsolutePath($filename), $this->getAbsolutePath($newFilename));
+    }
+
+    public function find(string $regex): \Iterator
+    {
+        return new \GlobIterator($this->getAbsolutePath($regex));
     }
 
     public function addFile(string $filename, $content)
