@@ -32,13 +32,12 @@ class ItemCompare
             $oldCodes = ReferenceBuilder::build($this->old, ...$references);
             $reference = key($oldCodes);
             $oldCodes = current($oldCodes);
-            $newCodes = ReferenceBuilder::build($this->new, ...$references);
-            $newCodes = current($newCodes);
+            $newCodes = ReferenceBuilder::buildValues($this->new, ...$references);
         } else {
             $reference = current($references);
             // compare the old with the new
-            $oldCodes = ReferenceBuilder::build($this->old, $reference)[$reference];
-            $newCodes = ReferenceBuilder::build($this->new, $reference)[$reference];
+            $oldCodes = ReferenceBuilder::buildValues($this->old, $reference);
+            $newCodes = ReferenceBuilder::buildValues($this->new, $reference);
         }
 
         $changes = [

@@ -1,0 +1,15 @@
+encode:
+  first_name:
+    string: ~
+  last_name:
+    string: ~
+
+parse:
+  type: csv
+  unflatten:
+    separator: '-'
+  nullify: ~
+  reference: code
+  format:
+    delimiter: ';'
+    enclosure: '"'

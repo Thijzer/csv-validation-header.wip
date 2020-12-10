@@ -2,7 +2,7 @@
 
 namespace Tests\Misery\Component\Reader;
 
-use Misery\Component\Filter\ColumnFilter;
+use Misery\Component\Filter\ColumnReducer;
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
@@ -29,13 +29,19 @@ class ItemReaderTest extends TestCase
             'last_name' => 'Cauter',
             'phone' => '1234556356',
         ],
+        [
+            'id' => "4",
+            'first_name' => 'Mieke',
+            'last_name' => 'Paepe',
+            'phone' => '12345563567',
+        ],
     ];
 
     public function test_parse_a_column(): void
     {
         $reader = new ItemReader($items = new ItemCollection($this->items));
 
-        $filteredReader = ColumnFilter::filter($reader, 'first_name');
+        $filteredReader = ColumnReducer::reduce($reader, 'first_name');
 
         $expected = [
             [
@@ -43,6 +49,9 @@ class ItemReaderTest extends TestCase
             ],
             [
                 'first_name' => 'Frans',
+            ],
+            [
+                'first_name' => 'Mieke',
             ],
             [
                 'first_name' => 'Mieke',
@@ -56,7 +65,7 @@ class ItemReaderTest extends TestCase
     {
         $reader = new ItemReader($items = new ItemCollection($this->items));
 
-        $filteredReader = ColumnFilter::filter($reader, 'first_name', 'last_name');
+        $filteredReader = ColumnReducer::reduce($reader, 'first_name', 'last_name');
 
         $this->assertSame(
             array_keys(current($filteredReader->getItems())), ['first_name', 'last_name']
@@ -96,7 +105,7 @@ class ItemReaderTest extends TestCase
         $reader = $reader
             ->index([0, 1])
         ;
-        $filteredReader = ColumnFilter::filter($reader, 'first_name', 'last_name');
+        $filteredReader = ColumnReducer::reduce($reader, 'first_name', 'last_name');
 
         $result = [
             0 => [
@@ -119,7 +128,7 @@ class ItemReaderTest extends TestCase
         $reader = $reader
             ->find(['first_name' => 'Frans'])
         ;
-        $filteredReader = ColumnFilter::filter($reader, 'first_name', 'last_name');
+        $filteredReader = ColumnReducer::reduce($reader, 'first_name', 'last_name');
 
         $result = [
             1 => [
@@ -147,6 +156,40 @@ class ItemReaderTest extends TestCase
                 'first_name' => 'Frans',
                 'last_name' => 'Merkel',
                 'phone' => '123456',
+            ],
+        ];
+
+        $this->assertSame($result, $reader->getItems());
+    }
+
+    public function test_double_filter_items(): void
+    {
+        $reader = new ItemReader($items = new ItemCollection($this->items));
+
+        $reader = $reader
+            ->filter(function ($row) {
+                return $row['first_name'] === 'Mieke';
+            })
+        ;
+
+        $reader = $reader
+            ->filter(function ($row) {
+                return $row['last_name'] === 'Paepe';
+            })
+        ;
+
+        $reader = $reader
+            ->filter(function ($row) {
+                return $row['last_name'] === 'Paepe';
+            })
+        ;
+
+        $result = [
+            3 => [
+                'id' => "4",
+                'first_name' => 'Mieke',
+                'last_name' => 'Paepe',
+                'phone' => '12345563567',
             ],
         ];
 

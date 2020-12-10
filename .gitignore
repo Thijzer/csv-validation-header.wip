@@ -1,3 +1,7 @@
+/bin/
+!/bin/composer
+!/bin/php
 /vendor/
 .phpunit.result.cache
 /examples/tmp/*
+composer.lock
