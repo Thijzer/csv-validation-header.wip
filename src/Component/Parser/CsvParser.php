@@ -86,7 +86,7 @@ class CsvParser implements CursorInterface
 
         // here we need to use the filter
         $row = @array_combine($this->headers, $current);
-        if (false === $row) {
+        if (!is_array($row)) {
             throw new Exception\InvalidCsvElementSizeException(
                 $this->file->getFilename(),
                 $this->key(),
