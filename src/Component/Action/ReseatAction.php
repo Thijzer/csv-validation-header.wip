@@ -19,16 +19,23 @@ class ReseatAction implements OptionsInterface
 
     public function apply(array $item): array
     {
-        $keys = array_intersect($this->options['keys'], array_keys($item));
+        $tmp = [];
+        if ($this->options['from'] === 'all') {
+            $tmp[$this->options['to']] = $item;
+
+            return $tmp;
+        }
+
+        $keys = array_intersect($this->options['from'], array_keys($item));
         if (empty($keys)) {
             return $item;
         }
 
-        $tmp = [];
         foreach ($keys as $key) {
-            $tmp[$this->options['to']][$key] = $item[$key];
+            $item[$this->options['to']][$key] = $item[$key];
+            unset($item[$key]);
         }
 
-        return $tmp;
+        return $item;
     }
 }

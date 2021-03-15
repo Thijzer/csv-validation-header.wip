@@ -148,4 +148,25 @@ class ArrayFunctions
 
         return $array;
     }
+
+    /** function array_filter_recursive
+     *
+     *      Exactly the same as array_filter except this function
+     *      filters within multi-dimensional arrays
+     *
+     * @param array $array
+     * @param callable $callback optional callback function name
+     *
+     * @return array merged array
+     */
+    public static function array_filter_recursive(array $array, callable $callback): array
+    {
+        $array = array_map(static function($item) use ($callback) {
+            return is_array($item) ? static::array_filter_recursive($item, $callback) : $item;
+        }, $array);
+
+        return array_filter($array, static function($item) use ($callback) {
+            return $callback($item);
+        });
+    }
 }

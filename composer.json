@@ -12,6 +12,7 @@
         "php": "8.*|7.4.*|7.3.*|7.2.*|7.1.*",
         "ext-json": "*",
         "ext-iconv": "*",
+        "ext-xmlwriter": "*",
         "symfony/yaml": "5.*|^4.3|^3.4"
     },
     "require-dev": {
@@ -35,6 +36,9 @@
             "php vendor/bin/phpunit",
             "vendor/bin/phpstan analyse -l 5 src",
             "vendor/bin/phpstan analyse -l 3 tests"
+        ],
+        "unit-check": [
+            "php vendor/bin/phpunit --exclude-group performance"
         ],
         "unit-test": [
             "php vendor/bin/phpunit --exclude-group performance",

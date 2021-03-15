@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Writer;
 
-class CsvWriter
+class CsvWriter implements ItemWriterInterface
 {
     public const DELIMITER = ';';
 
@@ -34,11 +34,11 @@ class CsvWriter
         );
     }
 
-    public function write(array $row): void
+    public function write(array $data): void
     {
-        $this->setHeader(array_keys($row));
+        $this->setHeader(array_keys($data));
 
-        fputcsv($this->handle, array_values($row), $this->delimiter);
+        fputcsv($this->handle, array_values($data), $this->delimiter);
     }
 
     public function close(): void

@@ -3,5 +3,5 @@
 !/bin/php
 /vendor/
 .phpunit.result.cache
-/examples/tmp/*
+/examples/*
 composer.lock
