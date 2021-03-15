@@ -196,6 +196,29 @@ class ItemReaderTest extends TestCase
         $this->assertSame($result, $reader->getItems());
     }
 
+    public function test_find_multiple_items(): void
+    {
+        $reader = new ItemReader($items = new ItemCollection($this->items));
+
+        $reader = $reader
+            ->find(['first_name' => ['Frans', 'Mieke']])
+        ;
+        $filteredReader = ColumnReducer::reduce($reader, 'first_name', 'last_name');
+
+        $result = [
+            1 => [
+                'first_name' => 'Frans',
+                'last_name' => 'Merkel',
+            ],
+            2 => [
+                'first_name' => 'Mieke',
+                'last_name' => 'Cauter',
+            ],
+        ];
+
+        $this->assertSame($result, $filteredReader->getItems());
+    }
+
     public function test_map_items(): void
     {
         $reader = new ItemReader($items = new ItemCollection([$this->items[0]]));

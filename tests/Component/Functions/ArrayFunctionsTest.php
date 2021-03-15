@@ -124,4 +124,14 @@ class ArrayFunctionsTest extends TestCase
             'sku' => '1',
         ], $result);
     }
+
+
+    public function test_it_should_strpos_any_elem_from_an_array(): void
+    {
+        $needles = ['burger', 'town'];
+
+        $this->assertFalse(ArrayFunctions::strpos_array('String contains word "cheese" and "tea".', $needles));
+
+        $this->assertTrue(ArrayFunctions::strpos_array('String contains word "cheese" and "town".', $needles));
+    }
 }

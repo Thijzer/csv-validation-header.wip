@@ -115,6 +115,17 @@ class ArrayFunctions
         );
     }
 
+    /**
+     * @param $haystack
+     * @param array $needles
+     *
+     * @return bool
+     */
+    public static function strpos_array($haystack, $needles = [])
+    {
+        return $haystack !== str_replace($needles, '', $haystack);
+    }
+
     public static function array_set(&$array, $key, $value, $prefix = '.'): array
     {
         if (null === $key) {
