@@ -4,8 +4,10 @@ namespace Misery\Component\Statement;
 
 use Misery\Component\Common\Options\OptionsInterface;
 
-class ContainsStatement
+class ContainsStatement implements StatementInterface
 {
+    public const NAME = 'CONTAINS';
+
     use StatementTrait;
 
     private function whenField(Field $field, array $item): bool

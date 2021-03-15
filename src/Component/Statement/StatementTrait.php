@@ -3,7 +3,6 @@
 namespace Misery\Component\Statement;
 
 use Misery\Component\Action\ActionInterface;
-use Misery\Component\Common\Options\OptionsInterface;
 
 trait StatementTrait
 {
@@ -24,7 +23,7 @@ trait StatementTrait
         return $self;
     }
 
-    public function when(string $field, string $value): self
+    public function when(string $field, string $value = null): self
     {
         $this->key++;
 
@@ -33,14 +32,14 @@ trait StatementTrait
         return $this;
     }
 
-    public function then(string $field, string $value): void
+    public function then(string $field, string $value = null): void
     {
         if (isset($this->conditions[$this->key])) {
             $this->conditions[$this->key] = $this->conditions[$this->key]+['then' => new Field($field, $value)];
         }
     }
 
-    public function apply($item): array
+    public function apply(array $item): array
     {
         foreach ($this->conditions as $condition) {
             if (true === $this->whenField($condition['when'], $item)) {

@@ -7,7 +7,7 @@ class Field
     private $field;
     private $value;
 
-    public function __construct(string $field, string $value)
+    public function __construct(string $field, string $value = null)
     {
         $this->field = $field;
         $this->value = $value;
@@ -18,7 +18,7 @@ class Field
         return $this->field;
     }
 
-    public function getValue(): string
+    public function getValue(): ? string
     {
         return $this->value;
     }

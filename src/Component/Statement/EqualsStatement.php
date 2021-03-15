@@ -4,8 +4,10 @@ namespace Misery\Component\Statement;
 
 use Misery\Component\Common\Options\OptionsInterface;
 
-class EqualsStatement
+class EqualsStatement implements StatementInterface
 {
+    public const NAME = 'EQUALS';
+
     use StatementTrait;
 
     private function whenField(Field $field, array $item): bool
