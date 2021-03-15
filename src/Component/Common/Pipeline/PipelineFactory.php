@@ -8,6 +8,7 @@ use Misery\Component\Decoder\ItemDecoderFactory;
 use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Parser\CsvParser;
 use Misery\Component\Reader\ItemReader;
+use Misery\Component\Source\Source;
 use Misery\Component\Source\SourceCollection;
 use Misery\Component\Writer\XmlWriter;
 
@@ -43,6 +44,15 @@ class PipelineFactory
             $configuration['input']['reader']['delimiter'] ?? CsvParser::DELIMITER,
             $configuration['input']['reader']['enclosure'] ?? CsvParser::ENCLOSURE
         ));
+
+        $sources->add(new Source(
+            new ItemReader(CsvParser::create($manager->getWorkingDirectory(). DIRECTORY_SEPARATOR . 'attribute.csv')),
+            'attribute'
+        ));
+        $sources->add(new Source(
+            $reader, 'product'
+        ));
+
         $pipeline->input(new PipeReader($reader));
 
         if (isset($configuration['output'])) {
@@ -53,7 +63,7 @@ class PipelineFactory
             $pipeline->output(new PipeWriter($writer));
         }
         if (isset($configuration['encoder'])) {
-            $encoder = $this->encoderFactory->createItemEncoder($configuration['encoder']);
+            $encoder = $this->encoderFactory->createItemEncoder($sources, $configuration['encoder']);
             $pipeline->line(new EncodingPipe($encoder));
         }
         if (isset($configuration['actions'])) {

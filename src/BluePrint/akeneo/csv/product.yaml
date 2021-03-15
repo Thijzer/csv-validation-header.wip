@@ -12,12 +12,21 @@ encode:
   groups:
     list: ~
 
+#
+#list:
+#  code: attribute_code_and_types
+#  options:
+#    source: attribute
+#    command: key_value_pair
+#    id: code
+#    value: type
+
 parse:
   type: csv
-  unflatten:
-    separator: '-'
-  nullify: ~
   reference: sku
+  structure: 'akeneo/product/csv'
+#    name: 'akeneo/product/csv'
+#    context: $attribute_code_and_types
   format:
     delimiter: ';'
     enclosure: '"'

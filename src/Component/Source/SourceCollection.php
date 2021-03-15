@@ -2,7 +2,6 @@
 
 namespace Misery\Component\Source;
 
-
 class SourceCollection
 {
     /** @var array */

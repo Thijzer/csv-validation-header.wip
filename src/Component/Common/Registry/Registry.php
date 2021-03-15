@@ -29,6 +29,20 @@ class Registry implements RegistryInterface
         return $this;
     }
 
+    public function registerByName(RegisteredByNameInterface $object): self
+    {
+        $this->collection->set($object->getName(), $object);
+
+        return $this;
+    }
+
+    public function registerAllByName(...$objects): void
+    {
+        foreach ($objects as $object) {
+            $this->registerByName($object);
+        }
+    }
+
     public function registerAll(...$objects): void
     {
         foreach ($objects as $object) {

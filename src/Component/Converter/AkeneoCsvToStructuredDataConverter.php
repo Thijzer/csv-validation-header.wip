@@ -2,16 +2,20 @@
 
 namespace Misery\Component\Converter;
 
-class AkeneoCsvToStructuredDataConverter implements ConverterInterface
+use Misery\Component\Common\Registry\RegisteredByNameInterface;
+use Misery\Component\Item\Builder\KeyValuePairBuilder;
+use Misery\Component\Source\SourceCollectionAwareInterface;
+use Misery\Component\Source\SourceCollectionTrait;
+
+class AkeneoCsvToStructuredDataConverter implements ConverterInterface, RegisteredByNameInterface, SourceCollectionAwareInterface
 {
+    use SourceCollectionTrait;
+
     private $codes;
-    private $keyValuePair;
     private $csvHeaderContext;
 
-    public function __construct(AkeneoCsvHeaderContext $csvHeaderContext, array $codes, array $keyValuePair)
+    public function __construct(AkeneoCsvHeaderContext $csvHeaderContext)
     {
-        $this->codes = $codes;
-        $this->keyValuePair = $keyValuePair;
         $this->csvHeaderContext = $csvHeaderContext;
     }
 
@@ -24,11 +28,11 @@ class AkeneoCsvToStructuredDataConverter implements ConverterInterface
 
             $keys = explode($separator, $key);
 
-            if (false === in_array($keys[0], $this->codes)) {
+            if (false === in_array($keys[0], array_keys($this->getCodes()))) {
                 continue;
             }
 
-            if (strpos( $key, '-unit') !== false) {
+            if (strpos($key, '-unit') !== false) {
                 unset($item[$key]);
                 continue;
             }
@@ -37,7 +41,8 @@ class AkeneoCsvToStructuredDataConverter implements ConverterInterface
             $prep = $this->csvHeaderContext->create($item)[$key];
             $prep['data'] = $value;
 
-            if ($this->keyValuePair[$keys[0]] === 'pim_catalog_metric') {
+            # metric exception
+            if ($this->getCodes()[$keys[0]] === 'pim_catalog_metric') {
                 $prep['unit'] = $item[str_replace($keys[0], $keys[0].'-unit', $key)] ?? null;
             }
 
@@ -65,7 +70,20 @@ class AkeneoCsvToStructuredDataConverter implements ConverterInterface
         return $item+$output;
     }
 
-    public function getName()
+    public function getCodes(): array
+    {
+        if (null === $this->codes) {
+            $this->codes = KeyValuePairBuilder::build(
+                $this->getSource('attribute')->getReader(),
+                'code',
+                'type'
+            );
+        }
+
+        return $this->codes;
+    }
+
+    public function getName(): string
     {
         return 'akeneo/product/csv';
     }

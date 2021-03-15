@@ -4,6 +4,13 @@ require __DIR__.'/../vendor/autoload.php';
 
 // formatters are reversable // Modifiers are NOT reversable
 
+$structureRegistry = new Misery\Component\Common\Registry\Registry('structure');
+$structureRegistry->registerByName(
+    new Misery\Component\Converter\AkeneoCsvToStructuredDataConverter(
+        new Misery\Component\Converter\AkeneoCsvHeaderContext()
+    )
+);
+
 $modifierRegistry = new Misery\Component\Common\Registry\Registry('modifier');
 $modifierRegistry
     ->register(Misery\Component\Modifier\StripSlashesModifier::NAME, new Misery\Component\Modifier\StripSlashesModifier())
@@ -11,6 +18,7 @@ $modifierRegistry
     ->register(Misery\Component\Modifier\NullifyEmptyStringModifier::NAME, new Misery\Component\Modifier\NullifyEmptyStringModifier())
     ->register(Misery\Component\Modifier\ReplaceCharacterModifier::NAME, new Misery\Component\Modifier\ReplaceCharacterModifier())
     ->register(Misery\Component\Modifier\FilterEmptyStringModifier::NAME, new Misery\Component\Modifier\FilterEmptyStringModifier())
+    ->register(Misery\Component\Modifier\StructureModifier::NAME, new Misery\Component\Modifier\StructureModifier($structureRegistry))
 ;
 
 $formatRegistry = new Misery\Component\Common\Registry\Registry('format');

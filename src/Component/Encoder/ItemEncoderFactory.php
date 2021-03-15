@@ -3,6 +3,7 @@
 namespace Misery\Component\Encoder;
 
 use Misery\Component\Common\Registry\RegistryInterface;
+use Misery\Component\Source\SourceCollection;
 
 class ItemEncoderFactory
 {
@@ -15,9 +16,10 @@ class ItemEncoderFactory
         return $this;
     }
 
-    public function createItemEncoder(array $configuration)
+    public function createItemEncoder(SourceCollection $collection, array $configuration)
     {
         return new ItemEncoder(
+            $collection,
             $this->prepRulesFromConfiguration($configuration)
         );
     }

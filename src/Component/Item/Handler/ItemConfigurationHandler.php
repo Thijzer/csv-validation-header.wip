@@ -50,8 +50,9 @@ class ItemConfigurationHandler
                     $configuration['blueprint_path'] . '/%s.yaml'
                 );
 
-                $sources = SourceCollectionFactory::create($this->encoderFactory, $this->decoderFactory, $sourcePaths);
+                $sources = SourceCollectionFactory::create($this->encoderFactory, $sourcePaths);
             }
+            $decoder = $this->decoderFactory->createItemDecoder($configuration);
 
             // blend client configuration and customer configuration
             $actionProcessor = $this->actionFactory->createActionProcessor($sources, $configuration['conversion']['actions'] ?? []);
@@ -63,7 +64,7 @@ class ItemConfigurationHandler
 
             // decoder needs to happen before write
             foreach ($source->getReader()->getIterator() as $item) {
-                $writer->write($source->decode($actionProcessor->process($item)));
+                $writer->write($decoder->decode($actionProcessor->process($item)));
             }
 
         } catch (\Exception $e) {

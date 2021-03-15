@@ -39,7 +39,7 @@ class BluePrintManager
             $this->bluePrintPath . DIRECTORY_SEPARATOR . $configuration['sources']['type'] . '/%s.yaml'
         );
 
-        $sources = SourceCollectionFactory::create($this->encoderFactory, $this->decoderFactory, $sourcePaths);
+        $sources = SourceCollectionFactory::create($this->encoderFactory, $sourcePaths);
 
         $handler = new ItemConfigurationHandler(
             $this->encoderFactory,

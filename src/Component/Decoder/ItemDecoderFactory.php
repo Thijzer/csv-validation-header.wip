@@ -2,7 +2,6 @@
 
 namespace Misery\Component\Decoder;
 
-
 use Misery\Component\Common\Registry\RegistryInterface;
 
 class ItemDecoderFactory
