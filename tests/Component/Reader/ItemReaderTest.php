@@ -214,6 +214,10 @@ class ItemReaderTest extends TestCase
                 'first_name' => 'Mieke',
                 'last_name' => 'Cauter',
             ],
+            3 => [
+                'first_name' => 'Mieke',
+                'last_name' => 'Paepe',
+            ],
         ];
 
         $this->assertSame($result, $filteredReader->getItems());

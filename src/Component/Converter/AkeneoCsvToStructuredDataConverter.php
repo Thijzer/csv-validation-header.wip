@@ -1,8 +1,8 @@
 <?php
 
-namespace Misery\Component\Common\Converter;
+namespace Misery\Component\Converter;
 
-class AkeneoCsvStructuredValueConverter
+class AkeneoCsvToStructuredDataConverter implements ConverterInterface
 {
     private $codes;
     private $keyValuePair;
@@ -15,14 +15,10 @@ class AkeneoCsvStructuredValueConverter
         $this->csvHeaderContext = $csvHeaderContext;
     }
 
-    public function convert(array $item)
+    public function convert(array $item): array
     {
         $separator = '-';
         $output = [];
-
-        # we need to calculate the keys here on the header,
-        # then we calculated store result an merge recursively.
-        # after that we only need to set our data value or unit
 
         foreach ($item as $key => $value) {
 
@@ -52,7 +48,7 @@ class AkeneoCsvStructuredValueConverter
         return $item+$output;
     }
 
-    public function revert(array $item)
+    public function revert(array $item): array
     {
         $output = [];
         foreach ($item['values'] as $key => $value) {

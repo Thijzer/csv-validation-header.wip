@@ -2,10 +2,11 @@
 
 namespace Tests\Misery\Component\Converter;
 
-use Misery\Component\Converter\AkeneoCsvStructureConverter;
+use Misery\Component\Converter\AkeneoCsvHeaderContext;
+use Misery\Component\Converter\AkeneoCsvToStructuredDataConverter;
 use PHPUnit\Framework\TestCase;
 
-class AkeneoCsvStructureConverterTest extends TestCase
+class AkeneoCsvToStructuredDataConverterTest extends TestCase
 {
     private $items = [
         [
@@ -25,8 +26,15 @@ class AkeneoCsvStructureConverterTest extends TestCase
     {
         $item = $this->items[0];
 
-        $convertedItem = AkeneoCsvStructureConverter::convert($item, ['code', 'description']);
-        $revertedItem = AkeneoCsvStructureConverter::revert($convertedItem, ['code', 'description']);
+        $headerContext = new AkeneoCsvHeaderContext();
+        $converter = new AkeneoCsvToStructuredDataConverter(
+            $headerContext,
+            ['code', 'description'],
+            ['code' => 'text', 'description' => 'text']
+        );
+
+        $convertedItem = $converter->convert($item);
+        $revertedItem = $converter->revert($convertedItem);
 
         $this->assertTrue($item == $revertedItem);
     }

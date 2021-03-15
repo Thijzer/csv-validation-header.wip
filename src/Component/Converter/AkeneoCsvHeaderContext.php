@@ -1,6 +1,6 @@
 <?php
 
-namespace Misery\Component\Common\Converter;
+namespace Misery\Component\Converter;
 
 use Misery\Component\Validator\LocaleValidator;
 
