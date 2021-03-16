@@ -2,9 +2,11 @@
 
 namespace Misery\Component\Decoder;
 
+use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
+use Misery\Component\Converter\ConverterInterface;
 
-class ItemDecoderFactory
+class ItemDecoderFactory implements RegisteredByNameInterface
 {
     private $registryCollection;
 
@@ -15,14 +17,15 @@ class ItemDecoderFactory
         return $this;
     }
 
-    public function createItemDecoder(array $configuration)
+    public function createItemDecoder(array $configuration, ConverterInterface $converter = null)
     {
         return new ItemDecoder(
-            $this->prepRulesFromConfiguration($configuration)
+            $this->parseDirectivesFromConfiguration($configuration),
+            $converter
         );
     }
 
-    public function prepRulesFromConfiguration(array $configuration): array
+    public function parseDirectivesFromConfiguration(array $configuration): array
     {
         $rules = [];
 
@@ -57,5 +60,10 @@ class ItemDecoderFactory
     private function getFormatClass(string $formatName)
     {
         return $this->registryCollection['format']->filterByAlias($formatName);
+    }
+
+    public function getName(): string
+    {
+        return 'decoder';
     }
 }

@@ -2,17 +2,18 @@
 
 namespace Misery\Component\Converter;
 
+use Misery\Component\Common\Options\OptionsInterface;
+use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
-use Misery\Component\Item\Builder\KeyValuePairBuilder;
-use Misery\Component\Source\SourceCollectionAwareInterface;
-use Misery\Component\Source\SourceCollectionTrait;
 
-class AkeneoCsvToStructuredDataConverter implements ConverterInterface, RegisteredByNameInterface, SourceCollectionAwareInterface
+class AkeneoCsvToStructuredDataConverter implements ConverterInterface, RegisteredByNameInterface, OptionsInterface
 {
-    use SourceCollectionTrait;
+    use OptionsTrait;
 
-    private $codes;
     private $csvHeaderContext;
+    private $options = [
+        'list' => null,
+    ];
 
     public function __construct(AkeneoCsvHeaderContext $csvHeaderContext)
     {
@@ -21,14 +22,15 @@ class AkeneoCsvToStructuredDataConverter implements ConverterInterface, Register
 
     public function convert(array $item): array
     {
+        $codes = $this->getOption('list');
+        $keyCodes = array_keys($codes);
         $separator = '-';
         $output = [];
 
         foreach ($item as $key => $value) {
 
             $keys = explode($separator, $key);
-
-            if (false === in_array($keys[0], array_keys($this->getCodes()))) {
+            if (false === in_array($keys[0], $keyCodes)) {
                 continue;
             }
 
@@ -42,7 +44,7 @@ class AkeneoCsvToStructuredDataConverter implements ConverterInterface, Register
             $prep['data'] = $value;
 
             # metric exception
-            if ($this->getCodes()[$keys[0]] === 'pim_catalog_metric') {
+            if ($codes[$keys[0]] === 'pim_catalog_metric') {
                 $prep['unit'] = $item[str_replace($keys[0], $keys[0].'-unit', $key)] ?? null;
             }
 
@@ -68,19 +70,6 @@ class AkeneoCsvToStructuredDataConverter implements ConverterInterface, Register
         unset($item['values']);
 
         return $item+$output;
-    }
-
-    public function getCodes(): array
-    {
-        if (null === $this->codes) {
-            $this->codes = KeyValuePairBuilder::build(
-                $this->getSource('attribute')->getReader(),
-                'code',
-                'type'
-            );
-        }
-
-        return $this->codes;
     }
 
     public function getName(): string

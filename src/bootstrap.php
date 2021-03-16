@@ -4,8 +4,14 @@ require __DIR__.'/../vendor/autoload.php';
 
 // formatters are reversable // Modifiers are NOT reversable
 
-$structureRegistry = new Misery\Component\Common\Registry\Registry('structure');
-$structureRegistry->registerByName(
+$sourceRegistry = new Misery\Component\Common\Registry\Registry('source_command');
+$sourceRegistry->registerAllByName(
+    new Misery\Component\Source\Command\SourceFilterCommand(),
+    new Misery\Component\Source\Command\SourceKeyValueCommand()
+);
+
+$converterRegistry = new Misery\Component\Common\Registry\Registry('converter');
+$converterRegistry->registerByName(
     new Misery\Component\Converter\AkeneoCsvToStructuredDataConverter(
         new Misery\Component\Converter\AkeneoCsvHeaderContext()
     )
@@ -18,7 +24,6 @@ $modifierRegistry
     ->register(Misery\Component\Modifier\NullifyEmptyStringModifier::NAME, new Misery\Component\Modifier\NullifyEmptyStringModifier())
     ->register(Misery\Component\Modifier\ReplaceCharacterModifier::NAME, new Misery\Component\Modifier\ReplaceCharacterModifier())
     ->register(Misery\Component\Modifier\FilterEmptyStringModifier::NAME, new Misery\Component\Modifier\FilterEmptyStringModifier())
-    ->register(Misery\Component\Modifier\StructureModifier::NAME, new Misery\Component\Modifier\StructureModifier($structureRegistry))
 ;
 
 $formatRegistry = new Misery\Component\Common\Registry\Registry('format');
@@ -62,8 +67,29 @@ $decoder
     ->addRegistry($modifierRegistry)
 ;
 
+$converter = new Misery\Component\Converter\ConverterFactory();
+$converter->addRegistry($converterRegistry);
+
+$list = new Misery\Component\Source\ListFactory();
+$list->addRegistry($sourceRegistry);
+
 //$statementFactory = new Misery\Component\Statement\StatementFactory();
 //$factory
 //    ->addRegistry($actionRegistry)
 //    ->addRegistry($statementRegistry)
 //;
+
+
+$factoryRegistry = new Misery\Component\Common\Registry\Registry('factories');
+$factoryRegistry->registerAllByName(
+    new Misery\Component\Source\SourceCollectionFactory(),
+    new Misery\Component\Common\Pipeline\PipelineFactory(),
+    new Misery\Component\BluePrint\BluePrintFactory(__DIR__.'/../src/BluePrint'),
+    new Misery\Component\Statement\StatementFactory(),
+    $list,
+    $converter,
+    $decoder,
+    $encoder,
+    $actions
+);
+$configurationFactory = new Misery\Component\Configurator\ConfigurationFactory($factoryRegistry);

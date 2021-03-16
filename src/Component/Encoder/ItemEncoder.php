@@ -7,18 +7,19 @@ use Misery\Component\Common\Format\StringFormat;
 use Misery\Component\Common\Modifier\CellModifier;
 use Misery\Component\Common\Modifier\RowModifier;
 use Misery\Component\Common\Options\OptionsInterface;
+use Misery\Component\Converter\ConverterInterface;
 use Misery\Component\Source\SourceCollection;
 use Misery\Component\Source\SourceCollectionAwareInterface;
 
 class ItemEncoder
 {
     private $configurationRules;
-    private $collection;
+    private $converter;
 
-    public function __construct(SourceCollection $collection, array $configurationRules)
+    public function __construct(array $configurationRules, ConverterInterface $converter = null)
     {
         $this->configurationRules = $configurationRules;
-        $this->collection = $collection;
+        $this->converter = $converter;
     }
 
     public function encode(array $item): array
@@ -37,6 +38,10 @@ class ItemEncoder
             }
         }
 
+        if ($this->converter) {
+            $item = $this->converter->convert($item);
+        }
+
         return $item;
     }
 
@@ -46,10 +51,6 @@ class ItemEncoder
 
         if ($class instanceof OptionsInterface && !empty($match['options'])) {
             $class->setOptions($match['options']);
-        }
-
-        if ($class instanceof SourceCollectionAwareInterface) {
-            $class->setSourceCollection($this->collection);
         }
 
         switch (true) {

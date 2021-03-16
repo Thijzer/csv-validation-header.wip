@@ -2,9 +2,10 @@
 
 namespace Misery\Component\Statement;
 
+use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
 
-class StatementFactory
+class StatementFactory implements RegisteredByNameInterface
 {
     private $registryCollection;
 
@@ -52,5 +53,10 @@ class StatementFactory
     private function getNamedStatement(string $name)
     {
         return $this->registryCollection['statement']->filterByAlias($name) ?? null;
+    }
+
+    public function getName(): string
+    {
+        return 'statement';
     }
 }

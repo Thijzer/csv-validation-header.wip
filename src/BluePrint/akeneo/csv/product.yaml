@@ -1,32 +1,34 @@
 encode:
   sku:
     string: ~
-  categories:
-    list: ~
+#  categories:
+#    list: ~
   enabled:
     boolean: ~
   family:
     string: ~
   parent:
     string: ~
-  groups:
-    list: ~
+#  groups:
+#    list: ~
 
-#
-#list:
-#  code: attribute_code_and_types
-#  options:
-#    source: attribute
-#    command: key_value_pair
-#    id: code
-#    value: type
+list:
+  - name: 'attribute_code_and_types'
+    source: attribute.csv
+    source_command: key_value_pair
+    options:
+      key: code
+      value: type
 
-parse:
+converter:
+  name: 'akeneo/product/csv'
+  options:
+    list: 'attribute_code_and_types'
+
+reader:
   type: csv
   reference: sku
-  structure: 'akeneo/product/csv'
-#    name: 'akeneo/product/csv'
-#    context: $attribute_code_and_types
+  filename_match: product.csv
   format:
     delimiter: ';'
     enclosure: '"'

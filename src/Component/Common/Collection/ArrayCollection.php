@@ -34,6 +34,11 @@ class ArrayCollection
         return current($this->items);
     }
 
+    public function merge(ArrayCollection $collection)
+    {
+        $this->items = array_merge($this->items, $collection->getValues());
+    }
+
     public function map(\Closure $p): self
     {
         return new self(array_map($p, $this->items));

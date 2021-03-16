@@ -6,14 +6,17 @@ use Misery\Component\Common\Format\ArrayFormat;
 use Misery\Component\Common\Format\StringFormat;
 use Misery\Component\Common\Modifier\RowModifier;
 use Misery\Component\Common\Options\OptionsInterface;
+use Misery\Component\Converter\ConverterInterface;
 
 class ItemDecoder
 {
     private $configurationRules;
+    private $converter;
 
-    public function __construct(array $configurationRules)
+    public function __construct(array $configurationRules, ConverterInterface $converter = null)
     {
         $this->configurationRules = $configurationRules;
+        $this->converter = $converter;
     }
 
     public function decode(array $item): array
@@ -30,6 +33,10 @@ class ItemDecoder
             foreach ($matches as $match) {
                 $this->processMatch($item, $property, $match);
             }
+        }
+
+        if ($this->converter) {
+            $item = $this->converter->revert($item);
         }
 
         return $item;

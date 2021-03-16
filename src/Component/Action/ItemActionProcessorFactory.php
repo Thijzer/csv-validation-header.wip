@@ -3,11 +3,12 @@
 namespace Misery\Component\Action;
 
 use Misery\Component\Common\Options\OptionsInterface;
+use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
 use Misery\Component\Reader\ItemReaderAwareInterface;
 use Misery\Component\Source\SourceCollection;
 
-class ItemActionProcessorFactory
+class ItemActionProcessorFactory implements RegisteredByNameInterface
 {
     private $registry;
 
@@ -47,5 +48,10 @@ class ItemActionProcessorFactory
         }
 
         return $rules;
+    }
+
+    public function getName(): string
+    {
+        return 'action';
     }
 }

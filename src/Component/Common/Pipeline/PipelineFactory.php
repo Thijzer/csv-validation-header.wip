@@ -2,57 +2,28 @@
 
 namespace Misery\Component\Common\Pipeline;
 
-use Misery\Component\Action\ItemActionProcessorFactory;
 use Misery\Component\Common\FileManager\LocalFileManager;
-use Misery\Component\Decoder\ItemDecoderFactory;
-use Misery\Component\Encoder\ItemEncoderFactory;
+use Misery\Component\Common\Registry\RegisteredByNameInterface;
+use Misery\Component\Configurator\ConfigurationManager;
 use Misery\Component\Parser\CsvParser;
 use Misery\Component\Reader\ItemReader;
-use Misery\Component\Source\Source;
-use Misery\Component\Source\SourceCollection;
 use Misery\Component\Writer\XmlWriter;
 
-class PipelineFactory
+class PipelineFactory implements RegisteredByNameInterface
 {
-    /** @var ItemEncoderFactory */
-    private $encoderFactory;
-    /** @var ItemDecoderFactory */
-    private $decoderFactory;
-    /** @var ItemActionProcessorFactory */
-    private $actionFactory;
-
-    public function __construct(
-        ItemEncoderFactory $encoderFactory,
-        ItemDecoderFactory $decoderFactory,
-        ItemActionProcessorFactory $actionFactory
-    ) {
-        $this->encoderFactory = $encoderFactory;
-        $this->decoderFactory = $decoderFactory;
-        $this->actionFactory = $actionFactory;
-    }
-
-    public function createFromConfiguration(array $configuration, LocalFileManager $manager) : Pipeline
-    {
-        $context = $configuration['context'];
-        $configuration = $configuration['pipeline'];
-
+    public function createFromConfiguration(
+        array $configuration,
+        LocalFileManager $manager,
+        ConfigurationManager $configurationManager
+    ) : Pipeline {
         $pipeline = new Pipeline();
-        $sources = new SourceCollection('akeneo/csv');
 
+        // input is mandatory
         $reader = new ItemReader(CsvParser::create(
             $manager->getWorkingDirectory(). DIRECTORY_SEPARATOR . $configuration['input']['reader']['filename'],
             $configuration['input']['reader']['delimiter'] ?? CsvParser::DELIMITER,
             $configuration['input']['reader']['enclosure'] ?? CsvParser::ENCLOSURE
         ));
-
-        $sources->add(new Source(
-            new ItemReader(CsvParser::create($manager->getWorkingDirectory(). DIRECTORY_SEPARATOR . 'attribute.csv')),
-            'attribute'
-        ));
-        $sources->add(new Source(
-            $reader, 'product'
-        ));
-
         $pipeline->input(new PipeReader($reader));
 
         if (isset($configuration['output'])) {
@@ -62,22 +33,27 @@ class PipelineFactory
             );
             $pipeline->output(new PipeWriter($writer));
         }
+
         if (isset($configuration['encoder'])) {
-            $encoder = $this->encoderFactory->createItemEncoder($sources, $configuration['encoder']);
+            $encoder = $configurationManager->createEncoder($configuration['encoder']);
             $pipeline->line(new EncodingPipe($encoder));
         }
+
         if (isset($configuration['actions'])) {
-            $actions = $this->actionFactory->createActionProcessor(
-                $sources,
-                $configuration['actions']
-            );
+            $actions = $configurationManager->createActions($configuration['actions']);
             $pipeline->line(new ActionPipe($actions));
         }
+
         if (isset($configuration['decoder'])) {
-            $decoder = $this->decoderFactory->createItemDecoder($configuration['decoder']);
+            $decoder = $configurationManager->createDecoder($configuration['decoder']);
             $pipeline->line(new DecodingPipe($decoder));
         }
 
         return $pipeline;
+    }
+
+    public function getName(): string
+    {
+        return 'pipeline';
     }
 }

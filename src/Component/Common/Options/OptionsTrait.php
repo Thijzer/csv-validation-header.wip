@@ -8,4 +8,14 @@ trait OptionsTrait
     {
         $this->options = array_merge($this->options, $options);
     }
+
+    public function getOption(string $key)
+    {
+        return $this->options[$key] ?? null;
+    }
+
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
 }
