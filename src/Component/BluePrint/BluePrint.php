@@ -2,11 +2,12 @@
 
 namespace Misery\Component\BluePrint;
 
+use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Converter\ConverterInterface;
 use Misery\Component\Decoder\ItemDecoder;
 use Misery\Component\Encoder\ItemEncoder;
 
-class BluePrint
+class BluePrint implements RegisteredByNameInterface
 {
     private $name;
     private $encoder;

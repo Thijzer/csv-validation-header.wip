@@ -4,6 +4,7 @@ namespace Misery\Component\Decoder;
 
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
+use Misery\Component\Configurator\ConfigurationManager;
 use Misery\Component\Converter\ConverterInterface;
 
 class ItemDecoderFactory implements RegisteredByNameInterface
@@ -17,8 +18,16 @@ class ItemDecoderFactory implements RegisteredByNameInterface
         return $this;
     }
 
-    public function createItemDecoder(array $configuration, ConverterInterface $converter = null)
+    public function createItemDecoder(array $configuration, ConfigurationManager $configurationManager, ConverterInterface $converter = null)
     {
+        // encoder can have a blueprint named reference
+        if (isset($configuration['blueprint'])) {
+            $bluePrint = $configurationManager->createBlueprint($configuration['blueprint']);
+            if ($bluePrint) {
+                return $bluePrint->getDecoder();
+            }
+        }
+
         return new ItemDecoder(
             $this->parseDirectivesFromConfiguration($configuration),
             $converter

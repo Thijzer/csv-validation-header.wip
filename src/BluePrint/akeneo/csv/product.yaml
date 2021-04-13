@@ -1,16 +1,16 @@
 encode:
   sku:
     string: ~
-#  categories:
-#    list: ~
+  categories:
+    list: ~
   enabled:
     boolean: ~
   family:
     string: ~
   parent:
     string: ~
-#  groups:
-#    list: ~
+  groups:
+    list: ~
 
 list:
   - name: 'attribute_code_and_types'

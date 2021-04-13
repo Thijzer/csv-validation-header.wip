@@ -29,6 +29,13 @@ class SourceKeyValueCommand implements SourceAwareInterface, ExecuteSourceComman
         );
     }
 
+    public function executeWithOptions(array $options)
+    {
+        $this->setOptions($options);
+
+        return $this->execute();
+    }
+
     public function getName(): string
     {
         return 'key_value_pair';

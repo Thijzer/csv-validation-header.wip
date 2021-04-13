@@ -11,10 +11,11 @@ $sourceRegistry->registerAllByName(
 );
 
 $converterRegistry = new Misery\Component\Common\Registry\Registry('converter');
-$converterRegistry->registerByName(
+$converterRegistry->registerAllByName(
     new Misery\Component\Converter\AkeneoCsvToStructuredDataConverter(
         new Misery\Component\Converter\AkeneoCsvHeaderContext()
-    )
+    ),
+    new Misery\Component\Converter\XmlDataConverter()
 );
 
 $modifierRegistry = new Misery\Component\Common\Registry\Registry('modifier');
@@ -47,6 +48,7 @@ $actionRegistry
     ->register(Misery\Component\Action\SetValueAction::NAME, new Misery\Component\Action\SetValueAction())
     ->register(Misery\Component\Action\ReseatAction::NAME, new Misery\Component\Action\ReseatAction())
     ->register(Misery\Component\Action\ModifierAction::NAME, new Misery\Component\Action\ModifierAction($modifierRegistry))
+    ->register(Misery\Component\Action\BindAction::NAME, new Misery\Component\Action\BindAction())
 ;
 
 //$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');
@@ -73,6 +75,9 @@ $converter->addRegistry($converterRegistry);
 $list = new Misery\Component\Source\ListFactory();
 $list->addRegistry($sourceRegistry);
 
+$filter = new Misery\Component\Source\SourceFilterFactory();
+$filter->addRegistry($sourceRegistry);
+
 //$statementFactory = new Misery\Component\Statement\StatementFactory();
 //$factory
 //    ->addRegistry($actionRegistry)
@@ -86,7 +91,10 @@ $factoryRegistry->registerAllByName(
     new Misery\Component\Common\Pipeline\PipelineFactory(),
     new Misery\Component\BluePrint\BluePrintFactory(__DIR__.'/../src/BluePrint'),
     new Misery\Component\Statement\StatementFactory(),
+    new Misery\Component\Reader\ItemReaderFactory(),
+    new Misery\Component\Writer\ItemWriterFactory(),
     $list,
+    $filter,
     $converter,
     $decoder,
     $encoder,

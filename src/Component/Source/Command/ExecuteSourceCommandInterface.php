@@ -2,9 +2,8 @@
 
 namespace Misery\Component\Source\Command;
 
-use Misery\Component\Source\Source;
-
 interface ExecuteSourceCommandInterface
 {
     public function execute();
+    public function executeWithOptions(array $options);
 }

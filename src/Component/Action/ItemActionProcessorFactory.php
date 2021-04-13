@@ -5,6 +5,7 @@ namespace Misery\Component\Action;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
+use Misery\Component\Configurator\ConfigurationManager;
 use Misery\Component\Reader\ItemReaderAwareInterface;
 use Misery\Component\Source\SourceCollection;
 
@@ -24,7 +25,14 @@ class ItemActionProcessorFactory implements RegisteredByNameInterface
         );
     }
 
-    private function prepRulesFromConfiguration(SourceCollection $sources, array $configuration): array
+    public function createFromConfiguration(array $configuration, ConfigurationManager $manager, SourceCollection $sources)
+    {
+        return new ItemActionProcessor(
+            $this->prepRulesFromConfiguration($sources, $configuration, $manager)
+        );
+    }
+
+    private function prepRulesFromConfiguration(SourceCollection $sources, array $configuration, ConfigurationManager $manager = null): array
     {
         $rules = [];
         foreach ($configuration as $name => $value) {
@@ -35,7 +43,14 @@ class ItemActionProcessorFactory implements RegisteredByNameInterface
 
                 $action = clone $action;
 
+                if ($manager && isset($value['filter']) && is_string($value['filter'])) {
+                    $value['filter'] = $manager->getConfig()->getFilter($value['filter']);
+                }
+
                 if ($action instanceof OptionsInterface && !empty($value)) {
+                    if ($manager && isset($value['list']) && is_string($value['filter'])) {
+                        $value['list'] = $manager->getConfig()->getList($value['list']);
+                    }
                     $action->setOptions($value);
                 }
 

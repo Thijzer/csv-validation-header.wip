@@ -61,7 +61,14 @@ class XmlWriter implements ItemWriterInterface
             }
             unset($data['@attributes']);
         }
-
+        if (isset($data['@data'])) {
+            $this->writer->text($data['@data']);
+            return;
+        }
+        if (isset($data['@CDATA'])) {
+            $this->writer->writeCdata($data['@CDATA']);
+            return;
+        }
         foreach($data as $key => $value) {
             if (\is_array($value)) {
                 if (\is_string($key) && is_numeric(current(array_keys($value)))) {

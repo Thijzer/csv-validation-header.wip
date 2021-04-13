@@ -43,7 +43,9 @@ class ListFactory implements RegisteredByNameInterface
 
     private function getCommandClass(string $alias): ExecuteSourceCommandInterface
     {
-        return $this->registryCollection['source_command']->filterByAlias($alias);
+        $filter = $this->registryCollection['source_command']->filterByAlias($alias);
+
+        return clone $filter;
     }
 
     public function getName(): string

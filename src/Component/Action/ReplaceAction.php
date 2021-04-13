@@ -28,6 +28,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
         'source_filter' => [],
         'source_reference' => 'code',
         'key' => null,
+        'list' => null,
         'format' => '[%s]',
         'content' => 'label',
         'locale' => null,

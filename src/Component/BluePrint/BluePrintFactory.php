@@ -5,7 +5,6 @@ namespace Misery\Component\BluePrint;
 use Misery\Component\Common\Collection\ArrayCollection;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\ConfigurationManager;
-use Misery\Component\Source\SourceCollection;
 use Symfony\Component\Yaml\Yaml;
 
 class BluePrintFactory implements RegisteredByNameInterface
@@ -21,20 +20,38 @@ class BluePrintFactory implements RegisteredByNameInterface
     {
         $collection = new ArrayCollection();
 
+        foreach ($configuration as $blueprintConf) {
+            if (isset($blueprintConf['name'])) {
+                $blueprint = $this->createFromName($blueprintConf['name'], $configurationManager);
+                if (null === $blueprint) {
+                    $blueprint = $this->createBlueprint($blueprintConf['name'], $blueprintConf, $configurationManager);
+                }
+                $collection->add($blueprint);
+            }
+        }
+
         return $collection;
     }
 
-    public function createFromName(string $name, ConfigurationManager $configurationManager)
+    public function createFromName(string $name, ConfigurationManager $configurationManager): ?Blueprint
     {
         // we check the configuration manager if we have this blueprint.
-
-        if (false === is_file($file = $this->bluePrintPath.DIRECTORY_SEPARATOR.$name.'.yaml')) {
-            // exception Config location not found
-            return;
+        $blueprint = $configurationManager->getConfig()->getBlueprint($name);
+        if ($blueprint) {
+            return $blueprint;
         }
 
-        $configuration = Yaml::parseFile($file);
+        if (is_file($file = $this->bluePrintPath.DIRECTORY_SEPARATOR.$name.'.yaml')) {
+            // exception Config location not found
+            $configuration = Yaml::parseFile($file);
+            return $this->createBlueprint($name, $configuration, $configurationManager);
+        }
 
+        return null;
+    }
+
+    private function createBlueprint(string $name, array $configuration, ConfigurationManager $configurationManager): BluePrint
+    {
         ## prepare the list commands
         if (isset($configuration['list'])) {
             $configurationManager->createLists($configuration['list']);
@@ -44,7 +61,6 @@ class BluePrintFactory implements RegisteredByNameInterface
         if (isset($configuration['converter'])) {
             $converter = $configurationManager->createConverter($configuration['converter']);
         }
-
 
         return new BluePrint(
             $name,

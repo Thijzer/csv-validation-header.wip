@@ -2,20 +2,11 @@
 
 namespace Misery\Component\Configurator;
 
-use Misery\Component\Action\ItemActionProcessorFactory;
-use Misery\Component\BluePrint\BluePrintFactory;
 use Misery\Component\Common\FileManager\LocalFileManager;
-use Misery\Component\Common\Pipeline\PipelineFactory;
 use Misery\Component\Common\Registry\Registry;
-use Misery\Component\Converter\ConverterFactory;
-use Misery\Component\Decoder\ItemDecoderFactory;
-use Misery\Component\Encoder\ItemEncoderFactory;
-use Misery\Component\Source\ListFactory;
-use Misery\Component\Source\SourceCollectionFactory;
 
 class ConfigurationFactory
 {
-    private $listFactory;
     /** @var ConfigurationManager */
     private $manager;
     private $config;
@@ -45,36 +36,36 @@ class ConfigurationFactory
 
     public function parseDirectivesFromConfiguration(array $configuration): Configuration
     {
-        if (isset($configuration['sources'])) {
-            $this->manager->addSources($configuration['sources']);
-        }
-
-        if (isset($configuration['pipeline'])) {
-            $this->manager->createPipelines($configuration['pipeline']);
-        }
-
-        if (isset($configuration['list'])) {
-            $this->manager->createLists($configuration['list']);
-        }
-
-        if (isset($configuration['converter'])) {
-            $this->manager->createConverter($configuration['converter']);
-        }
-
-        if (isset($configuration['blueprint'])) {
-            $this->manager->createBlueprint($configuration['blueprint']);
-        }
-
-        if (isset($configuration['actions'])) {
-            $this->manager->createActions($configuration['actions']);
-        }
-
-        if (isset($configuration['encoder'])) {
-            $this->manager->createEncoder($configuration['encoder']);
-        }
-
-        if (isset($configuration['decoder'])) {
-            $this->manager->createDecoder($configuration['decoder']);
+        foreach ($configuration as $key => $valueConfiguration) {
+            switch ($key) {
+                case $key === 'sources';
+                    $this->manager->addSources($configuration['source']);
+                    break;
+                case $key === 'pipeline';
+                    $this->manager->createPipelines($configuration['pipeline']);
+                    break;
+                case $key === 'list';
+                    $this->manager->createLists($configuration['list']);
+                    break;
+                case $key === 'filter';
+                    $this->manager->createFilters($configuration['filter']);
+                    break;
+                case $key === 'converter';
+                    $this->manager->createConverter($configuration['converter']);
+                    break;
+                case $key === 'blueprint';
+                    $this->manager->createBlueprints($configuration['blueprint']);
+                    break;
+                case $key === 'actions';
+                    $this->manager->createActions($configuration['actions']);
+                    break;
+                case $key === 'encoder';
+                    $this->manager->createEncoder($configuration['encoder']);
+                    break;
+                case $key === 'decoder';
+                    $this->manager->createDecoder($configuration['decoder']);
+                    break;
+            }
         }
 
         return $this->config;

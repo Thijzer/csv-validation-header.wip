@@ -10,7 +10,9 @@ use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Converter\ConverterInterface;
 use Misery\Component\Decoder\ItemDecoder;
 use Misery\Component\Encoder\ItemEncoder;
+use Misery\Component\Reader\ItemReaderInterface;
 use Misery\Component\Source\SourceCollection;
+use Misery\Component\Writer\ItemWriterInterface;
 
 class Configuration
 {
@@ -19,7 +21,10 @@ class Configuration
     private $blueprints;
     private $encoders;
     private $decoders;
+    private $reader;
+    private $writer;
     private $lists = [];
+    private $filters = [];
     private $converters;
     private $sources;
 
@@ -66,6 +71,18 @@ class Configuration
         $this->blueprints->add($bluePrint);
     }
 
+    public function getBlueprint(string $name)
+    {
+        return $this->blueprints->filter(function (RegisteredByNameInterface $blueprint) use ($name) {
+            return $blueprint->getName() === $name;
+        })->first();
+    }
+
+    public function getBlueprints(): ArrayCollection
+    {
+        return $this->blueprints;
+    }
+
     public function addBlueprints(ArrayCollection $collection)
     {
         $this->blueprints->merge($collection);
@@ -84,6 +101,21 @@ class Configuration
     public function getList(string $alias)
     {
         return $this->lists[$alias] ?? null;
+    }
+
+    public function addFilters(array $filters)
+    {
+        $this->filters = array_merge($this->filters, $filters);
+    }
+
+    public function getFilter(string $alias)
+    {
+        return $this->filters[$alias] ?? null;
+    }
+
+    public function getFilters(): array
+    {
+        return $this->filters;
     }
 
     /**
@@ -114,6 +146,26 @@ class Configuration
         return $this->decoders->filter(function (RegisteredByNameInterface $converter) use ($name) {
             return $converter->getName() === $name;
         })->first();
+    }
+
+    public function setWriter(ItemWriterInterface $writer): void
+    {
+        $this->writer = $writer;
+    }
+
+    public function getWriter(): ?ItemWriterInterface
+    {
+        return $this->writer;
+    }
+
+    public function setReader(ItemReaderInterface $reader): void
+    {
+        $this->reader = $reader;
+    }
+
+    public function getReader(): ?ItemReaderInterface
+    {
+        return $this->reader;
     }
 
     /**

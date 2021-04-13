@@ -13,9 +13,12 @@ use Misery\Component\Decoder\ItemDecoder;
 use Misery\Component\Decoder\ItemDecoderFactory;
 use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
+use Misery\Component\Reader\ItemReaderFactory;
 use Misery\Component\Source\ListFactory;
 use Misery\Component\Source\SourceCollection;
 use Misery\Component\Source\SourceCollectionFactory;
+use Misery\Component\Source\SourceFilterFactory;
+use Misery\Component\Writer\ItemWriterFactory;
 
 class ConfigurationManager
 {
@@ -56,7 +59,7 @@ class ConfigurationManager
         /** @var PipelineFactory $factory */
         $factory = $this->factory->getFactory('pipeline');
         $this->config->setPipeline(
-            $factory->createFromConfiguration($configuration, $this->manager, $this)
+            $factory->createFromConfiguration($configuration, $this)
         );
     }
 
@@ -64,7 +67,7 @@ class ConfigurationManager
     {
         /** @var ItemActionProcessorFactory $factory */
         $factory = $this->factory->getFactory('action');
-        $actions = $factory->createActionProcessor($this->sources, $configuration);
+        $actions = $factory->createFromConfiguration($configuration, $this, $this->sources);
 
         $this->config->setActions($actions);
 
@@ -97,28 +100,64 @@ class ConfigurationManager
     {
         /** @var ItemDecoderFactory $factory */
         $factory = $this->factory->getFactory('decoder');
-        $decoder = $factory->createItemDecoder($configuration, $converter);
+        $decoder = $factory->createItemDecoder($configuration, $this, $converter);
 
         $this->config->addDecoder($decoder);
 
         return $decoder;
     }
 
-    public function createBlueprint($configuration): ?BluePrint
+    public function createBlueprints(array $configuration): void
     {
         /** @var BluePrintFactory $factory */
         $factory = $this->factory->getFactory('blueprint');
 
-        if (is_array($configuration)) {
-            $blueprints = $factory->createFromConfiguration($configuration, $this);
-            $this->config->addBlueprints($blueprints);
-        }
-        if (is_string($configuration)) {
-            $blueprint = $factory->createFromName($configuration, $this);
-            $this->config->addBlueprint($blueprint);
+        $blueprints = $factory->createFromConfiguration($configuration, $this);
+        $this->config->addBlueprints($blueprints);
+    }
 
-            return $blueprint;
+    public function createBlueprint(string $configuration): ?BluePrint
+    {
+        /** @var BluePrintFactory $factory */
+        $factory = $this->factory->getFactory('blueprint');
+
+        $blueprint = $factory->createFromName($configuration, $this);
+        if ($blueprint) {
+            $this->config->addBlueprint($blueprint);
         }
+
+        return $blueprint;
+    }
+
+    public function createWriter(array $configuration)
+    {
+        /** @var ItemWriterFactory $factory */
+        $factory = $this->factory->getFactory('writer');
+        $writer = $factory->createFromConfiguration($configuration, $this->manager);
+
+        $this->config->setWriter($writer);
+
+        return $writer;
+    }
+
+    public function createReader(array $configuration)
+    {
+        /** @var ItemReaderFactory $factory */
+        $factory = $this->factory->getFactory('reader');
+        $reader = $factory->createFromConfiguration($configuration, $this->manager);
+
+        $this->config->setReader($reader);
+
+        return $reader;
+    }
+
+    public function createFilters(array $configuration): void
+    {
+        /** @var SourceFilterFactory $factory */
+        $factory = $this->factory->getFactory('filter');
+        $filters = $factory->createFromConfiguration($configuration, $this->sources);
+
+        $this->config->addFilters($filters);
     }
 
     public function createLists(array $configuration)

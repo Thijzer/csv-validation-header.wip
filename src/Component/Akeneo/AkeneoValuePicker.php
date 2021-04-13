@@ -2,8 +2,10 @@
 
 namespace Misery\Component\Akeneo;
 
+use Misery\Component\Common\Picker\ValuePickerInterface;
+
 /**
- *  expected/supported array values sturcture
+ *  expected/supported array values structures
  *
  * / local and scope
  *
@@ -29,7 +31,7 @@ namespace Misery\Component\Akeneo;
  *
  *     'description' => 'LVS',
  **/
-class AkeneoValuePicker
+class AkeneoValuePicker implements ValuePickerInterface
 {
     private static $default = [
         'locale' => null,

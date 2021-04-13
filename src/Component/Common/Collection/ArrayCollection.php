@@ -36,7 +36,9 @@ class ArrayCollection
 
     public function merge(ArrayCollection $collection)
     {
-        $this->items = array_merge($this->items, $collection->getValues());
+        foreach ($collection->getValues() as $item) {
+            $this->items[] = $item;
+        }
     }
 
     public function map(\Closure $p): self
