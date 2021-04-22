@@ -11,12 +11,10 @@ use Misery\Component\Converter\ConverterInterface;
 class ItemDecoder
 {
     private $configurationRules;
-    private $converter;
 
-    public function __construct(array $configurationRules, ConverterInterface $converter = null)
+    public function __construct(array $configurationRules)
     {
         $this->configurationRules = $configurationRules;
-        $this->converter = $converter;
     }
 
     public function decode(array $item): array
@@ -33,10 +31,6 @@ class ItemDecoder
             foreach ($matches as $match) {
                 $this->processMatch($item, $property, $match);
             }
-        }
-
-        if ($this->converter) {
-            $item = $this->converter->revert($item);
         }
 
         return $item;

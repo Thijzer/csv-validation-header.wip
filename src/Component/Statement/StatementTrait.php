@@ -14,7 +14,7 @@ trait StatementTrait
 
     private function __construct() {}
 
-    public static function prepare(ActionInterface $action, array $context = []): self
+    public static function prepare(ActionInterface $action, array $context = []): StatementInterface
     {
         $self = new self();
         $self->action = $action;
@@ -23,7 +23,7 @@ trait StatementTrait
         return $self;
     }
 
-    public function when(string $field, string $value = null): self
+    public function when(string $field, string $value = null): StatementInterface
     {
         $this->key++;
 

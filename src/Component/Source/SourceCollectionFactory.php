@@ -8,6 +8,8 @@ use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
+use Misery\Component\Item\Processor\EncoderProcessor;
+use Misery\Component\Item\Processor\NullProcessor;
 use Misery\Component\Parser\CsvParser;
 use Misery\Component\Parser\XmlParser;
 use Misery\Component\Reader\ItemReader;
@@ -22,12 +24,12 @@ class SourceCollectionFactory implements RegisteredByNameInterface
             $path = pathinfo($file);
             if ($path['extension'] === 'csv') {
                 $sourceCollection->add(
-                    new Source(new ItemReader(CsvParser::create($file)), $path['basename'])
+                    Source::createSimple(new ItemReader(CsvParser::create($file)), $path['basename'])
                 );
             }
             if ($path['extension'] === 'xml') {
                 $sourceCollection->add(
-                    new Source(new ItemReader(XmlParser::create($file)), $path['basename'])
+                    Source::createSimple(new ItemReader(XmlParser::create($file)), $path['basename'])
                 );
             }
         }
@@ -55,9 +57,10 @@ class SourceCollectionFactory implements RegisteredByNameInterface
             $sources->add(new Source(
                 self::createEncodedReader(
                     $configuration,
-                    $encoderFactory->createItemEncoder($configuration),
                     $sourcePath['source']
                 ),
+                new EncoderProcessor($encoderFactory->createItemEncoder($configuration)),
+                new NullProcessor(),
                 $reference
             ));
         }
@@ -65,7 +68,7 @@ class SourceCollectionFactory implements RegisteredByNameInterface
         return $sources;
     }
 
-    private static function createEncodedReader(array $configuration, ItemEncoder $encoder, string $source): ItemReaderInterface
+    private static function createEncodedReader(array $configuration, string $source): ItemReaderInterface
     {
         if ($configuration['parse']['type'] === 'csv') {
 
@@ -73,18 +76,12 @@ class SourceCollectionFactory implements RegisteredByNameInterface
 
             return new ItemReader(
                 new CachedCursor(
-                    new FunctionalCursor(
-                        CsvParser::create(
-                            $source,
-                            $format['delimiter'],
-                            $format['enclosure']
-                        ), function ($item) use ($encoder) {
-                        return $encoder->encode($item);
-                    }
+                    CsvParser::create(
+                        $source,
+                        $format['delimiter'],
+                        $format['enclosure']
                     ),
-                    [
-                        'cache_size' => CachedCursor::LARGE_CACHE_SIZE,
-                    ]
+                    ['cache_size' => CachedCursor::LARGE_CACHE_SIZE]
                 )
             );
         }

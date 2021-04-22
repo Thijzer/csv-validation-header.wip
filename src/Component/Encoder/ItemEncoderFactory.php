@@ -18,7 +18,7 @@ class ItemEncoderFactory implements RegisteredByNameInterface
         return $this;
     }
 
-    public function createFromConfiguration(array $configuration, ConfigurationManager $configurationManager, ConverterInterface $converter = null): ItemEncoder
+    public function createFromConfiguration(array $configuration, ConfigurationManager $configurationManager): ItemEncoder
     {
         // encoder can have a blueprint named reference
         if (isset($configuration['blueprint'])) {
@@ -28,15 +28,12 @@ class ItemEncoderFactory implements RegisteredByNameInterface
             }
         }
 
-        return $this->createItemEncoder($configuration, $converter);
+        return $this->createItemEncoder($configuration);
     }
 
-    public function createItemEncoder(array $configuration, ConverterInterface $converter = null): ItemEncoder
+    public function createItemEncoder(array $configuration): ItemEncoder
     {
-        return new ItemEncoder(
-            $this->parseDirectivesFromConfiguration($configuration),
-            $converter
-        );
+        return new ItemEncoder($this->parseDirectivesFromConfiguration($configuration));
     }
 
     public function parseDirectivesFromConfiguration(array $configuration): array

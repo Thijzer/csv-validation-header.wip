@@ -27,7 +27,7 @@ class XmlWriterTest extends TestCase
 
     public function test_parse_csv_file(): void
     {
-        $filename = __DIR__ . '/../../examples/new_users.xml';
+        $filename = __DIR__ . '/../../examples/STD_OUT';
         $writer = new XmlWriter($filename, [
             XmlWriter::START => [        
                 'PutRequest' => [
@@ -60,6 +60,6 @@ class XmlWriterTest extends TestCase
 
         $this->assertSame($this->items, $result);
 
-        unlink($filename);
+        $writer->clear();
     }
 }

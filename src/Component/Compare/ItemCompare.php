@@ -4,7 +4,6 @@ namespace Misery\Component\Compare;
 
 use Misery\Component\Common\Cursor\CachedCursor;
 use Misery\Component\Common\Cursor\CursorInterface;
-use Misery\Component\Common\Cursor\FunctionalCursor;
 use Misery\Component\Common\Functions\ArrayFunctions as Arr;
 use Misery\Component\Filter\ColumnReducer;
 use Misery\Component\Item\Builder\ReferenceBuilder;
@@ -45,6 +44,7 @@ class ItemCompare
             ],
         ];
 
+        // only compare what we have
         $comparableHeaders = array_diff($headersBranch, ...array_values($headers['out_of_alignment']));
 
         $masterReader = new ItemReader($this->master instanceof CachedCursor ? $this->master : CachedCursor::create($this->master));

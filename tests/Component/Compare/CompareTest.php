@@ -36,6 +36,6 @@ class CompareTest extends TestCase
 
         $result = $tool->compare('id');
 
-        $this->assertCount(1, $result[ItemCompare::CHANGED]);
+        $this->assertCount(1, $result['items'][ItemCompare::CHANGED]);
     }
 }

@@ -50,7 +50,7 @@ class StatementFactoryTest extends TestCase
         ];
 
         /** @var StatementInterface $collection */
-        $collection = $factory->createStatements($configuration);
+        $collection = $factory->createFromConfiguration($configuration);
 
         $item = [
             'brand' => 'louis',
@@ -99,7 +99,7 @@ class StatementFactoryTest extends TestCase
         ];
 
         /** @var StatementInterface $collection */
-        $collection = $factory->createStatements($configuration);
+        $collection = $factory->createFromConfiguration($configuration);
 
         $item = [
             'brand' => 'louis',
@@ -152,7 +152,7 @@ class StatementFactoryTest extends TestCase
         ];
 
         /** @var StatementInterface $collection */
-        $collection = $factory->createStatements($configuration);
+        $collection = $factory->createFromConfiguration($configuration);
 
         $item = [
             'brand' => 'louis',

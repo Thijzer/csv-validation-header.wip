@@ -14,12 +14,10 @@ use Misery\Component\Source\SourceCollectionAwareInterface;
 class ItemEncoder
 {
     private $configurationRules;
-    private $converter;
 
-    public function __construct(array $configurationRules, ConverterInterface $converter = null)
+    public function __construct(array $configurationRules)
     {
         $this->configurationRules = $configurationRules;
-        $this->converter = $converter;
     }
 
     public function encode(array $item): array
@@ -36,10 +34,6 @@ class ItemEncoder
                     $this->processMatch($item, $property, $match);
                 }
             }
-        }
-
-        if ($this->converter) {
-            $item = $this->converter->convert($item);
         }
 
         return $item;

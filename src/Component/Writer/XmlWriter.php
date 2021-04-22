@@ -21,11 +21,14 @@ class XmlWriter implements ItemWriterInterface
 
     /**  @var \XMLWriter */
     private $writer;
+    /** @var string */
+    private $filename;
 
     public function __construct(
         string $filename,
         array $options = []
     ) {
+        $this->filename = $filename;
         Assertion::writeable($filename);
 
         $this->options = $options;
@@ -103,6 +106,11 @@ class XmlWriter implements ItemWriterInterface
                 $this->writer->writeElement($key, $value);
             }
         }
+    }
+
+    public function clear(): void
+    {
+        file_put_contents($this->filename, '');
     }
 
     public function close(): void

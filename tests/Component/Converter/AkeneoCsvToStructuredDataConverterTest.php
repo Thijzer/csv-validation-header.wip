@@ -27,11 +27,13 @@ class AkeneoCsvToStructuredDataConverterTest extends TestCase
         $item = $this->items[0];
 
         $headerContext = new AkeneoCsvHeaderContext();
-        $converter = new AkeneoCsvToStructuredDataConverter(
-            $headerContext,
-            ['code', 'description'],
-            ['code' => 'text', 'description' => 'text']
-        );
+        $converter = new AkeneoCsvToStructuredDataConverter($headerContext);
+        $converter->setOptions(
+            ['list' => [
+                'code' => 'text',
+                'description' => 'text'
+            ]
+        ]);
 
         $convertedItem = $converter->convert($item);
         $revertedItem = $converter->revert($convertedItem);
