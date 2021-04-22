@@ -51,7 +51,7 @@ class SourceCollectionFactory implements RegisteredByNameInterface
         $sources = new SourceCollection('akeneo/csv');
 
         foreach ($sourcePaths as $reference => $sourcePath) {
-            $configuration = $sourcePath['blueprint'];
+            $configuration = $sourcePath['blueprint'] ?? [];
             $sources->add(new Source(
                 self::createEncodedReader(
                     $configuration,

@@ -89,7 +89,7 @@ class ConfigurationManager
     {
         /** @var ItemEncoderFactory $factory */
         $factory = $this->factory->getFactory('encoder');
-        $encoder = $factory->createItemEncoder($configuration, $this, $converter);
+        $encoder = $factory->createFromConfiguration($configuration, $this, $converter);
 
         $this->config->addEncoder($encoder);
 
@@ -100,7 +100,7 @@ class ConfigurationManager
     {
         /** @var ItemDecoderFactory $factory */
         $factory = $this->factory->getFactory('decoder');
-        $decoder = $factory->createItemDecoder($configuration, $this, $converter);
+        $decoder = $factory->createFromConfiguration($configuration, $this, $converter);
 
         $this->config->addDecoder($decoder);
 
@@ -133,7 +133,7 @@ class ConfigurationManager
     {
         /** @var ItemWriterFactory $factory */
         $factory = $this->factory->getFactory('writer');
-        $writer = $factory->createFromConfiguration($configuration, $this->manager);
+        $writer = $factory->createFromConfiguration($configuration, $this->manager->getWorkingDirectory());
 
         $this->config->setWriter($writer);
 

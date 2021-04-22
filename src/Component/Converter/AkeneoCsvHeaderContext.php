@@ -8,7 +8,7 @@ class AkeneoCsvHeaderContext
 {
     private $header;
 
-    public function create(array $item)
+    public function create(array $item): array
     {
         if ($this->header) {
             return $this->header;
@@ -40,7 +40,7 @@ class AkeneoCsvHeaderContext
         return $this->header;
     }
 
-    private function prepContext(string $key, array $prep)
+    private function prepContext(string $key, array $prep): array
     {
         $separator = '-';
         $scopes = explode($separator, $key);

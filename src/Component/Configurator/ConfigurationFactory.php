@@ -12,9 +12,8 @@ class ConfigurationFactory
     private $config;
     private $factoryRegistry;
 
-    public function __construct(
-        Registry $factoryRegistry
-    ) {
+    public function __construct(Registry $factoryRegistry)
+    {
         $this->factoryRegistry = $factoryRegistry;
     }
 

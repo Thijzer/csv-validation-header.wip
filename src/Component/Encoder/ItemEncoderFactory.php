@@ -11,14 +11,14 @@ class ItemEncoderFactory implements RegisteredByNameInterface
 {
     private $registryCollection;
 
-    public function addRegistry(RegistryInterface $registry)
+    public function addRegistry(RegistryInterface $registry): ItemEncoderFactory
     {
         $this->registryCollection[$registry->getAlias()] = $registry;
 
         return $this;
     }
 
-    public function createItemEncoder(array $configuration, ConfigurationManager $configurationManager, ConverterInterface $converter = null)
+    public function createFromConfiguration(array $configuration, ConfigurationManager $configurationManager, ConverterInterface $converter = null): ItemEncoder
     {
         // encoder can have a blueprint named reference
         if (isset($configuration['blueprint'])) {
@@ -28,6 +28,11 @@ class ItemEncoderFactory implements RegisteredByNameInterface
             }
         }
 
+        return $this->createItemEncoder($configuration, $converter);
+    }
+
+    public function createItemEncoder(array $configuration, ConverterInterface $converter = null): ItemEncoder
+    {
         return new ItemEncoder(
             $this->parseDirectivesFromConfiguration($configuration),
             $converter

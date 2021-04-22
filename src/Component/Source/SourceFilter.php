@@ -7,13 +7,11 @@ use Misery\Component\Source\Command\ExecuteSourceCommandInterface;
 
 class SourceFilter
 {
-    private $source;
     private $filter;
     private $command;
 
-    public function __construct(Source $source, ExecuteSourceCommandInterface $command, array $filter)
+    public function __construct(ExecuteSourceCommandInterface $command, array $filter)
     {
-        $this->source = $source;
         $this->filter = $filter;
         $this->command = $command;
     }

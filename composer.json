@@ -13,37 +13,43 @@
         "ext-json": "*",
         "ext-iconv": "*",
         "ext-xmlwriter": "*",
-        "symfony/yaml": "5.*|^4.3|^3.4"
+        "symfony/yaml": "5.*|^4.3|^3.4",
+        "beberlei/assert": "^3.3",
+        "adhocore/cli": "^0.9.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "symfony/var-dumper": "5.*|^4.3|^3.4",
+        "symfony/var-dumper": "*",
         "phpunit/phpunit": "~8.3.4",
-        "phpstan/phpstan": "^0.12.7",
-        "jangregor/phpstan-prophecy": "^0.8.0"
+        "phpstan/phpstan": "*",
+        "jangregor/phpstan-prophecy": "*",
+        "phpstan/phpstan-beberlei-assert": "^0.12.6"
     },
     "autoload": {
-        "psr-4": { "Misery\\": "src/" },
+        "psr-4": {
+            "Misery\\": "src/"
+        },
         "exclude-from-classmap": [
             "/tests/"
         ]
     },
     "autoload-dev": {
-        "psr-4": { "Tests\\Misery\\": "tests/" }
+        "psr-4": {
+            "Tests\\Misery\\": "tests/"
+        }
     },
     "scripts": {
         "test": [
             "php vendor/bin/phpunit",
-            "vendor/bin/phpstan analyse -l 5 src",
-            "vendor/bin/phpstan analyse -l 3 tests"
+            "vendor/bin/phpstan analyse --no-progress --ansi -l 7 src",
+            "vendor/bin/phpstan analyse --no-progress --ansi -l 7 tests"
         ],
         "unit-test": [
             "php vendor/bin/phpunit --exclude-group performance"
         ],
-        "fast-test": [
-            "php vendor/bin/phpunit --exclude-group performance",
-            "vendor/bin/phpstan analyse -l 5 src",
-            "vendor/bin/phpstan analyse -l 3 tests"
+        "sa-test": [
+            "vendor/bin/phpstan analyse --no-progress --ansi -l 7 src",
+            "vendor/bin/phpstan analyse --no-progress --ansi -l 7 tests"
         ]
     }
 }

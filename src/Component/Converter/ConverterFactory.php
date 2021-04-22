@@ -10,7 +10,7 @@ class ConverterFactory implements RegisteredByNameInterface
 {
     private $registryCollection;
 
-    public function addRegistry(RegistryInterface $registry)
+    public function addRegistry(RegistryInterface $registry): ConverterFactory
     {
         $this->registryCollection[$registry->getAlias()] = $registry;
 

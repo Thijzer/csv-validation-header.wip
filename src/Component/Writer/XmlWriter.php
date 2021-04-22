@@ -2,13 +2,16 @@
 
 namespace Misery\Component\Writer;
 
+use Assert\Assertion;
+
 class XmlWriter implements ItemWriterInterface
 {
     public const CONTAINER = 'container';
     public const HEADER = 'header';
     public const START = 'start';
 
-    private $options = [];
+    private $options;
+    /** @var array */
     private $header = [
         'version' => '1.0',
         'encoding' => 'UTF-8',
@@ -23,6 +26,8 @@ class XmlWriter implements ItemWriterInterface
         string $filename,
         array $options = []
     ) {
+        Assertion::writeable($filename);
+
         $this->options = $options;
         $start = isset($options[self::START]) > 0 ? $options[self::START]: [];
         $header = array_merge($this->header, $options[self::HEADER] ?? []);
@@ -94,9 +99,8 @@ class XmlWriter implements ItemWriterInterface
                 continue;
             }
 
-            if (is_string($value) && !empty($key)) {
+            if (is_string($key) && is_string($value) && !empty($key)) {
                 $this->writer->writeElement($key, $value);
-                continue;
             }
         }
     }

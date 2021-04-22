@@ -11,14 +11,14 @@ class ItemDecoderFactory implements RegisteredByNameInterface
 {
     private $registryCollection;
 
-    public function addRegistry(RegistryInterface $registry)
+    public function addRegistry(RegistryInterface $registry): ItemDecoderFactory
     {
         $this->registryCollection[$registry->getAlias()] = $registry;
 
         return $this;
     }
 
-    public function createItemDecoder(array $configuration, ConfigurationManager $configurationManager, ConverterInterface $converter = null)
+    public function createFromConfiguration(array $configuration, ConfigurationManager $configurationManager, ConverterInterface $converter = null): ItemDecoder
     {
         // encoder can have a blueprint named reference
         if (isset($configuration['blueprint'])) {
@@ -28,6 +28,11 @@ class ItemDecoderFactory implements RegisteredByNameInterface
             }
         }
 
+        return $this->createItemDecoder($configuration, $converter);
+    }
+
+    public function createItemDecoder(array $configuration, ConverterInterface $converter = null): ItemDecoder
+    {
         return new ItemDecoder(
             $this->parseDirectivesFromConfiguration($configuration),
             $converter
@@ -37,7 +42,6 @@ class ItemDecoderFactory implements RegisteredByNameInterface
     public function parseDirectivesFromConfiguration(array $configuration): array
     {
         $rules = [];
-
         foreach ($configuration['encode'] ?? [] as $property => $formatters) {
             foreach ($formatters as $formatName => $formatOptions) {
                 if ($class = $this->getFormatClass($formatName)) {
@@ -59,6 +63,11 @@ class ItemDecoderFactory implements RegisteredByNameInterface
         }
 
         return $rules;
+    }
+
+    private function getConverterClass(string $formatName)
+    {
+        return $this->registryCollection['converter']->filterByAlias($formatName);
     }
 
     private function getModifierClass(string $formatName)

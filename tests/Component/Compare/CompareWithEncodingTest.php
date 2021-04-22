@@ -71,8 +71,8 @@ class CompareWithEncodingTest extends TestCase
         }));
 
         $tool = new ItemCompare(
-            $readerA = new ItemReader($setA),
-            $readerB = new ItemReader($setB)
+            $setA,
+            $setB
         );
 
         $result = $tool->compare('id');

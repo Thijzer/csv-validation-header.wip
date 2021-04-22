@@ -11,21 +11,20 @@ class SourceFilterFactory implements RegisteredByNameInterface
 {
     private $registryCollection;
 
-    public function addRegistry(RegistryInterface $registry)
+    public function addRegistry(RegistryInterface $registry): SourceFilterFactory
     {
         $this->registryCollection[$registry->getAlias()] = $registry;
 
         return $this;
     }
 
-    public function createFromConfiguration(array $configuration, SourceCollection $collection)
+    public function createFromConfiguration(array $configuration, SourceCollection $collection): array
     {
         // we have to apply the filters like an encoder, so we can execute on demand
         $filters = [];
         foreach ($configuration as $listCommand) {
             $filters[$listCommand['name']] = new SourceFilter(
-                $collection->get($listCommand['source']),
-                $class = $this->getCommandClass('filter'),
+                $class = $this->getCommandClass(),
                 $listCommand['filter']
             );
 
@@ -42,9 +41,9 @@ class SourceFilterFactory implements RegisteredByNameInterface
         return $filters;
     }
 
-    private function getCommandClass(string $alias): ExecuteSourceCommandInterface
+    private function getCommandClass(): ExecuteSourceCommandInterface
     {
-        $filter = $this->registryCollection['source_command']->filterByAlias($alias);
+        $filter = $this->registryCollection['source_command']->filterByAlias('filter');
 
         return clone $filter;
     }

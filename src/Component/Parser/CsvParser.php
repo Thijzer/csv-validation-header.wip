@@ -2,6 +2,7 @@
 
 namespace Misery\Component\Parser;
 
+use Assert\Assertion;
 use Misery\Component\Common\Cursor\CursorInterface;
 
 class CsvParser implements CursorInterface
@@ -23,6 +24,8 @@ class CsvParser implements CursorInterface
         string $enclosure = self::ENCLOSURE,
         string $escapeChar = self::ESCAPE
     ) {
+        Assertion::file($file->getRealPath());
+
         $this->file = $file;
         ini_set('auto_detect_line_endings', '1');
 

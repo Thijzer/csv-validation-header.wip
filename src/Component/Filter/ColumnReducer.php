@@ -35,14 +35,19 @@ class ColumnReducer
     public static function reduce(ReaderInterface $reader, string ...$columnNames): ReaderInterface
     {
         return $reader
-            ->map(static function(array $row) use ($columnNames) {
-                $nRow = [];
-                foreach ($columnNames as $columnName) {
-                    $nRow[$columnName] = $row[$columnName];
-                }
-
-                return $nRow;
+            ->map(static function(array $item) use ($columnNames) {
+                return self::reduceItem($item, ...$columnNames);
             })
         ;
+    }
+
+    public static function reduceItem(array $item, string ...$columnNames): array
+    {
+        $nRow = [];
+        foreach ($columnNames as $columnName) {
+            $nRow[$columnName] = $item[$columnName];
+        }
+
+        return $nRow;
     }
 }

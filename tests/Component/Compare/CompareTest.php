@@ -30,8 +30,8 @@ class CompareTest extends TestCase
         ]);
 
         $tool = new ItemCompare(
-            new ItemReader($setA),
-            new ItemReader($setB)
+            $setA,
+            $setB
         );
 
         $result = $tool->compare('id');

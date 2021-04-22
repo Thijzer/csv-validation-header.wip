@@ -1,6 +1,6 @@
 /bin/
-!/bin/composer
-!/bin/php
+!/bin/docker/composer
+!/bin/docker/php
 /vendor/
 .phpunit.result.cache
 /examples/*

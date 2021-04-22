@@ -36,7 +36,7 @@ class Configuration
         $this->blueprints = new ArrayCollection();
     }
 
-    public function addSources(SourceCollection $sources)
+    public function addSources(SourceCollection $sources): void
     {
         $this->sources = $sources;
     }
@@ -46,7 +46,7 @@ class Configuration
         return $this->sources;
     }
 
-    public function setPipeline(Pipeline $pipeline)
+    public function setPipeline(Pipeline $pipeline): void
     {
         $this->pipeline = $pipeline;
     }
@@ -56,7 +56,7 @@ class Configuration
         return $this->pipeline;
     }
 
-    public function setActions(ItemActionProcessor $actionProcessor)
+    public function setActions(ItemActionProcessor $actionProcessor): void
     {
         $this->actions = $actionProcessor;
     }
@@ -66,7 +66,7 @@ class Configuration
         return $this->actions;
     }
 
-    public function addBlueprint(BluePrint $bluePrint)
+    public function addBlueprint(BluePrint $bluePrint): void
     {
         $this->blueprints->add($bluePrint);
     }
@@ -83,12 +83,12 @@ class Configuration
         return $this->blueprints;
     }
 
-    public function addBlueprints(ArrayCollection $collection)
+    public function addBlueprints(ArrayCollection $collection): void
     {
         $this->blueprints->merge($collection);
     }
 
-    public function addLists(array $lists)
+    public function addLists(array $lists): void
     {
         $this->lists = array_merge($this->lists, $lists);
     }
@@ -103,7 +103,7 @@ class Configuration
         return $this->lists[$alias] ?? null;
     }
 
-    public function addFilters(array $filters)
+    public function addFilters(array $filters): void
     {
         $this->filters = array_merge($this->filters, $filters);
     }
@@ -141,10 +141,10 @@ class Configuration
         $this->decoders->add($decoders);
     }
 
-    public function getDecoder(string $name): ?ConverterInterface
+    public function getDecoder(string $name): ?ItemDecoder
     {
-        return $this->decoders->filter(function (RegisteredByNameInterface $converter) use ($name) {
-            return $converter->getName() === $name;
+        return $this->decoders->filter(function (RegisteredByNameInterface $encoder) use ($name) {
+            return $encoder->getName() === $name;
         })->first();
     }
 
@@ -176,10 +176,10 @@ class Configuration
         $this->encoders->add($encoders);
     }
 
-    public function getEncoder(string $name): ?ConverterInterface
+    public function getEncoder(string $name): ?ItemEncoder
     {
-        return $this->encoders->filter(function (RegisteredByNameInterface $converter) use ($name) {
-            return $converter->getName() === $name;
+        return $this->encoders->filter(function (RegisteredByNameInterface $encoder) use ($name) {
+            return $encoder->getName() === $name;
         })->first();
     }
 }
