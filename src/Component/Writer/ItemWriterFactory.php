@@ -11,6 +11,11 @@ class ItemWriterFactory implements RegisteredByNameInterface
         array $configuration,
         string $workingDirectory
     ) : ItemWriterInterface {
+        Assert::that(
+            $configuration['type'],
+            'type must be filled in.'
+        )->notEmpty()->string()->inArray(['xml', 'csv']);
+
         if ($configuration['type'] === 'xml') {
             return new XmlWriter(
                 $workingDirectory . DIRECTORY_SEPARATOR . $configuration['filename'],
@@ -24,10 +29,7 @@ class ItemWriterFactory implements RegisteredByNameInterface
             );
         }
 
-        Assert::that(
-            $configuration['type'],
-            'type must be filled in.'
-        )->notEmpty()->string()->inArray(['xml', 'csv']);
+        throw new \RuntimeException('Impossible Exception');
     }
 
     public function getName(): string

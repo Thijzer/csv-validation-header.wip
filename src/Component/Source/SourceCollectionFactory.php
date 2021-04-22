@@ -2,11 +2,10 @@
 
 namespace Misery\Component\Source;
 
+use Assert\Assert;
 use Misery\Component\Common\Cursor\CachedCursor;
-use Misery\Component\Common\Cursor\FunctionalCursor;
 use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
-use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Item\Processor\EncoderProcessor;
 use Misery\Component\Item\Processor\NullProcessor;
@@ -39,14 +38,11 @@ class SourceCollectionFactory implements RegisteredByNameInterface
 
     public function createFromConfiguration(array $configuration, SourceCollection $sourceCollection = null): SourceCollection
     {
-        // update our sources with more intel
-
-//        $sourcePaths = CreateSourcePaths::create(
-//            $configuration['sources']['list'],
-//            $manager->getWorkingDirectory() . '/%s.csv',
-//            $configuration[] . DIRECTORY_SEPARATOR . $configuration['sources']['type'] . '/%s.yaml'
-//        );
+        foreach ($configuration['sources'] as $sourceName) {
+        }
+        return $sourceCollection;
     }
+
     public static function create(ItemEncoderFactory $encoderFactory, array $sourcePaths): SourceCollection
     {
         // TODO open up the SourceCollection
@@ -70,21 +66,20 @@ class SourceCollectionFactory implements RegisteredByNameInterface
 
     private static function createEncodedReader(array $configuration, string $source): ItemReaderInterface
     {
-        if ($configuration['parse']['type'] === 'csv') {
+        Assert::that($configuration['parse'])->keyIsset('type')->notEmpty()->inArray(['csv']);
 
-            $format = $configuration['parse']['format'];
+        $format = $configuration['parse']['format'];
 
-            return new ItemReader(
-                new CachedCursor(
-                    CsvParser::create(
-                        $source,
-                        $format['delimiter'],
-                        $format['enclosure']
-                    ),
-                    ['cache_size' => CachedCursor::LARGE_CACHE_SIZE]
-                )
-            );
-        }
+        return new ItemReader(
+            new CachedCursor(
+                CsvParser::create(
+                    $source,
+                    $format['delimiter'],
+                    $format['enclosure']
+                ),
+                ['cache_size' => CachedCursor::LARGE_CACHE_SIZE]
+            )
+        );
     }
 
     public function getName(): string

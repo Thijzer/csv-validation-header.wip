@@ -11,7 +11,7 @@ class ListFactory implements RegisteredByNameInterface
 {
     private $registryCollection;
 
-    public function addRegistry(RegistryInterface $registry)
+    public function addRegistry(RegistryInterface $registry): self
     {
         $this->registryCollection[$registry->getAlias()] = $registry;
 
@@ -41,7 +41,7 @@ class ListFactory implements RegisteredByNameInterface
         return $commands;
     }
 
-    private function getCommandClass(string $alias): ExecuteSourceCommandInterface
+    private function getCommandClass(string $alias): ?ExecuteSourceCommandInterface
     {
         $filter = $this->registryCollection['source_command']->filterByAlias($alias);
 

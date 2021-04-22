@@ -2,6 +2,7 @@
 
 namespace Misery\Component\Configurator;
 
+use Misery\Component\Action\ItemActionProcessor;
 use Misery\Component\Action\ItemActionProcessorFactory;
 use Misery\Component\BluePrint\BluePrint;
 use Misery\Component\BluePrint\BluePrintFactory;
@@ -14,11 +15,13 @@ use Misery\Component\Decoder\ItemDecoderFactory;
 use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Reader\ItemReaderFactory;
+use Misery\Component\Reader\ItemReaderInterface;
 use Misery\Component\Source\ListFactory;
 use Misery\Component\Source\SourceCollection;
 use Misery\Component\Source\SourceCollectionFactory;
 use Misery\Component\Source\SourceFilterFactory;
 use Misery\Component\Writer\ItemWriterFactory;
+use Misery\Component\Writer\ItemWriterInterface;
 
 class ConfigurationManager
 {
@@ -47,14 +50,14 @@ class ConfigurationManager
         return $this->config;
     }
 
-    public function addSources(array $configuration)
+    public function addSources(array $configuration): void
     {
         /** @var SourceCollectionFactory $factory */
         $factory = $this->factory->getFactory('source');
         $this->sources = $factory->createFromConfiguration($configuration, $this->sources);
     }
 
-    public function createPipelines(array $configuration)
+    public function createPipelines(array $configuration): void
     {
         /** @var PipelineFactory $factory */
         $factory = $this->factory->getFactory('pipeline');
@@ -63,7 +66,7 @@ class ConfigurationManager
         );
     }
 
-    public function createActions(array $configuration)
+    public function createActions(array $configuration): ItemActionProcessor
     {
         /** @var ItemActionProcessorFactory $factory */
         $factory = $this->factory->getFactory('action');
@@ -74,7 +77,7 @@ class ConfigurationManager
         return $actions;
     }
 
-    public function createConverter(array $configuration)
+    public function createConverter(array $configuration): ConverterInterface
     {
         /** @var ConverterFactory $factory */
         $factory = $this->factory->getFactory('converter');
@@ -85,22 +88,22 @@ class ConfigurationManager
         return $converter;
     }
 
-    public function createEncoder(array $configuration, ConverterInterface $converter = null): ItemEncoder
+    public function createEncoder(array $configuration): ItemEncoder
     {
         /** @var ItemEncoderFactory $factory */
         $factory = $this->factory->getFactory('encoder');
-        $encoder = $factory->createFromConfiguration($configuration, $this, $converter);
+        $encoder = $factory->createFromConfiguration($configuration, $this);
 
         $this->config->addEncoder($encoder);
 
         return $encoder;
     }
 
-    public function createDecoder(array $configuration, ConverterInterface $converter = null): ItemDecoder
+    public function createDecoder(array $configuration): ItemDecoder
     {
         /** @var ItemDecoderFactory $factory */
         $factory = $this->factory->getFactory('decoder');
-        $decoder = $factory->createFromConfiguration($configuration, $this, $converter);
+        $decoder = $factory->createFromConfiguration($configuration, $this);
 
         $this->config->addDecoder($decoder);
 
@@ -129,7 +132,7 @@ class ConfigurationManager
         return $blueprint;
     }
 
-    public function createWriter(array $configuration)
+    public function createWriter(array $configuration): ItemWriterInterface
     {
         /** @var ItemWriterFactory $factory */
         $factory = $this->factory->getFactory('writer');
@@ -140,7 +143,7 @@ class ConfigurationManager
         return $writer;
     }
 
-    public function createReader(array $configuration)
+    public function createReader(array $configuration): ItemReaderInterface
     {
         /** @var ItemReaderFactory $factory */
         $factory = $this->factory->getFactory('reader');
@@ -160,7 +163,7 @@ class ConfigurationManager
         $this->config->addFilters($filters);
     }
 
-    public function createLists(array $configuration)
+    public function createLists(array $configuration): array
     {
         /** @var ListFactory $factory */
         $factory = $this->factory->getFactory('list');

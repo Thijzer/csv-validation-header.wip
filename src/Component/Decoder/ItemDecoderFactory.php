@@ -18,7 +18,7 @@ class ItemDecoderFactory implements RegisteredByNameInterface
         return $this;
     }
 
-    public function createFromConfiguration(array $configuration, ConfigurationManager $configurationManager, ConverterInterface $converter = null): ItemDecoder
+    public function createFromConfiguration(array $configuration, ConfigurationManager $configurationManager): ItemDecoder
     {
         // encoder can have a blueprint named reference
         if (isset($configuration['blueprint'])) {
@@ -28,15 +28,13 @@ class ItemDecoderFactory implements RegisteredByNameInterface
             }
         }
 
-        return $this->createItemDecoder($configuration, $converter);
+        return $this->createItemDecoder($configuration);
     }
 
-    public function createItemDecoder(array $configuration, ConverterInterface $converter = null): ItemDecoder
+    public function createItemDecoder(array $configuration): ItemDecoder
     {
         return new ItemDecoder(
-            $this->parseDirectivesFromConfiguration($configuration),
-            $converter
-        );
+            $this->parseDirectivesFromConfiguration($configuration));
     }
 
     public function parseDirectivesFromConfiguration(array $configuration): array

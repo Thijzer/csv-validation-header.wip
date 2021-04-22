@@ -40,7 +40,7 @@ class CsvWriter implements ItemWriterInterface
         Assert::that($setup['filename'])->notEmpty()->writeable();
         $format = array_merge(self::$format, $setup['format'] = []);
         Assert::that($format['allow_headers'])->boolean();
-        Assert::that($format['delimiter'])->maxLength('1');
+        Assert::that($format['delimiter'])->maxLength(1);
 
         return new self(
             $setup['filename'],

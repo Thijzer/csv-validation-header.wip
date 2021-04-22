@@ -33,21 +33,6 @@ class CompareCommand extends Command
         ;
     }
 
-//    public function interact(Interactor $io)
-//    {
-//        if (!$this->master) {
-//            $this->set('master', $io->prompt('Enter your master file'));
-//        }
-//
-//        if (!$this->branch) {
-//            $this->set('branch', $io->prompt('Enter your branched file'));
-//        }
-//
-//        if (!$this->reference) {
-//            $this->set('reference', $io->prompt('Enter your references'));
-//        }
-//    }
-
     public function execute(string $master, string $branch, $reference)
     {
         $io = $this->app()->io();
@@ -60,8 +45,8 @@ class CompareCommand extends Command
             CsvParser::create($branch, ';')
         );
 
-        $dump = $compare->compare(...explode(',', $reference));
+        $report = $compare->compare(...array_filter(explode(',', $reference)));
 
-        dump($dump);
+        dump($report);
     }
 }

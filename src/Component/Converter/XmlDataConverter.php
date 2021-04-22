@@ -22,6 +22,7 @@ class XmlDataConverter implements ConverterInterface, RegisteredByNameInterface,
 
     public function convert(array $item): array
     {
+        return $item;
     }
 
     public function revert(array $item): array

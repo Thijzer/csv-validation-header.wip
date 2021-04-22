@@ -118,9 +118,6 @@ class Configuration
         return $this->filters;
     }
 
-    /**
-     * @param mixed $converter
-     */
     public function addConverter(ConverterInterface $converter): void
     {
         $this->decoders->add($converter);
@@ -133,9 +130,6 @@ class Configuration
         })->first();
     }
 
-    /**
-     * @param mixed $decoders
-     */
     public function addDecoder(ItemDecoder $decoders): void
     {
         $this->decoders->add($decoders);
@@ -168,9 +162,6 @@ class Configuration
         return $this->reader;
     }
 
-    /**
-     * @param mixed $encoders
-     */
     public function addEncoder(ItemEncoder $encoders): void
     {
         $this->encoders->add($encoders);

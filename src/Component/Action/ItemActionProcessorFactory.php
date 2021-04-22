@@ -18,14 +18,14 @@ class ItemActionProcessorFactory implements RegisteredByNameInterface
         $this->registry = $registry;
     }
 
-    public function createActionProcessor(SourceCollection $sources, array $configuration)
+    public function createActionProcessor(SourceCollection $sources, array $configuration): ItemActionProcessor
     {
         return new ItemActionProcessor(
             $this->prepRulesFromConfiguration($sources, $configuration)
         );
     }
 
-    public function createFromConfiguration(array $configuration, ConfigurationManager $manager, SourceCollection $sources)
+    public function createFromConfiguration(array $configuration, ConfigurationManager $manager, SourceCollection $sources): ItemActionProcessor
     {
         return new ItemActionProcessor(
             $this->prepRulesFromConfiguration($sources, $configuration, $manager)

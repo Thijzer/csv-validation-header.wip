@@ -116,12 +116,12 @@ class ArrayFunctions
     }
 
     /**
-     * @param $haystack
+     * @param mixed $haystack
      * @param array $needles
      *
      * @return bool
      */
-    public static function strpos_array($haystack, $needles = [])
+    public static function strpos_array($haystack, $needles = []): bool
     {
         return $haystack !== str_replace($needles, '', $haystack);
     }

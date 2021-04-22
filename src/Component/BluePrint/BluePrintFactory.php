@@ -33,7 +33,7 @@ class BluePrintFactory implements RegisteredByNameInterface
         return $collection;
     }
 
-    public function createFromName(string $name, ConfigurationManager $configurationManager): ?Blueprint
+    public function createFromName(string $name, ConfigurationManager $configurationManager): ?BluePrint
     {
         // we check the configuration manager if we have this blueprint.
         $blueprint = $configurationManager->getConfig()->getBlueprint($name);
@@ -64,8 +64,9 @@ class BluePrintFactory implements RegisteredByNameInterface
 
         return new BluePrint(
             $name,
-            $configurationManager->createEncoder($configuration, $converter),
-            $configurationManager->createDecoder($configuration, $converter)
+            $configurationManager->createEncoder($configuration),
+            $configurationManager->createDecoder($configuration),
+            $converter
         );
     }
 
