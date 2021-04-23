@@ -1,0 +1,39 @@
+context:
+  workpath:
+  sources:
+
+pipeline:
+  input:
+    reader:
+      type: csv
+      filename: 'product.csv'
+    # blueprint: path/to/blueprint
+  encoder:
+    parse:
+      nullify: ~
+      filter_empty: ~
+      unflatten:
+        separator: '-'
+  actions:
+    remove_empty_values:
+      action: modify
+      modifier: 'remove_empty'
+    remove_unwanted:
+      action: remove
+      keys: [categories, enabled, family, parent, groups]
+    copy_identifier:
+      action: copy
+      from: 'sku'
+      to: 'id'
+    reseat_id:
+      action: reseat
+      from: ['id']
+      to: '@attributes'
+    reseat_all:
+      action: reseat
+      from: all
+      to: Product
+  output:
+    writer:
+      type: json
+      filename: 'new_product.json'

@@ -13,7 +13,9 @@
         "ext-json": "*",
         "ext-iconv": "*",
         "ext-xmlwriter": "*",
-        "symfony/yaml": "5.*|^4.3|^3.4",
+        "ext-xmlreader": "*",
+        "ext-curl": "*",
+        "symfony/yaml": "5.*|^4.3|^3.4"
         "beberlei/assert": "^3.3",
         "adhocore/cli": "^0.9.0"
     },

@@ -155,7 +155,7 @@ class CsvParser implements CursorInterface
     public function count(): int
     {
         if (null === $this->count) {
-            $this->loop(function (){});
+            $this->loop(static function (){});
         }
 
         return $this->count;

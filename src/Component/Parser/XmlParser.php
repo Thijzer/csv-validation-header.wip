@@ -11,8 +11,6 @@ class XmlParser implements CursorInterface
     /** @var string */
     private $container;
     private $xml;
-    /** @var array|false|mixed|string */
-    private $headers;
     /** @var int|null */
     private $count;
     private $i = 0;
@@ -24,7 +22,7 @@ class XmlParser implements CursorInterface
         $this->container = $container;
 
         $this->xml = new \XMLReader();
-        $this->xml->open($file);
+        $this->xml::open($file);
     }
 
     public static function create(string $filename, string $container = null): self 
@@ -57,12 +55,14 @@ class XmlParser implements CursorInterface
 
     /**
      * {@inheritDoc}
-     * @throws Exception\InvalidCsvElementSizeException
+     *
      * @return false|array
+     *
+     * @throws \Exception
      */
     public function current()
     {
-        while($this->i === 0 && $this->xml->read() && $this->xml->name != $this->container) {
+        while ($this->i === 0 && $this->xml->read() && $this->xml->name !== $this->container) {
             ;
         }
         $this->i++;
@@ -117,9 +117,9 @@ class XmlParser implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function seek($pointer): void
+    public function seek($offset): void
     {
-        $this->xml->moveToAttributeNo($pointer);
+        $this->xml->moveToAttributeNo($offset);
     }
 
     /**
