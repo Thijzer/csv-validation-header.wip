@@ -9,13 +9,14 @@
         }
     ],
     "require": {
-        "php": "8.*|7.4.*|7.3.*|7.2.*|7.1.*",
+        "php": "8.*|7.4.*|7.3.*|7.2.*",
         "ext-json": "*",
         "ext-iconv": "*",
         "ext-xmlwriter": "*",
         "ext-xmlreader": "*",
         "ext-curl": "*",
-        "symfony/yaml": "5.*|^4.3|^3.4"
+        "ext-simplexml": "*",
+        "symfony/yaml": "5.*|^4.3|^3.4",
         "beberlei/assert": "^3.3",
         "adhocore/cli": "^0.9.0"
     },

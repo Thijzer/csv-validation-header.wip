@@ -23,7 +23,7 @@ class ApiReader implements ReaderInterface
     private function all(int $pageSize = 10, array $queryParameters = []): array
     {
         return $this->client
-            ->get($this->client->generateUrl($this->endpoint->getAll()))
+            ->get($this->client->getUrlGenerator()->generate($this->endpoint->getAll()))
             ->getResponse()
             ->getContent()
         ;
@@ -59,7 +59,19 @@ class ApiReader implements ReaderInterface
 
     public function find(array $constraints): ReaderInterface
     {
-        // TODO: Implement find() method.
+        // TODO we need to implement a find or search int the API
+        $reader = $this;
+        foreach ($constraints as $columnName => $rowValue) {
+            if (is_string($rowValue)) {
+                $rowValue = [$rowValue];
+            }
+
+            $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
+                return in_array($row[$columnName], $rowValue);
+            });
+        }
+
+        return $reader;
     }
 
     public function filter(callable $callable): ReaderInterface

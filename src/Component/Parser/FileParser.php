@@ -4,7 +4,7 @@ namespace Misery\Component\Parser;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 
-class FileParser implements CursorInterface
+abstract class FileParser implements CursorInterface
 {
     /** @var int|null */
     private $count;
@@ -17,13 +17,7 @@ class FileParser implements CursorInterface
             $this->file = $file;
 
             ini_set('auto_detect_line_endings', '1');
-
         }
-    }
-
-    public static function create(string $filename): self
-    {
-        return new static(new \SplFileObject($filename));
     }
 
     /**

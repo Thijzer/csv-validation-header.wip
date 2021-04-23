@@ -4,6 +4,11 @@ namespace Misery\Component\Parser;
 
 class JsonFileParser extends FileParser
 {
+    public static function create(string $filename): self
+    {
+        return new self(new \SplFileObject($filename));
+    }
+
     /**
      * @return false|array
      */

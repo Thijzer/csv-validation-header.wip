@@ -20,7 +20,7 @@ class ApiWriter implements ItemWriterInterface
     private function post(array $data): void
     {
         $this->client
-            ->post($this->client->generateUrl($this->endpoint->getSingleEndPoint()), $data)
+            ->post($this->client->getUrlGenerator()->generate($this->endpoint->getSingleEndPoint()), $data)
             ->getResponse()
         ;
     }

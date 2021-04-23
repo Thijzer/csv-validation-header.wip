@@ -24,16 +24,15 @@ class CompareCommand extends Command
         $this
             ->option('-m --master', 'The master file')
             ->option('-b --branch', 'The branch file')
-            ->option('-r --reference', 'The references (comma sep)')
+            ->option('-r --reference', 'The references to align (comma sep)')
             ->usage(
-                '<bold>  compare</end> <comment>--master /path/to/master --branch /path/to/branch --reference code</end> ## details<eol/>'.
+                '<bold>  compare</end> <comment>--master /path/to/master --branch /path/to/branch --reference code</end> ## detailed<eol/>'.
                 '<bold>  compare</end> <comment>-m /path/to/master -b /path/to/branch -r code</end> ## short<eol/>'
-
             )
         ;
     }
 
-    public function execute(string $master, string $branch, $reference)
+    public function execute(string $master, string $branch, string $reference)
     {
         $io = $this->app()->io();
 

@@ -92,7 +92,7 @@ class Paginator
         return $this->next;
     }
 
-    public function getCount(): ?string
+    public function getCount(): ?int
     {
         return $this->count;
     }

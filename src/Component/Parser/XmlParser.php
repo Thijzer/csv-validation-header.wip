@@ -17,15 +17,15 @@ class XmlParser implements CursorInterface
 
     public function __construct(
         string $file,
-        string $container = null
+        string $container
     ) {
         $this->container = $container;
 
         $this->xml = new \XMLReader();
-        $this->xml::open($file);
+        $this->xml->open($file);
     }
 
-    public static function create(string $filename, string $container = null): self 
+    public static function create(string $filename, string $container): self
     {
         return new self($filename, $container);
     }
@@ -62,13 +62,18 @@ class XmlParser implements CursorInterface
      */
     public function current()
     {
+        // this part is responsible for setting the start element correctly
         while ($this->i === 0 && $this->xml->read() && $this->xml->name !== $this->container) {
-            ;
+            // digging;
         }
         $this->i++;
 
-        if ($this->xml->name == $this->container) {
-            return json_decode(json_encode(new \SimpleXMLElement($this->xml->readOuterXML())), true);
+        try {
+            if ($this->xml->name === $this->container) {
+                return json_decode(json_encode(new \SimpleXMLElement($this->xml->readOuterXML())), true);
+            }
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage());
         }
 
         return false;

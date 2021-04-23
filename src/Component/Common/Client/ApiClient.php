@@ -36,7 +36,7 @@ class ApiClient
             $this->authenticatedAccount->useToken($this);
         }
 
-        \curl_setopt($this->handle, CURLOPT_URL, $this->generateUrl($endpoint, $params));
+        \curl_setopt($this->handle, CURLOPT_URL, $this->getUrlGenerator()->generate($endpoint, $params));
 
         return $this;
     }
