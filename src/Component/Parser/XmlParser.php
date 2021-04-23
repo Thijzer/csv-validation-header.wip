@@ -2,6 +2,7 @@
 
 namespace Misery\Component\Parser;
 
+use Assert\Assert;
 use Misery\Component\Common\Cursor\CursorInterface;
 
 class XmlParser implements CursorInterface
@@ -17,7 +18,7 @@ class XmlParser implements CursorInterface
 
     public function __construct(
         string $file,
-        string $container
+        string $container = null
     ) {
         $this->container = $container;
 
@@ -25,9 +26,15 @@ class XmlParser implements CursorInterface
         $this->xml->open($file);
     }
 
-    public static function create(string $filename, string $container): self
+    public static function create(string $filename, string $container = null): self
     {
         return new self($filename, $container);
+    }
+
+    public function setContainer(string $container): void
+    {
+        // once's set, you can't chang the container
+        $this->container = $this->container ?? $container;
     }
 
     /**
@@ -65,6 +72,7 @@ class XmlParser implements CursorInterface
         // this part is responsible for setting the start element correctly
         while ($this->i === 0 && $this->xml->read() && $this->xml->name !== $this->container) {
             // digging;
+            Assert::that($this->container, 'XML parser needs a container name')->notEmpty();
         }
         $this->i++;
 

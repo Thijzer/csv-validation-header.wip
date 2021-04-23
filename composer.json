@@ -51,8 +51,8 @@
             "php vendor/bin/phpunit --exclude-group performance"
         ],
         "sa-test": [
-            "vendor/bin/phpstan analyse --no-progress --ansi -l 5 src",
-            "vendor/bin/phpstan analyse --no-progress --ansi -l 5 tests"
+            "vendor/bin/phpstan analyse -l 5 src",
+            "vendor/bin/phpstan analyse -l 5 tests"
         ]
     }
 }
