@@ -2,35 +2,58 @@
 
 namespace Misery\Component\Writer;
 
-class CsvWriter
+use Assert\Assert;
+use Assert\Assertion;
+
+class CsvWriter implements ItemWriterInterface
 {
     public const DELIMITER = ';';
 
-    /** @var string */
     private $delimiter;
-    /** @var string */
     private $filename;
-    /** @var resource */
     private $handle;
-    /** @var bool */
     private $allowHeaders;
+
+    private static $format = [
+        'delimiter' => self::DELIMITER,
+        'allow_headers' => true,
+    ];
 
     public function __construct(
         string $filename,
         string $delimiter = self::DELIMITER,
         bool $allowHeaders = true
     ) {
+        Assertion::writeable($filename);
+
         $this->filename = $filename;
         $this->delimiter = $delimiter;
         $this->allowHeaders = $allowHeaders;
         $this->handle = fopen($this->filename, 'wb+');
+
+        Assertion::isResource($this->handle);
     }
 
-    public function write(array $row): void
+    public static function createFromArray(array $setup): CsvWriter
     {
-        $this->setHeader(array_keys($row));
+        Assert::that($setup)->keyIsset('filename');
+        Assert::that($setup['filename'])->notEmpty()->writeable();
+        $format = array_merge(self::$format, $setup['format'] = []);
+        Assert::that($format['allow_headers'])->boolean();
+        Assert::that($format['delimiter'])->maxLength(1);
 
-        fputcsv($this->handle, array_values($row), $this->delimiter);
+        return new self(
+            $setup['filename'],
+            $format['delimiter'],
+            $format['allow_headers']
+        );
+    }
+
+    public function write(array $data): void
+    {
+        $this->setHeader(array_keys($data));
+
+        fputcsv($this->handle, array_values($data), $this->delimiter);
     }
 
     public function close(): void

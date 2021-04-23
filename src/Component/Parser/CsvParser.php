@@ -2,6 +2,7 @@
 
 namespace Misery\Component\Parser;
 
+use Assert\Assertion;
 use Misery\Component\Common\Cursor\CursorInterface;
 
 class CsvParser implements CursorInterface
@@ -23,6 +24,8 @@ class CsvParser implements CursorInterface
         string $enclosure = self::ENCLOSURE,
         string $escapeChar = self::ESCAPE
     ) {
+        Assertion::file($file->getRealPath());
+
         $this->file = $file;
         ini_set('auto_detect_line_endings', '1');
 
@@ -86,7 +89,7 @@ class CsvParser implements CursorInterface
 
         // here we need to use the filter
         $row = @array_combine($this->headers, $current);
-        if (false === $row) {
+        if (!is_array($row)) {
             throw new Exception\InvalidCsvElementSizeException(
                 $this->file->getFilename(),
                 $this->key(),
@@ -152,7 +155,7 @@ class CsvParser implements CursorInterface
     public function count(): int
     {
         if (null === $this->count) {
-            $this->loop(function (){});
+            $this->loop(static function (){});
         }
 
         return $this->count;

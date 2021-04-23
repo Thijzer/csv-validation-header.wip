@@ -53,8 +53,12 @@ class ItemReader implements ItemReaderInterface
     {
         $reader = $this;
         foreach ($constraints as $columnName => $rowValue) {
+            if (is_string($rowValue)) {
+                $rowValue = [$rowValue];
+            }
+
             $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
-                return $row[$columnName] === $rowValue;
+                return in_array($row[$columnName], $rowValue);
             });
         }
 

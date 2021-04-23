@@ -7,60 +7,39 @@ use Misery\Component\Common\Format\StringFormat;
 use Misery\Component\Common\Modifier\CellModifier;
 use Misery\Component\Common\Modifier\RowModifier;
 use Misery\Component\Common\Options\OptionsInterface;
-use Misery\Component\Common\Registry\RegistryInterface;
+use Misery\Component\Converter\ConverterInterface;
+use Misery\Component\Source\SourceCollection;
+use Misery\Component\Source\SourceCollectionAwareInterface;
 
 class ItemEncoder
 {
-    private $registryCollection;
+    private $configurationRules;
 
-    public function addRegistry(RegistryInterface $registry)
+    public function __construct(array $configurationRules)
     {
-        $this->registryCollection[$registry->getAlias()] = $registry;
+        $this->configurationRules = $configurationRules;
     }
 
-    public function encode(array $data, array $context = []): array
+    public function encode(array $item): array
     {
-        // preparation
-        $context = $this->parseContext($context);
+        foreach ($this->configurationRules['item'] ?? [] as $property => $matches) {
+            foreach ($matches as $match) {
+                $this->processMatch($item, $property, $match);
+            }
+        }
 
-        foreach ($context as $header => $namedMatches) {
-            foreach ($namedMatches as $property => $matches) {
+        foreach ($this->configurationRules['property'] ?? [] as $property => $matches) {
+            if (isset($item[$property])) {
                 foreach ($matches as $match) {
-                    $this->processMatch($data, $property, $match);
+                    $this->processMatch($item, $property, $match);
                 }
             }
         }
 
-        return $data;
+        return $item;
     }
 
-    public function parseContext(array $context): array
-    {
-        $rules = [];
-        foreach ($context['columns'] ?? [] as $columnName => $formatters) {
-            foreach ($formatters as $formatName => $formatOptions) {
-                if ($class = $this->getFormatClass($formatName)) {
-                    $rules['format'][$columnName][$formatName] = [
-                        'class' => $class,
-                        'options' => $formatOptions,
-                    ];
-                }
-            }
-        }
-
-        foreach ($context['rows'] ?? [] as $modifierName => $modifierOptions) {
-            if ($class = $this->getModifierClass($modifierName)) {
-                $rules['format'][$modifierName][] = [
-                    'class' => $class,
-                    'options' => $modifierOptions,
-                ];
-            }
-        }
-
-        return $rules;
-    }
-
-    private function processMatch(array &$row, string $property, array $match): void
+    private function processMatch(array &$item, string $property, array $match): void
     {
         $class = $match['class'];
 
@@ -69,28 +48,18 @@ class ItemEncoder
         }
 
         switch (true) {
+            case $class instanceof ArrayFormat:
+                $item = $class->format($item);
+                break;
             case $class instanceof CellModifier:
-                $row[$property] = $class->modify($row[$property]);
+                $item[$property] = $class->modify($item[$property]);
                 break;
             case $class instanceof StringFormat:
-                $row[$property] = $class->format($row[$property]);
+                $item[$property] = $class->format($item[$property]);
                 break;
             case $class instanceof RowModifier:
-                $row = $class->modify($row);
-                break;
-            case $class instanceof ArrayFormat:
-                $row = $class->format($row);
+                $item = $class->modify($item);
                 break;
         }
-    }
-
-    private function getModifierClass(string $formatName)
-    {
-        return $this->registryCollection['modifier']->filterByAlias($formatName);
-    }
-
-    private function getFormatClass(string $formatName)
-    {
-        return $this->registryCollection['format']->filterByAlias($formatName);
     }
 }

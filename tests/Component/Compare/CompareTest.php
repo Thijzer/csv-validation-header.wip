@@ -30,12 +30,12 @@ class CompareTest extends TestCase
         ]);
 
         $tool = new ItemCompare(
-            new ItemReader($setA),
-            new ItemReader($setB)
+            $setA,
+            $setB
         );
 
         $result = $tool->compare('id');
 
-        $this->assertCount(1, $result[ItemCompare::CHANGED]);
+        $this->assertCount(1, $result['items'][ItemCompare::CHANGED]);
     }
 }

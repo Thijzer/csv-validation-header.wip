@@ -22,9 +22,14 @@ class ArrayFunctions
         $output = [];
         foreach ($array as $key => $value) {
             static::array_set($output, $key, $value, $separator);
-            if (\is_array($value) && !strpos($key, $separator)) {
-                $nested = static::unflatten($value, $separator);
-                $output[$key] = $nested;
+            if (\is_array($value) && \strpos($key, $separator) !== false) {
+                $output[$key] = static::unflatten($value, $separator);
+            }
+        }
+
+        foreach (\array_keys($output) as $key) {
+            if (\array_key_exists($key, $array) && \is_array($output[$key])) {
+                $output[$key] = ['' => $array[$key]] + $output[$key];
             }
         }
 
@@ -45,14 +50,20 @@ class ArrayFunctions
     {
         $result = [];
         foreach ($array as $key => $value) {
-            if (\is_array($value)) {
+            if (\is_array($value) && !empty($value)) {
                 $result += static::flatten($value, $separator, $prefix . $key . $separator);
                 continue;
             }
-            $result[$prefix . $key] = $value;
+
+            $result[$key === '' ? \rtrim($prefix, $separator): $prefix . $key] = $value;
         }
 
         return $result;
+    }
+
+    public static function merge(array $a, array $b)
+    {
+        return static::unflatten(array_merge(static::flatten($a), static::flatten($b)));
     }
 
     public static function multiCompare(array $a, array $b): array
@@ -104,16 +115,27 @@ class ArrayFunctions
         );
     }
 
+    /**
+     * @param mixed $haystack
+     * @param array $needles
+     *
+     * @return bool
+     */
+    public static function strpos_array($haystack, $needles = []): bool
+    {
+        return $haystack !== str_replace($needles, '', $haystack);
+    }
+
     public static function array_set(&$array, $key, $value, $prefix = '.'): array
     {
         if (null === $key) {
             return $array = $value;
         }
 
-        $keys = explode($prefix, $key);
+        $keys = \explode($prefix, $key);
 
         while (\count($keys) > 1) {
-            $key = array_shift($keys);
+            $key = \array_shift($keys);
             // If the key doesn't exist at this depth, we will just create an empty array
             // to hold the next value, allowing us to create the arrays to hold final
             // values at the correct depth. Then we'll keep digging into the array.
@@ -122,8 +144,29 @@ class ArrayFunctions
             }
             $array = &$array[$key];
         }
-        $array[array_shift($keys)] = $value;
+        $array[\array_shift($keys)] = $value;
 
         return $array;
+    }
+
+    /** function array_filter_recursive
+     *
+     *      Exactly the same as array_filter except this function
+     *      filters within multi-dimensional arrays
+     *
+     * @param array $array
+     * @param callable $callback optional callback function name
+     *
+     * @return array merged array
+     */
+    public static function array_filter_recursive(array $array, callable $callback): array
+    {
+        $array = array_map(static function($item) use ($callback) {
+            return is_array($item) ? static::array_filter_recursive($item, $callback) : $item;
+        }, $array);
+
+        return array_filter($array, static function($item) use ($callback) {
+            return $callback($item);
+        });
     }
 }
