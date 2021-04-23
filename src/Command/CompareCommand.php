@@ -27,8 +27,8 @@ class CompareCommand extends Command
         $this
             ->option('-m --master', 'The master file')
             ->option('-b --branch', 'The branch file')
-            ->option('-r --reference', 'The references to align (comma sep)')
-            ->option('-e --excluded', 'The excluded headers (comma sep)')
+            ->option('-r --reference', 'The identities to align (comma sep)')
+            ->option('-e --excluded', 'exclude keys you don\'t want to compare (comma sep)')
             ->usage(
                 '<bold>  compare</end> <comment>--master /path/to/master --branch /path/to/branch --reference code</end> ## detailed<eol/>'.
                 '<bold>  compare</end> <comment>-m /path/to/master -b /path/to/branch -r code</end> ## short<eol/>'
