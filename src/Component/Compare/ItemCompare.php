@@ -19,10 +19,10 @@ class ItemCompare
     private $master;
     /** @var CursorInterface */
     private $branch;
-    /** @var array|null*/
+    /** @var array */
     private $excludes;
 
-    public function __construct(CursorInterface $master, CursorInterface $branch, array $excludes = null)
+    public function __construct(CursorInterface $master, CursorInterface $branch, array $excludes = [])
     {
         $this->master = $master;
         $this->branch = $branch;
@@ -45,7 +45,7 @@ class ItemCompare
         ];
 
         // only compare what we have
-        $comparableHeaders = array_diff($headersBranch, ...array_values($headers['out_of_alignment']));
+        $comparableHeaders = array_diff($headersMaster, $this->excludes, ...array_values($headers['out_of_alignment']));
 
         $masterReader = new ItemReader($this->master instanceof CachedCursor ? $this->master : CachedCursor::create($this->master));
         $branchReader = new ItemReader($this->branch instanceof CachedCursor ? $this->branch : CachedCursor::create($this->branch));
@@ -71,6 +71,7 @@ class ItemCompare
             ],
         ];
 
+        // pointers to the comparable items
         $pointers = array_diff($masterCodes, $changes['items'][self::REMOVED]);
 
         // flip codes so we can get find the NEW $lineNumber
@@ -82,23 +83,18 @@ class ItemCompare
             $master = ColumnReducer::reduceItem($master, ...$comparableHeaders);
             $branch = ColumnReducer::reduceItem($branch, ...$comparableHeaders);
 
-            if ($this->excludes) {
-                foreach ($this->excludes as $exclude) {
-                    unset($master[$exclude]);
-                    unset($branch[$exclude]);
-                }
-            }
-
             if ($branch != $master) {
-                $changes['items'][self::CHANGED][$id] = [
-                    'reference' => $reference,
-                    $reference => $id,
-                    'line_number' => $lineNumber,
-                    'changes' => array_filter([
-                        self::REMOVED => Arr::multiCompare($branch, $master),
-                        self::ADDED => Arr::multiCompare($master, $branch),
-                    ]),
-                ];
+                $changeFilter = array_filter([
+                    self::REMOVED => Arr::multiCompare($branch, $master),
+                    self::ADDED => Arr::multiCompare($master, $branch),
+                ]);
+                if ($changeFilter !== []) {
+                    $changes['items'][self::CHANGED][$id] = [
+                        $reference => $id,
+                        'line_number' => $lineNumber,
+                        'changes' => $changeFilter,
+                    ];
+                }
             }
         }
 
