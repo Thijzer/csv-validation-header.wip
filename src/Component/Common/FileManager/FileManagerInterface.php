@@ -11,4 +11,7 @@ interface FileManagerInterface
     public function isFile(string $filename): bool;
 
     public function listFiles(): \Generator;
+
+    /** remove all files inside the working directory. */
+    public function clear(): void;
 }

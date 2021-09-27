@@ -44,7 +44,7 @@ class AkeneoCsvToStructuredDataConverter implements ConverterInterface, Register
             $prep['data'] = $value;
 
             # metric exception
-                if ($codes[$keys[0]] === 'pim_catalog_metric') {
+            if ($codes[$keys[0]] === 'pim_catalog_metric') {
                 $prep['unit'] = $item[str_replace($keys[0], $keys[0].'-unit', $key)] ?? null;
             }
 

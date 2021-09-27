@@ -35,10 +35,17 @@ class ConfigurationFactory
 
     public function parseDirectivesFromConfiguration(array $configuration): Configuration
     {
+        // level 0 directives only
         foreach ($configuration as $key => $valueConfiguration) {
             switch ($key) {
+                case $key === 'context';
+                    $this->manager->addContext($configuration['context']);
+                    break;
                 case $key === 'sources';
-                    $this->manager->addSources($configuration['source']);
+                    $this->manager->addSources($configuration['sources']);
+                    break;
+                case $key === 'transformation_steps';
+                    $this->manager->addTransformationSteps($configuration['transformation_steps']);
                     break;
                 case $key === 'pipeline';
                     $this->manager->createPipelines($configuration['pipeline']);

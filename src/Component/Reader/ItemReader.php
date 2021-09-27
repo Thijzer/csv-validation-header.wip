@@ -2,6 +2,8 @@
 
 namespace Misery\Component\Reader;
 
+use Misery\Component\Item\Builder\ReferenceBuilder;
+
 class ItemReader implements ItemReaderInterface
 {
     private $cursor;
@@ -46,7 +48,7 @@ class ItemReader implements ItemReaderInterface
             $this->cursor->next();
         }
 
-        // @TODO throw outofboudexception
+        // @TODO throw outofboundexception
     }
 
     public function find(array $constraints): ReaderInterface
@@ -56,13 +58,50 @@ class ItemReader implements ItemReaderInterface
             if (is_string($rowValue)) {
                 $rowValue = [$rowValue];
             }
-
-            $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
-                return in_array($row[$columnName], $rowValue);
-            });
+            if ($rowValue === ['UNIQUE']) {
+                $reader = new self(
+                    $this->processIndex(
+                        array_values(
+                            array_flip(
+                                ReferenceBuilder::build($reader, $columnName)[$columnName]
+                            )
+                        )
+                    )
+                );
+            } elseif ($rowValue === ['NOT_NULL']) {
+                $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
+                    return false === in_array($row[$columnName], [NULL]);
+                });
+            } else  {
+                $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
+                    return in_array($row[$columnName], $rowValue);
+                });
+            }
         }
 
         return $reader;
+    }
+
+    /**
+     * PLEASE don't use the sort on very large data sets
+     * array_multisort can only sort on the whole array in memory
+     *
+     */
+    public function sort(array $criteria): ReaderInterface
+    {
+        $flags = ['ASC' => SORT_ASC, 'DSC' => SORT_DESC, 'DESC' => SORT_DESC];
+        $setup = [];
+        foreach ($criteria as $keyName => $sortDirection) {
+            $setup[] = ReferenceBuilder::buildValues($this, $keyName);
+            $setup[] = $flags[strtoupper($sortDirection)];
+        }
+        // should be part of the criteria
+        $setup[] = SORT_NUMERIC;
+        $setup[] = $this->getItems();
+
+        array_multisort(...$setup);
+
+        return new self(new ItemCollection(end($setup)));
     }
 
     public function filter(callable $callable): ReaderInterface

@@ -24,7 +24,7 @@ class CsvWriter implements ItemWriterInterface
         string $delimiter = self::DELIMITER,
         bool $allowHeaders = true
     ) {
-        Assertion::writeable($filename);
+        #Assertion::writeable($filename);
 
         $this->filename = $filename;
         $this->delimiter = $delimiter;
@@ -37,7 +37,7 @@ class CsvWriter implements ItemWriterInterface
     public static function createFromArray(array $setup): CsvWriter
     {
         Assert::that($setup)->keyIsset('filename');
-        Assert::that($setup['filename'])->notEmpty()->writeable();
+        Assert::that($setup['filename'])->notEmpty();
         $format = array_merge(self::$format, $setup['format'] = []);
         Assert::that($format['allow_headers'])->boolean();
         Assert::that($format['delimiter'])->maxLength(1);

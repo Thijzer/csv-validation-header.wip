@@ -5,6 +5,8 @@ namespace Misery\Component\Converter;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Common\Registry\RegistryInterface;
+use Misery\Component\Configurator\Configuration;
+use Misery\Component\Configurator\ConfigurationAwareInterface;
 
 class ConverterFactory implements RegisteredByNameInterface
 {
@@ -17,7 +19,7 @@ class ConverterFactory implements RegisteredByNameInterface
         return $this;
     }
 
-    public function createFromConfiguration(array $configuration, array $listedValues): ConverterInterface
+    public function createFromConfiguration(array $configuration, Configuration $config): ConverterInterface
     {
         /** @var ConverterInterface $converter */
         $converter = $this->registryCollection['converter']->filterByAlias($configuration['name']);
@@ -25,6 +27,10 @@ class ConverterFactory implements RegisteredByNameInterface
         if ($converter instanceof OptionsInterface && isset($configuration['options'])) {
             $options = $configuration['options'];
             $converter->setOptions($options);
+        }
+
+        if ($converter instanceof ConfigurationAwareInterface) {
+            $converter->setConfiguration($config);
         }
 
         if ($converter instanceof OptionsInterface && $list = $converter->getOption('list')) {

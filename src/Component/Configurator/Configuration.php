@@ -27,6 +27,7 @@ class Configuration
     private $filters = [];
     private $converters;
     private $sources;
+    private $context = [];
 
     public function __construct()
     {
@@ -34,6 +35,16 @@ class Configuration
         $this->encoders = new ArrayCollection();
         $this->decoders = new ArrayCollection();
         $this->blueprints = new ArrayCollection();
+    }
+
+    public function addContext(array $context)
+    {
+        $this->context = array_merge($this->context, $context);
+    }
+
+    public function getContext(string $key)
+    {
+        return $this->context[$key] ?? null;
     }
 
     public function addSources(SourceCollection $sources): void

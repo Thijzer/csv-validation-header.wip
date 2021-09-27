@@ -4,6 +4,9 @@ namespace Misery\Component\Parser;
 
 use Misery\Component\Common\Cursor\CursorInterface;
 
+/**
+ * Abstract line by line Parser
+ */
 abstract class FileParser implements CursorInterface
 {
     /** @var int|null */

@@ -2,32 +2,36 @@
 
 namespace Misery\Component\Source;
 
+use Misery\Component\Common\Cursor\CachedCursor;
+use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Item\Processor\NullProcessor;
 use Misery\Component\Item\Processor\ProcessorInterface;
+use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ItemReaderInterface;
 
 class Source
 {
-    private $reader;
+    private $cursor;
     private $alias;
     private $processorIn;
     private $processorOut;
+    private $cache;
 
     public function __construct(
-        ItemReaderInterface $reader,
+        CursorInterface $cursor,
         ProcessorInterface $processorIn,
         ProcessorInterface $processorOut,
         string $alias
     ) {
         $this->alias = $alias;
-        $this->reader = $reader;
+        $this->cursor = $cursor;
         $this->processorIn = $processorIn;
         $this->processorOut = $processorOut;
     }
 
-    public static function createSimple(ItemReaderInterface $reader, string $alias): self
+    public static function createSimple(CursorInterface $cursor, string $alias): self
     {
-        return new self($reader, new NullProcessor(), new NullProcessor(), $alias);
+        return new self($cursor, new NullProcessor(), new NullProcessor(), $alias);
     }
 
     public function getAlias(): string
@@ -47,6 +51,20 @@ class Source
 
     public function getReader(): ItemReaderInterface
     {
-        return $this->reader;
+        return new ItemReader($this->cursor);
+    }
+
+    public function getCachedReader(array $options = []): ItemReaderInterface
+    {
+        if (null === $this->cache) {
+            $options = array_merge(['cache_size' => CachedCursor::LARGE_CACHE_SIZE], $options);
+
+            $this->cache = new ItemReader(new CachedCursor(
+                $this->cursor,
+                $options
+            ));
+        }
+
+        return $this->cache;
     }
 }

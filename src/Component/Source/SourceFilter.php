@@ -7,20 +7,35 @@ use Misery\Component\Source\Command\ExecuteSourceCommandInterface;
 
 class SourceFilter
 {
-    private $filter;
     private $command;
 
-    public function __construct(ExecuteSourceCommandInterface $command, array $filter)
+    public function __construct(ExecuteSourceCommandInterface $command)
     {
-        $this->filter = $filter;
         $this->command = $command;
     }
 
-    public function filter(array $options): ItemReaderInterface
+    /**
+     * @param array $item
+     * @return ItemReaderInterface|array
+     */
+    public function filter(array $item)
     {
-        // we miss the tech to map correctly here
-        $options = array_merge($this->filter, $options);
+        $options = $this->createOptionsFromItem($item);
+
         // prep the options
-        return $this->command->executeWithOptions(['filter' => $options]);
+        return $this->command->executeWithOptions($options);
+    }
+
+    private function createOptionsFromItem(array $item): array
+    {
+        $options = $this->command->getOptions();
+
+        foreach ($options['stmt'] as $key => $value) {
+            if (strpos($value, '$') !== false && isset($item[$key])) {
+                $options['stmt'][$key] = $item[$key];
+            }
+        }
+
+        return $options;
     }
 }

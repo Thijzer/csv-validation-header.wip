@@ -9,7 +9,8 @@ class LocalFileManager implements FileManagerInterface
 
     public function __construct(string $workingDirectory, bool $removeEmptyDir = true)
     {
-        $this->workingDirectory = $workingDirectory;
+        $absolute = realpath($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . $workingDirectory);
+        $this->workingDirectory = is_dir($absolute) ? $absolute : $workingDirectory;
         $this->removeEmptyDir = $removeEmptyDir;
     }
 
@@ -148,5 +149,10 @@ class LocalFileManager implements FileManagerInterface
         }
 
         return $empty && rmdir($directory);
+    }
+
+    public function clear(): void
+    {
+        $this->removeFiles(...$this->listFiles());
     }
 }

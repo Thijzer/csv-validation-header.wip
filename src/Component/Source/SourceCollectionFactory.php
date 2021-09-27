@@ -23,12 +23,12 @@ class SourceCollectionFactory implements RegisteredByNameInterface
             $path = pathinfo($file);
             if ($path['extension'] === 'csv') {
                 $sourceCollection->add(
-                    Source::createSimple(new ItemReader(CsvParser::create($file)), $path['basename'])
+                    Source::createSimple(CsvParser::create($file), $path['basename'])
                 );
             }
             if ($path['extension'] === 'xml') {
                 $sourceCollection->add(
-                    Source::createSimple(new ItemReader(XmlParser::create($file)), $path['basename'])
+                    Source::createSimple(XmlParser::create($file), $path['basename'])
                 );
             }
         }
@@ -51,7 +51,7 @@ class SourceCollectionFactory implements RegisteredByNameInterface
         foreach ($sourcePaths as $reference => $sourcePath) {
             $configuration = $sourcePath['blueprint'] ?? [];
             $sources->add(new Source(
-                self::createEncodedReader(
+                self::createEncodedCursor(
                     $configuration,
                     $sourcePath['source']
                 ),
@@ -64,21 +64,19 @@ class SourceCollectionFactory implements RegisteredByNameInterface
         return $sources;
     }
 
-    private static function createEncodedReader(array $configuration, string $source): ItemReaderInterface
+    private static function createEncodedCursor(array $configuration, string $source): CachedCursor
     {
         Assert::that($configuration['parse'])->keyIsset('type')->notEmpty()->inArray(['csv']);
 
         $format = $configuration['parse']['format'];
 
-        return new ItemReader(
-            new CachedCursor(
-                CsvParser::create(
-                    $source,
-                    $format['delimiter'],
-                    $format['enclosure']
-                ),
-                ['cache_size' => CachedCursor::LARGE_CACHE_SIZE]
-            )
+        return new CachedCursor(
+            CsvParser::create(
+                $source,
+                $format['delimiter'],
+                $format['enclosure']
+            ),
+            ['cache_size' => CachedCursor::LARGE_CACHE_SIZE]
         );
     }
 

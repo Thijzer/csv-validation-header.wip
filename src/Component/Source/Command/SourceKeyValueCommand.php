@@ -9,7 +9,7 @@ use Misery\Component\Item\Builder\KeyValuePairBuilder;
 use Misery\Component\Source\SourceAwareInterface;
 use Misery\Component\Source\SourceTrait;
 
-class SourceKeyValueCommand implements SourceAwareInterface, ExecuteSourceCommandInterface, OptionsInterface, RegisteredByNameInterface
+class SourceKeyValueCommand implements SourceAwareInterface, ExecuteSourceCommandInterface, RegisteredByNameInterface
 {
     use SourceTrait;
     use OptionsTrait;
@@ -23,7 +23,7 @@ class SourceKeyValueCommand implements SourceAwareInterface, ExecuteSourceComman
     public function execute(): array
     {
         return KeyValuePairBuilder::build(
-            $this->getSource()->getReader(),
+            $this->getSource()->getCachedReader(),
             $this->getOption('key'),
             $this->getOption('value')
         );

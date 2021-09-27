@@ -32,12 +32,20 @@ class BindAction implements OptionsInterface, ItemReaderAwareInterface
 
         // don't hardcode values // auto level into the array
 
-        foreach ($this->getOption('list') as $columnKey) {
-            if (array_key_exists($columnKey, $item['values'])) {
-                foreach ($item['values'][$columnKey] as $i => $a) {
-                    if (isset($a['data'])) {
-                        $item['values'][$columnKey][$i]['data'] = $filter->filter(['code' => $a['key']])->getIterator()->current();
+        if (isset($item['values'])) {
+            foreach ($this->getOption('list') as $columnKey) {
+                if (array_key_exists($columnKey, $item['values'])) {
+                    foreach ($item['values'][$columnKey] as $i => $a) {
+                        if (isset($a['data'])) {
+                            $item['values'][$columnKey][$i]['data'] = $filter->filter(['code' => $a['key']])->getIterator()->current();
+                        }
                     }
+                }
+            }
+        } else {
+            foreach ($this->getOption('list') as $columnKey) {
+                if (array_key_exists($columnKey, $item)) {
+                    $item[$columnKey] = $filter->filter($item);
                 }
             }
         }

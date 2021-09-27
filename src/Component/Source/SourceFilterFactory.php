@@ -18,14 +18,13 @@ class SourceFilterFactory implements RegisteredByNameInterface
         return $this;
     }
 
-    public function createFromConfiguration(array $configuration, SourceCollection $collection): array
+    public function createFromConfiguration(array $configuration, SourceCollection $sourceCollection): array
     {
-        // we have to apply the filters like an encoder, so we can execute on demand
-        $filters = [];
+        // we have to apply the filterCollection like an encoder, so we can execute on demand
+        $filterCollection = [];
         foreach ($configuration as $listCommand) {
-            $filters[$listCommand['name']] = new SourceFilter(
-                $class = $this->getCommandClass(),
-                $listCommand['filter']
+            $filterCollection[$listCommand['name']] = new SourceFilter(
+                $class = $this->getCommandClass()
             );
 
             if ($class instanceof OptionsInterface && isset($listCommand['options'])) {
@@ -34,11 +33,12 @@ class SourceFilterFactory implements RegisteredByNameInterface
             }
 
             if ($class instanceof SourceAwareInterface && isset($listCommand['source'])) {
-                $class->setSource($collection->get($listCommand['source']));
+                // @todo allow cache options
+                $class->setSource($sourceCollection->get($listCommand['source']));
             }
         }
 
-        return $filters;
+        return $filterCollection;
     }
 
     private function getCommandClass(): ExecuteSourceCommandInterface

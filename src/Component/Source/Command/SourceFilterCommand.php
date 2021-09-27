@@ -2,15 +2,13 @@
 
 namespace Misery\Component\Source\Command;
 
-use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Item\Builder\ReferenceBuilder;
-use Misery\Component\Reader\ItemReader;
 use Misery\Component\Source\SourceAwareInterface;
 use Misery\Component\Source\SourceTrait;
 
-class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareInterface, OptionsInterface, RegisteredByNameInterface
+class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareInterface, RegisteredByNameInterface
 {
     use SourceTrait;
     use OptionsTrait;
@@ -22,7 +20,7 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
 
     public function execute()
     {
-        $items = $this->getSource()->getReader()->find($this->getOption('filter'));
+        $items = $this->getSource()->getCachedReader()->find($this->getOption('stmt'));
 
         if (!empty($this->getOption('return'))) {
             return ReferenceBuilder::buildValues(
@@ -36,9 +34,15 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
 
     public function executeWithOptions(array $options)
     {
+        $staleOptions = $this->getOptions();
+
         $this->setOptions($options);
 
-        return $this->execute();
+        $result = $this->execute();
+
+        $this->setOptions($staleOptions);
+
+        return $result;
     }
 
     public function getName(): string

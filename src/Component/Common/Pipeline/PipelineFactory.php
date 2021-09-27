@@ -27,6 +27,16 @@ class PipelineFactory implements RegisteredByNameInterface
                     $encoder = $configurationManager->createEncoder($configuration['encoder']);
                     $pipeline->line(new EncodingPipe($encoder));
                     break;
+                case $key === 'blueprint';
+                    $blueprint = $configurationManager->createBlueprint($configuration['blueprint']);
+                    $pipeline->line(new EncodingPipe($blueprint->getEncoder()));
+                    if ($blueprint->getConverter()) {
+                        $pipeline->line(new ConverterPipe($blueprint->getConverter()));
+                        $pipeline->line(new RevertPipe($blueprint->getConverter()));
+                    }
+                    $pipeline->line(new DecodingPipe($blueprint->getDecoder()));
+                    // what about decode and revert
+                    break;
                 case $key === 'actions';
                     $actions = $configurationManager->createActions($configuration['actions']);
                     $pipeline->line(new ActionPipe($actions));

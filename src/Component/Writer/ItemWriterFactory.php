@@ -23,10 +23,8 @@ class ItemWriterFactory implements RegisteredByNameInterface
             );
         }
         if ($configuration['type'] === 'csv') {
-            return new CsvWriter(
-                $workingDirectory . DIRECTORY_SEPARATOR . $configuration['filename'],
-                $configuration['options'] ?? []
-            );
+            $configuration['filename'] = $workingDirectory . DIRECTORY_SEPARATOR . $configuration['filename'];
+            return CsvWriter::createFromArray($configuration);
         }
 
         throw new \RuntimeException('Impossible Exception');

@@ -169,4 +169,20 @@ class ArrayFunctions
             return $callback($item);
         });
     }
+
+    public static function fill_with_empty(array $array): array
+    {
+        return array_fill_keys($array, null);
+    }
+
+    public static function array_map_recursive(array $array, callable $callback): array
+    {
+        $array = array_map(static function($item) use ($callback) {
+            return is_array($item) ? static::array_map_recursive($item, $callback) : $item;
+        }, $array);
+
+        return array_map(static function($item) use ($callback) {
+            return $callback($item);
+        }, $array);
+    }
 }
