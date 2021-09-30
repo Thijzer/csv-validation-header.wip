@@ -69,10 +69,10 @@ class ItemReader implements ItemReaderInterface
                     )
                 );
             } elseif ($rowValue === ['NOT_NULL']) {
-                $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
+                $reader = $reader->filter(static function ($row) use ($columnName) {
                     return false === in_array($row[$columnName], [NULL]);
                 });
-            } else  {
+            } else {
                 $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
                     return in_array($row[$columnName], $rowValue);
                 });
@@ -84,7 +84,7 @@ class ItemReader implements ItemReaderInterface
 
     /**
      * PLEASE don't use the sort on very large data sets
-     * array_multisort can only sort on the whole array in memory
+     * array_multisort can only sort on the whole data_set in memory
      *
      */
     public function sort(array $criteria): ReaderInterface
@@ -95,7 +95,7 @@ class ItemReader implements ItemReaderInterface
             $setup[] = ReferenceBuilder::buildValues($this, $keyName);
             $setup[] = $flags[strtoupper($sortDirection)];
         }
-        // should be part of the criteria
+        // should be part of the given criteria
         $setup[] = SORT_NUMERIC;
         $setup[] = $this->getItems();
 

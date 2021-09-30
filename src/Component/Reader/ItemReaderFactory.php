@@ -10,7 +10,11 @@ use Misery\Component\Common\Registry\RegisteredByNameInterface;
 class ItemReaderFactory implements RegisteredByNameInterface
 {
     private $collection = [];
-    public function createFromConfiguration(CursorInterface $cursor, array $configuration): ItemReaderInterface
+
+    /**
+     * @return ItemReader|ReaderInterface
+     */
+    public function createFromConfiguration(CursorInterface $cursor, array $configuration)
     {
         if (isset($configuration['x_filter'])) {
             return new ItemReader(new SubFunctionalCollectionCursor($cursor, function ($item) {

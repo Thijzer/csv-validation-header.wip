@@ -11,8 +11,6 @@ class CursorFactory implements RegisteredByNameInterface
         switch ($name) {
             case 'cached_cursor':
                 return new CachedCursor($prevCursor);
-            case 'sub_cursor':
-                return new SubFunctionalCollectionCursor($prevCursor);
             case 'functional_cursor':
             // we need to pass a callable function for this to work
             //    return new FunctionalCursor($cursor);

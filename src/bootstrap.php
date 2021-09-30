@@ -16,8 +16,7 @@ $converterRegistry->registerAllByName(
         new Misery\Component\Converter\AkeneoCsvHeaderContext()
     ),
     new Misery\Component\Converter\XmlDataConverter(),
-    new Misery\Component\Converter\KliumCsvToStructuredDataConverter(),
-    new Misery\Component\Converter\KliumCsvToAttributeStructuredDataConverter()
+    new Misery\Component\Converter\KliumCsvToStructuredDataConverter()
 );
 
 $modifierRegistry = new Misery\Component\Common\Registry\Registry('modifier');
@@ -107,4 +106,8 @@ $factoryRegistry->registerAllByName(
     $encoder,
     $actions
 );
-$configurationFactory = new Misery\Component\Configurator\ConfigurationFactory($factoryRegistry);
+
+$GLOBALS['$configurationFactory'] = new Misery\Component\Configurator\ConfigurationFactory($factoryRegistry);
+function initConfigurationFactory(): Misery\Component\Configurator\ConfigurationFactory {
+    return $GLOBALS['$configurationFactory'];
+}

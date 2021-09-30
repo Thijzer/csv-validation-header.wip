@@ -10,7 +10,9 @@ use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Converter\ConverterInterface;
 use Misery\Component\Decoder\ItemDecoder;
 use Misery\Component\Encoder\ItemEncoder;
+use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ItemReaderInterface;
+use Misery\Component\Reader\ReaderInterface;
 use Misery\Component\Source\SourceCollection;
 use Misery\Component\Writer\ItemWriterInterface;
 
@@ -163,12 +165,17 @@ class Configuration
         return $this->writer;
     }
 
-    public function setReader(ItemReaderInterface $reader): void
+    public function setReader($reader): void
     {
-        $this->reader = $reader;
+        if ($reader instanceof ReaderInterface) {
+            $this->reader = $reader;
+        }
     }
 
-    public function getReader(): ?ItemReaderInterface
+    /**
+     * @return ItemReaderInterface|ReaderInterface|null
+     */
+    public function getReader()
     {
         return $this->reader;
     }

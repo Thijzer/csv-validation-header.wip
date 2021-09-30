@@ -4,7 +4,7 @@ namespace Misery\Component\Common\Cursor;
 
 class TraversableCursor implements \Iterator
 {
-    private $places = [];
+    private $places;
     private $count = 0;
     private $index = 0;
 
@@ -34,13 +34,7 @@ class TraversableCursor implements \Iterator
         return isset($this->places[$this->key()]);
     }
 
-    public function reverse()
-    {
-        $this->places = array_reverse($this->places);
-        $this->rewind();
-    }
-
-    public function totalCount()
+    public function count(): int
     {
         return $this->count;
     }

@@ -46,6 +46,7 @@ class TransformationCommand extends Command
 
         $fm = new LocalFileManager($source);
 
+        $configurationFactory = initConfigurationFactory();
         $configurationFactory->init($fm);
 
         $configuration = $configurationFactory->parseDirectivesFromConfiguration(

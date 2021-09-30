@@ -16,24 +16,24 @@ class FileProcessor implements FileProcessorInterface
         $this->dateFormat = $dateFormat;
     }
 
-    public function getIncomingDirectory(string $filename = null)
+    public function getIncomingDirectory(string $filename = null): string
     {
-        return $this->provisionPath('incoming', $filename);
+        return $this->provisionRelativePath('incoming', $filename);
     }
 
-    public function getProcessingDirectory(string $filename = null)
+    public function getProcessingDirectory(string $filename = null): string
     {
-        return $this->provisionPath('processing', $filename);
+        return $this->provisionRelativePath('processing', $filename);
     }
 
-    public function getDoneDirectory(string $filename = null)
+    public function getDoneDirectory(string $filename = null): string
     {
-        return $this->provisionPath('done', date($this->dateFormat), $filename);
+        return $this->provisionRelativePath('done', date($this->dateFormat), $filename);
     }
 
-    public function getFailedDirectory(string $filename = null)
+    public function getFailedDirectory(string $filename = null): string
     {
-        return $this->provisionPath('failed', date($this->dateFormat), $filename);
+        return $this->provisionRelativePath('failed', date($this->dateFormat), $filename);
     }
 
     /**

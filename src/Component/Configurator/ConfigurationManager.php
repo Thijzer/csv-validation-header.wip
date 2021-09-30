@@ -22,8 +22,10 @@ use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Parser\ItemParserFactory;
 use Misery\Component\Process\ProcessManager;
+use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ItemReaderFactory;
 use Misery\Component\Reader\ItemReaderInterface;
+use Misery\Component\Reader\ReaderInterface;
 use Misery\Component\Source\ListFactory;
 use Misery\Component\Source\SourceCollection;
 use Misery\Component\Source\SourceCollectionFactory;
@@ -200,7 +202,10 @@ class ConfigurationManager
         return $parser;
     }
 
-    public function createReader(array $configuration): ItemReaderInterface
+    /**
+     * @return ItemReader|ReaderInterface
+     */
+    public function createReader(array $configuration)
     {
         $cursor = $this->createCursableParser($configuration);
 

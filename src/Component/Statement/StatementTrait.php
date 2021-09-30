@@ -63,6 +63,7 @@ trait StatementTrait
     public function isApplicable(): bool
     {
         // TODO
+        return true;
     }
 
     public function apply(array $item): array

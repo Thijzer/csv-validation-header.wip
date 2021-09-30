@@ -18,7 +18,7 @@ class SubFunctionalCollectionCursor implements CursorInterface
 {
     /** @var CursorInterface */
     private $cursor;
-    /** @var ItemCollection */
+    /** @var ItemCollection|null */
     private $subItems;
     /** @var int|null */
     private $count;
@@ -76,7 +76,7 @@ class SubFunctionalCollectionCursor implements CursorInterface
 
         // reset and move to next
         $this->cursor->next();
-        $this->subItems = null;
+        unset($this->subItems);
 
         return $this->current();
     }
@@ -117,6 +117,10 @@ class SubFunctionalCollectionCursor implements CursorInterface
      */
     public function rewind(): void
     {
+        if (false === $this->valid()) {
+            $this->count = $this->key() - 1;
+        }
+
         $this->cursor->rewind();
         $this->subItems = null;
     }
@@ -135,9 +139,7 @@ class SubFunctionalCollectionCursor implements CursorInterface
     public function count(): int
     {
         if (null === $this->count) {
-            $this->loop(static function () {
-                $this->count++;
-            });
+            $this->loop(static function () {});
         }
 
         return $this->count;

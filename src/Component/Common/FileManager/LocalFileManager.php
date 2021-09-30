@@ -46,6 +46,14 @@ class LocalFileManager implements FileManagerInterface
         rename($this->getAbsolutePath($filename), $this->getAbsolutePath($newFilename));
     }
 
+    public function moveFiles($newFilename, array $filenames): void
+    {
+        foreach ($filenames as $filename) {
+            $this->moveFile($filename, $newFilename);
+        }
+    }
+
+
     public function find(string $regex): \Iterator
     {
         return new \GlobIterator($this->getAbsolutePath($regex));

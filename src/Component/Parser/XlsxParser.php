@@ -12,6 +12,8 @@ class XlsxParser implements CursorInterface
     private $cursor;
     /** @var mixed|void */
     private $headers;
+    /** @var int|null */
+    private $count;
 
     public function __construct(string $filename)
     {
@@ -23,7 +25,7 @@ class XlsxParser implements CursorInterface
         return new self($filename);
     }
 
-    private function init()
+    private function init(): void
     {
         // https://github.com/AsperaGmbH/xlsx-reader
         $reader = new \Aspera\Spreadsheet\XLSX\Reader();
@@ -71,26 +73,52 @@ class XlsxParser implements CursorInterface
 
     public function rewind(): void
     {
+        if (false === $this->valid()) {
+            $this->count = $this->key() - 1;
+        }
+
         $this->cursor->rewind();
     }
 
     public function count(): int
     {
-        // TODO: Implement count() method.
+        if (null === $this->count) {
+            $this->loop(static function () {});
+        }
+
+        return $this->count;
     }
 
     public function loop(callable $callable): void
     {
-        // TODO: Implement loop() method.
+        while ($this->valid()) {
+            $callable($this->current());
+            $this->next();
+        }
+        $this->rewind();
     }
 
     public function getIterator(): \Generator
     {
-        return $this->cursor;
+        while ($this->valid()) {
+            yield $this->key() => $this->current();
+            $this->next();
+        }
+        $this->rewind();
     }
 
-    public function seek($offset)
+    public function seek($pointer): void
     {
-        // TODO: Implement seek() method.
+        $this->rewind();
+        while ($this->valid()) {
+            if ($this->key() === $pointer) {
+                break;
+            }
+            $this->next();
+        }
+
+        if (!$this->valid()) {
+            //throw new OutOfBoundsException('Invalid position');
+        }
     }
 }

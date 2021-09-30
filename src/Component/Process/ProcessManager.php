@@ -21,9 +21,7 @@ class ProcessManager
     {
         $debug = $this->configuration->getContext('debug');
 
-        /** @var Pipeline $pipeline */
         if ($pipeline = $this->configuration->getPipeline()) {
-
             if ($debug === true) {
                 $pipeline
                     ->line(New LoggingPipe())

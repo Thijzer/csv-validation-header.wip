@@ -10,7 +10,7 @@ class PipelineFactory implements RegisteredByNameInterface
     public function createFromConfiguration(
         array $configuration,
         ConfigurationManager $configurationManager
-    ) : Pipeline {
+    ): Pipeline {
         $pipeline = new Pipeline();
 
         // input is mandatory
