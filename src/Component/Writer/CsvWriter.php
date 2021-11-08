@@ -53,7 +53,7 @@ class CsvWriter implements ItemWriterInterface
     {
         $this->setHeader(array_keys($data));
 
-        fputcsv($this->handle, array_values($data), $this->delimiter);
+        @fputcsv($this->handle, array_values($data), $this->delimiter);
     }
 
     public function close(): void

@@ -13,6 +13,11 @@ abstract class FileWriter implements ItemWriterInterface
         $this->handle = fopen($filename, 'wb+');
     }
 
+    public function getFilename(): string
+    {
+        return $this->filename;
+    }
+
     public function clear(): void
     {
         file_put_contents($this->filename, '');

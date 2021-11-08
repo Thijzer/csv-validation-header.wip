@@ -8,6 +8,7 @@ interface StatementInterface
 {
     public static function prepare(ActionInterface $action, array $context = []): StatementInterface;
     public function apply(array $item): array;
+    public function isApplicable(array $item): bool;
     public function when(string $field, string $value = null): StatementInterface;
     public function and(string $field, string $value = null): StatementInterface;
     public function or(string $field, string $value = null): StatementInterface;

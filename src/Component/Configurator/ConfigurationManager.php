@@ -11,8 +11,6 @@ use Misery\Component\BluePrint\BluePrintFactory;
 use Misery\Component\Common\Cursor\CursorFactory;
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\FileManager\LocalFileManager;
-use Misery\Component\Common\Pipeline\LoggingPipe;
-use Misery\Component\Common\Pipeline\Pipeline;
 use Misery\Component\Common\Pipeline\PipelineFactory;
 use Misery\Component\Converter\ConverterFactory;
 use Misery\Component\Converter\ConverterInterface;
@@ -20,11 +18,12 @@ use Misery\Component\Decoder\ItemDecoder;
 use Misery\Component\Decoder\ItemDecoderFactory;
 use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
+use Misery\Component\Mapping\MappingFactory;
 use Misery\Component\Parser\ItemParserFactory;
 use Misery\Component\Process\ProcessManager;
+use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ItemReaderFactory;
-use Misery\Component\Reader\ItemReaderInterface;
 use Misery\Component\Reader\ReaderInterface;
 use Misery\Component\Source\ListFactory;
 use Misery\Component\Source\SourceCollection;
@@ -178,6 +177,13 @@ class ConfigurationManager
         return $blueprint;
     }
 
+    public function createMapping(array $configuration)
+    {
+        /** @var MappingFactory $factory */
+        $factory = $this->factory->getFactory('mapping');
+        $factory->createFromConfiguration($configuration, $this->fileManager->getWorkingDirectory(), $this);
+    }
+
     public function createWriter(array $configuration): ItemWriterInterface
     {
         /** @var ItemWriterFactory $factory */
@@ -197,6 +203,12 @@ class ConfigurationManager
 
         if (isset($configuration['cursor'])) {
             $parser = $this->createConnectedCursor($configuration['cursor'], $parser);
+        }
+
+        if ($parser instanceof ItemCollection) {
+            $parser->add(
+                $this->config->getList($configuration['list'])
+            );
         }
 
         return $parser;

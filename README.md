@@ -21,3 +21,18 @@ bin/composer install -o
 
 bin/composer unit-test
 ```
+
+```yaml
+blueprint:
+  validations: <describes the validations>
+  parse: <describes the options of interpretation>
+  fields: <describes the expected field types>
+    sku:
+      integer: ~
+    enabled:
+      bool: ~
+    attributes:
+      list: ~
+    label:
+      array: ~
+```

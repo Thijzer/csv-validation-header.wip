@@ -116,6 +116,15 @@ class ArrayFunctions
     }
 
     /**
+     * this array_combine version will also combine
+     * when the elements form array $b are less then the values of array $a
+     */
+    public static function arrayCombine(array $a, array $b)
+    {
+        return array_combine($a, $b+array_fill(0,count($a),null));
+    }
+
+    /**
      * @param mixed $haystack
      * @param array $needles
      *

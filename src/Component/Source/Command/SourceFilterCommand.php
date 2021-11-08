@@ -4,7 +4,6 @@ namespace Misery\Component\Source\Command;
 
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
-use Misery\Component\Item\Builder\ReferenceBuilder;
 use Misery\Component\Source\SourceAwareInterface;
 use Misery\Component\Source\SourceTrait;
 
@@ -13,20 +12,26 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
     use SourceTrait;
     use OptionsTrait;
 
+    private $reader;
+
     private $options = [
         'return' => [],
-        'filter' => [],
+        'cache' => [],
+        'stmt' => null,
     ];
 
     public function execute()
     {
-        $items = $this->getSource()->getCachedReader()->find($this->getOption('stmt'));
+        if ($this->reader === null) {
+            $this->reader = $this->getSource()->getCachedReader($this->getOption('cache'));
+        }
+
+        $items = $this->reader->find($this->getOption('stmt'));
 
         if (!empty($this->getOption('return'))) {
-            return ReferenceBuilder::buildValues(
-                $items,
-                $this->getOption('return')
-            );
+            return array_map(function (array $item) {
+                return $item[$this->getOption('return')];
+            }, $items->getItems());
         }
 
         return $items;

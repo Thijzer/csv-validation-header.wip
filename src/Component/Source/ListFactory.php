@@ -21,20 +21,24 @@ class ListFactory implements RegisteredByNameInterface
     public function createFromConfiguration(array $configuration, SourceCollection $collection): array
     {
         $commands = [];
-        foreach ($configuration as $listCommand) {
-            if ($class = $this->getCommandClass($listCommand['source_command'])) {
+        foreach ($configuration as $listItem) {
+            if (isset($listItem['values']) && is_array($listItem['values'])) {
+                $commands[$listItem['name']] = $listItem['values'];
+                continue;
+            }
+            if (isset($listItem['source_command']) && $class = $this->getCommandClass($listItem['source_command'])) {
 
-                if ($class instanceof OptionsInterface && isset($listCommand['options'])) {
-                    $options = $listCommand['options'];
+                if ($class instanceof OptionsInterface && isset($listItem['options'])) {
+                    $options = $listItem['options'];
                     $class->setOptions($options);
                 }
 
-                if ($class instanceof SourceAwareInterface && isset($listCommand['source'])) {
-                    $class->setSource($collection->get($listCommand['source']));
+                if ($class instanceof SourceAwareInterface && isset($listItem['source'])) {
+                    $class->setSource($collection->get($listItem['source']));
                 }
 
                 // this might become a late call
-                $commands[$listCommand['name']] = $class->execute();
+                $commands[$listItem['name']] = $class->execute();
             }
         }
 

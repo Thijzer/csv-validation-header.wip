@@ -2,8 +2,36 @@
 
 namespace Misery\Component\Statement;
 
+use Misery\Component\Action\SetValueAction;
+
 class WhenStatementBuilder
 {
+    public static function buildFromOperator(string $operator, array $context = []): StatementInterface
+    {
+        switch ($operator) {
+            case 'IN_LIST':
+                $statement = InListStatement::prepare(new SetValueAction(), $context);
+                break;
+            case 'EQUALS':
+            case null:
+                $statement = EqualsStatement::prepare(new SetValueAction());
+                break;
+            case 'CONTAINS':
+                $statement = ContainsStatement::prepare(new SetValueAction());
+                break;
+            case 'EMPTY':
+                $statement = EmptyStatement::prepare(new SetValueAction());
+                break;
+            case 'NOT_EMPTY':
+                $statement = NotEmptyStatement::prepare(new SetValueAction());
+                break;
+            default:
+                throw new \Exception('invalid statement operator');
+        }
+
+        return $statement;
+    }
+
     public static function build($when, array $then, StatementInterface $statement): void
     {
         if (is_string($when)) {

@@ -51,7 +51,7 @@ class Source
 
     public function getReader(): ItemReaderInterface
     {
-        return new ItemReader($this->cursor);
+        return new ItemReader(clone $this->cursor);
     }
 
     public function getCachedReader(array $options = []): ItemReaderInterface
@@ -60,7 +60,7 @@ class Source
             $options = array_merge(['cache_size' => CachedCursor::LARGE_CACHE_SIZE], $options);
 
             $this->cache = new ItemReader(new CachedCursor(
-                $this->cursor,
+                clone $this->cursor,
                 $options
             ));
         }

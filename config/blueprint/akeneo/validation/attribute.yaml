@@ -16,6 +16,10 @@ property:
         - pim_catalog_date
         - pim_catalog_file
         - pim_catalog_identifier
+
+        - pim_reference_data_simpleselect
+        - pim_reference_data_multiselect
+
   max_characters:
     is_integer: ~
   max_file_size:

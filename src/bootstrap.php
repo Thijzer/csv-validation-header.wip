@@ -7,7 +7,7 @@ require __DIR__.'/../vendor/autoload.php';
 $sourceRegistry = new Misery\Component\Common\Registry\Registry('source_command');
 $sourceRegistry->registerAllByName(
     new Misery\Component\Source\Command\SourceFilterCommand(),
-    new Misery\Component\Source\Command\SourceKeyValueCommand(),
+    new Misery\Component\Source\Command\SourceKeyValueCommand()
 );
 
 $converterRegistry = new Misery\Component\Common\Registry\Registry('converter');
@@ -16,7 +16,8 @@ $converterRegistry->registerAllByName(
         new Misery\Component\Converter\AkeneoCsvHeaderContext()
     ),
     new Misery\Component\Converter\XmlDataConverter(),
-    new Misery\Component\Converter\KliumCsvToStructuredDataConverter()
+    new Misery\Component\Converter\KliumCsvToStructuredDataConverter(),
+    new Misery\Component\Converter\AS400CsvToStructuredDataConverter()
 );
 
 $modifierRegistry = new Misery\Component\Common\Registry\Registry('modifier');
@@ -27,6 +28,14 @@ $modifierRegistry
     ->register(Misery\Component\Modifier\ReplaceCharacterModifier::NAME, new Misery\Component\Modifier\ReplaceCharacterModifier())
     ->register(Misery\Component\Modifier\FilterEmptyStringModifier::NAME, new Misery\Component\Modifier\FilterEmptyStringModifier())
     ->register(Misery\Component\Modifier\FilterWhiteSpacesModifier::NAME, new Misery\Component\Modifier\FilterWhiteSpacesModifier())
+
+    ->register(Misery\Component\Modifier\ReferenceCodeModifier::NAME, new Misery\Component\Modifier\ReferenceCodeModifier())
+    ->register(Misery\Component\Modifier\SnakeCaseModifier::NAME, new Misery\Component\Modifier\SnakeCaseModifier())
+    ->register(Misery\Component\Modifier\StripSlashesModifier::NAME, new Misery\Component\Modifier\StripSlashesModifier())
+    ->register(Misery\Component\Modifier\StringToUpperModifier::NAME, new Misery\Component\Modifier\StringToUpperModifier())
+    ->register(Misery\Component\Modifier\StringToLowerModifier::NAME, new Misery\Component\Modifier\StringToLowerModifier())
+
+    //->register(Misery\Component\Modifier\StructureModifier::NAME, new Misery\Component\Modifier\StructureModifier())
 ;
 
 $formatRegistry = new Misery\Component\Common\Registry\Registry('format');
@@ -54,6 +63,9 @@ $actionRegistry
     ->register(Misery\Component\Action\KeyMapperAction::NAME, new Misery\Component\Action\KeyMapperAction())
     ->register(Misery\Component\Action\ExpandAction::NAME, new Misery\Component\Action\ExpandAction())
     ->register(Misery\Component\Action\StatementAction::NAME, new Misery\Component\Action\StatementAction())
+    ->register(Misery\Component\Action\FormatAction::NAME, new Misery\Component\Action\FormatAction())
+    ->register(Misery\Component\Action\MapAction::NAME, new Misery\Component\Action\MapAction())
+    ->register(Misery\Component\Action\CombineAction::NAME, new Misery\Component\Action\CombineAction())
 ;
 
 #$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');
@@ -99,6 +111,7 @@ $factoryRegistry->registerAllByName(
     new Misery\Component\Parser\ItemParserFactory(),
     new Misery\Component\Writer\ItemWriterFactory(),
     new Misery\Component\Common\Cursor\CursorFactory(),
+    new Misery\Component\Mapping\MappingFactory(),
     $list,
     $filter,
     $converter,

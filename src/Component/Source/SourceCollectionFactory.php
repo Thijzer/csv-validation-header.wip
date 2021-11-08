@@ -21,12 +21,12 @@ class SourceCollectionFactory implements RegisteredByNameInterface
         $sourceCollection = $sourceCollection ?: new SourceCollection('manager');
         foreach ($manager->listFiles() as $file) {
             $path = pathinfo($file);
-            if ($path['extension'] === 'csv') {
+            if (strtolower($path['extension']) === 'csv') {
                 $sourceCollection->add(
                     Source::createSimple(CsvParser::create($file), $path['basename'])
                 );
             }
-            if ($path['extension'] === 'xml') {
+            if (strtolower($path['extension']) === 'xml') {
                 $sourceCollection->add(
                     Source::createSimple(XmlParser::create($file), $path['basename'])
                 );

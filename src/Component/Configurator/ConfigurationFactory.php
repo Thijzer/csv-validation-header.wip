@@ -53,6 +53,9 @@ class ConfigurationFactory
                 case $key === 'list';
                     $this->manager->createLists($configuration['list']);
                     break;
+                case $key === 'mapping';
+                    $this->manager->createMapping($configuration['mapping']);
+                    break;
                 case $key === 'filter';
                     $this->manager->createFilters($configuration['filter']);
                     break;

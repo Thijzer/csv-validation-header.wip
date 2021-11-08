@@ -59,15 +59,15 @@ class ItemReader implements ItemReaderInterface
                 $rowValue = [$rowValue];
             }
             if ($rowValue === ['UNIQUE']) {
-                $reader = new self(
-                    $this->processIndex(
-                        array_values(
-                            array_flip(
-                                ReferenceBuilder::build($reader, $columnName)[$columnName]
-                            )
-                        )
-                    )
-                );
+                $list = [];
+                $reader = $reader->filter(static function ($row) use ($columnName, &$list) {
+                    $id = $row[$columnName];
+                    if (in_array($id, $list)) {
+                        return false;
+                    }
+                    $list[] = $id;
+                    return true;
+                });
             } elseif ($rowValue === ['NOT_NULL']) {
                 $reader = $reader->filter(static function ($row) use ($columnName) {
                     return false === in_array($row[$columnName], [NULL]);
@@ -85,23 +85,21 @@ class ItemReader implements ItemReaderInterface
     /**
      * PLEASE don't use the sort on very large data sets
      * array_multisort can only sort on the whole data_set in memory
-     *
      */
     public function sort(array $criteria): ReaderInterface
     {
         $flags = ['ASC' => SORT_ASC, 'DSC' => SORT_DESC, 'DESC' => SORT_DESC];
         $setup = [];
         foreach ($criteria as $keyName => $sortDirection) {
-            $setup[] = ReferenceBuilder::buildValues($this, $keyName);
+            $setup[] = $index = ReferenceBuilder::buildValues($this, $keyName);
             $setup[] = $flags[strtoupper($sortDirection)];
+            $setup[] = SORT_NUMERIC;
+            $setup[] = array_keys($index);
         }
-        // should be part of the given criteria
-        $setup[] = SORT_NUMERIC;
-        $setup[] = $this->getItems();
 
         array_multisort(...$setup);
 
-        return new self(new ItemCollection(end($setup)));
+        return $this->index(end($setup));
     }
 
     public function filter(callable $callable): ReaderInterface
@@ -126,7 +124,9 @@ class ItemReader implements ItemReaderInterface
     private function processMap(callable $callable): \Generator
     {
         foreach ($this->getIterator() as $key => $row) {
-            yield $key => $callable($row);
+            if (is_array($row)) {
+                yield $key => $callable($row);
+            }
         }
     }
 

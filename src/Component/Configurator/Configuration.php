@@ -10,6 +10,7 @@ use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Converter\ConverterInterface;
 use Misery\Component\Decoder\ItemDecoder;
 use Misery\Component\Encoder\ItemEncoder;
+use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ItemReaderInterface;
 use Misery\Component\Reader\ReaderInterface;
@@ -26,6 +27,7 @@ class Configuration
     private $reader;
     private $writer;
     private $lists = [];
+    private $mappings = [];
     private $filters = [];
     private $converters;
     private $sources;
@@ -170,6 +172,24 @@ class Configuration
         if ($reader instanceof ReaderInterface) {
             $this->reader = $reader;
         }
+    }
+
+    public function addMapping(string $alias, array $mappings): void
+    {
+        $this->mappings[$alias] = $mappings;
+
+        // todo we add it to the lists here
+        $this->addLists([$alias => $mappings]);
+    }
+
+    public function getMappings(): array
+    {
+        return $this->mappings;
+    }
+
+    public function getMapping(string $alias)
+    {
+        return $this->mappings[$alias] ?? null;
     }
 
     /**

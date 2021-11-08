@@ -60,10 +60,19 @@ trait StatementTrait
         }
     }
 
-    public function isApplicable(): bool
+    public function isApplicable(array $item): bool
     {
-        // TODO
-        return true;
+        return count($this->conditions) !== count(array_filter($this->conditions, function ($condition) use ($item) {
+            $condition = array_merge($this->template, $condition);
+            switch (true) {
+                case !empty($condition['or']) && (true === $this->whenField($condition['when'], $item) || true === $this->whenField($condition['or'], $item)):
+                case !empty($condition['and']) && (true === $this->whenField($condition['when'], $item) && true ===  $this->whenField($condition['and'], $item)):
+                case true === $this->whenField($condition['when'], $item):
+                    return true;
+                default:
+                    return false;
+            }
+        }));
     }
 
     public function apply(array $item): array

@@ -42,7 +42,7 @@ class TransformationCommand extends Command
         Assertion::file($file);
         Assertion::directory($source);
 
-        require __DIR__.'/../../src/bootstrap.php';
+        require_once __DIR__.'/../../src/bootstrap.php';
 
         $fm = new LocalFileManager($source);
 

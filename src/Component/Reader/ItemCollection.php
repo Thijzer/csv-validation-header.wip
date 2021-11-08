@@ -20,6 +20,14 @@ class ItemCollection implements CursorInterface
         $this->keys = array_keys($items);
     }
 
+    public function add(array $items)
+    {
+        foreach ($items as $key => $value) {
+            $this->items[$key] = $value;
+        }
+        $this->keys = array_keys($this->items);
+    }
+
     /**
      * @param string|int $key
      * @param mixed $value

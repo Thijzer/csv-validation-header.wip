@@ -2,10 +2,13 @@
 
 namespace Misery\Component\Reader;
 
+use Misery\Component\Common\Cursor\CondensedCursor;
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Cursor\SubFunctionalCollectionCursor;
 use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
+use Misery\Component\Filter\ColumnReducer;
+use Misery\Component\Item\ItemsFactoryIntoItem;
 
 class ItemReaderFactory implements RegisteredByNameInterface
 {
@@ -16,7 +19,7 @@ class ItemReaderFactory implements RegisteredByNameInterface
      */
     public function createFromConfiguration(CursorInterface $cursor, array $configuration)
     {
-        if (isset($configuration['x_filter'])) {
+        if (isset($configuration['x_filter']) && $configuration['x_filter'] === 'collect_unique_attribute_ids') {
             return new ItemReader(new SubFunctionalCollectionCursor($cursor, function ($item) {
                 // we need a reader that can accept cursor in cursor similar to the SubCursor
                 // why? contextually we need the full item to create the correct sub-items
@@ -32,13 +35,42 @@ class ItemReaderFactory implements RegisteredByNameInterface
                     if ($key && !isset($this->collection[$key])) {
                         $this->collection[$key] = $key;
                         $itemCol->set($key, [
-                            'code' => 'klium_'.$key,
+                            'code' => 'klium_' . $key,
                             'label-nl_BE' => $label,
                         ]);
                     }
                 }
 
                 return $itemCol;
+            }));
+        }
+
+        if (isset($configuration['x_filter']['name']) && $configuration['x_filter']['name'] === 'condensed') {
+            $config = $configuration['x_filter'];
+            return new ItemReader(new CondensedCursor($cursor, function ($item) use ($config) {
+                $key = $item[$config['on']];
+                $this->collection[$key][] = $item;
+
+                // new id check
+                if (!isset($this->collection['current_id']) || $this->collection['current_id'] !== $key) {
+                    $prevId = $this->collection['current_id'] ?? null;
+                    $this->collection['current_id'] = $key;
+
+                    if (!$prevId) {
+                        return null;
+                    }
+
+                    $prev = $this->collection[$prevId];
+                    unset($this->collection[$prevId]);
+
+                    if (isset($config['join_into'])) {
+                        return ItemsFactoryIntoItem::createFromConfig($prev, $config['join_into']);
+                    }
+
+                    return $prev;
+                }
+
+                return null;
             }));
         }
 
