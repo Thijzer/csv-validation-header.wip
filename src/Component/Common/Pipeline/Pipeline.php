@@ -2,6 +2,8 @@
 
 namespace Misery\Component\Common\Pipeline;
 
+use Misery\Component\Common\Pipeline\Exception\SkipPipeLineException;
+
 class Pipeline
 {
     /** @var PipeReaderInterface */
@@ -36,8 +38,12 @@ class Pipeline
     {
         $i = 0;
         while ($i !== $amount && $item = $this->in->read()) {
-            foreach ($this->lines as $line) {
-                $item = $line->pipe($item);
+            try {
+                foreach ($this->lines as $line) {
+                    $item = $line->pipe($item);
+                }
+            } catch (SkipPipeLineException $exception) {
+                continue;
             }
             foreach ($this->out as $out) {
                 $out->write($item);

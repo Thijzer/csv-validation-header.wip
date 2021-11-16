@@ -33,10 +33,17 @@ class ConverterFactory implements RegisteredByNameInterface
             $converter->setConfiguration($config);
         }
 
-        if ($converter instanceof OptionsInterface && $list = $converter->getOption('list')) {
+        if ($converter instanceof OptionsInterface && isset($configuration['options'])) {
+            $options = $configuration['options'];
             // fetch those values
-            if ($command = $listedValues[$list] ?? null) {
-                $converter->setOptions(['list' => $command]);
+            foreach ($options as $option => $optionValue) {
+                if (strpos($option, ':list') !== false) {
+                    $converter->setOptions([$option => $config->getList($optionValue)]);
+                }
+            }
+
+            if ($list = $converter->getOption('list')) {
+                $converter->setOptions(['list' => $config->getList($list)]);
             }
         }
 

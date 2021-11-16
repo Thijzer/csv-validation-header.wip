@@ -10,10 +10,9 @@ use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Converter\ConverterInterface;
 use Misery\Component\Decoder\ItemDecoder;
 use Misery\Component\Encoder\ItemEncoder;
-use Misery\Component\Reader\ItemCollection;
-use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ItemReaderInterface;
 use Misery\Component\Reader\ReaderInterface;
+use Misery\Component\Shell\ShellCommands;
 use Misery\Component\Source\SourceCollection;
 use Misery\Component\Writer\ItemWriterInterface;
 
@@ -32,6 +31,7 @@ class Configuration
     private $converters;
     private $sources;
     private $context = [];
+    private $shellCommands;
 
     public function __construct()
     {
@@ -46,9 +46,9 @@ class Configuration
         $this->context = array_merge($this->context, $context);
     }
 
-    public function getContext(string $key)
+    public function getContext(string $key = null)
     {
-        return $this->context[$key] ?? null;
+        return $key !== null ? $this->context[$key] ?? null: $this->context;
     }
 
     public function addSources(SourceCollection $sources): void
@@ -69,6 +69,16 @@ class Configuration
     public function getPipeline(): ?Pipeline
     {
         return $this->pipeline;
+    }
+
+    public function setShellCommands(ShellCommands $commands): void
+    {
+        $this->shellCommands = $commands;
+    }
+
+    public function getShellCommands(): ?ShellCommands
+    {
+        return $this->shellCommands;
     }
 
     public function setActions(ItemActionProcessor $actionProcessor): void

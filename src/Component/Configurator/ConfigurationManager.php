@@ -25,6 +25,7 @@ use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ItemReaderFactory;
 use Misery\Component\Reader\ReaderInterface;
+use Misery\Component\Shell\ShellCommandFactory;
 use Misery\Component\Source\ListFactory;
 use Misery\Component\Source\SourceCollection;
 use Misery\Component\Source\SourceCollectionFactory;
@@ -64,7 +65,7 @@ class ConfigurationManager
     {
         /** @var SourceCollectionFactory $factory */
         $factory = $this->factory->getFactory('source');
-        $this->sources = $factory->createFromConfiguration($configuration, $this->sources);
+        $this->sources = $factory->createFromConfiguration($this->fileManager, $configuration, $this->sources);
     }
 
     public function addContext(array $configuration): void
@@ -85,13 +86,29 @@ class ConfigurationManager
             $configuration = $this->factory->parseDirectivesFromConfiguration(
                 array_merge(Yaml::parseFile($file), [
                     'context' => [
+                        'debug' => $debug,
+                        'dirname' => $dirName,
                         'transformation_file' => $file,
                     ]
                 ])
             );
 
             (new ProcessManager($configuration))->startTransformation();
+
+            // TODO connect the outputs here
+            if ($shellCommands = $configuration->getShellCommands()) {
+                $shellCommands->exec();
+            }
         }
+    }
+
+    public function createShellCommands(array $configuration)
+    {
+        /** @var ShellCommandFactory $factory */
+        $factory = $this->factory->getFactory('shell');
+        $this->config->setShellCommands(
+            $factory->createFromConfiguration($configuration, $this->config)
+        );
     }
 
     public function createPipelines(array $configuration): void

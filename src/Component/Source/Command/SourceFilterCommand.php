@@ -17,7 +17,7 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
     private $options = [
         'return' => [],
         'cache' => [],
-        'stmt' => null,
+        'filter' => null,
     ];
 
     public function execute()
@@ -26,7 +26,7 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
             $this->reader = $this->getSource()->getCachedReader($this->getOption('cache'));
         }
 
-        $items = $this->reader->find($this->getOption('stmt'));
+        $items = $this->reader->find($this->getOption('filter'));
 
         if (!empty($this->getOption('return'))) {
             return array_map(function (array $item) {

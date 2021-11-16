@@ -30,9 +30,9 @@ class SourceFilter
     {
         $options = $this->command->getOptions();
 
-        foreach ($options['stmt'] as $key => $value) {
+        foreach ($options['filter'] as $key => $value) {
             if (strpos($value, '$') !== false && isset($item[$key])) {
-                $options['stmt'][$key] = $item[$key];
+                $options['filter'][$key] = $item[$key];
             }
         }
 

@@ -16,12 +16,19 @@ class MappingFactory implements RegisteredByNameInterface
                 $mapping = $configurationManager->getConfig()->getMapping($mappingList['name']);
                 if (null === $mapping && isset($mappingList['source'])) {
                     $mapping = $this->create($workingDirectory . DIRECTORY_SEPARATOR . $mappingList['source']);
-                    if (in_array('flatten', $mappingList['options'])) {
-                        $mapping = ArrayFunctions::flatten($mapping);
+                    if (isset($mappingList['options'])) {
+                        if (in_array('flatten', $mappingList['options'])) {
+                            $mapping = ArrayFunctions::flatten($mapping);
+                        }
+                        if (in_array('flip', $mappingList['options'])) {
+                            $mapping = array_flip($mapping);
+                        }
                     }
-                    if (in_array('flip', $mappingList['options'])) {
-                        $mapping = array_flip($mapping);
-                    }
+                }
+                if (null === $mapping && isset($mappingList['sets'])) {
+                    $mapping = array_merge(...array_map(function ($mappingName) use ($configurationManager) {
+                        return $configurationManager->getConfig()->getMapping($mappingName);
+                    }, $mappingList['sets']));
                 }
 
                 $configurationManager->getConfig()->addMapping($mappingList['name'], $mapping);

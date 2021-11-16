@@ -50,6 +50,9 @@ class ConfigurationFactory
                 case $key === 'pipeline';
                     $this->manager->createPipelines($configuration['pipeline']);
                     break;
+                case $key === 'shell';
+                    $this->manager->createShellCommands($configuration['shell']);
+                    break;
                 case $key === 'list';
                     $this->manager->createLists($configuration['list']);
                     break;

@@ -10,7 +10,7 @@ class KeyValuePairBuilder
     public static function build(ReaderInterface $reader, string $key, string $value)
     {
         $concat = [];
-        foreach (ColumnReducer::reduce($reader, $key, $value)->getIterator() as $index => $array) {
+        foreach (ColumnReducer::reduce($reader, $key, $value)->getIterator() as $array) {
             $concat[$array[$key]] = $array[$value];
         }
 

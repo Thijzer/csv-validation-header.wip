@@ -54,11 +54,18 @@ class TransformationCommand extends Command
                 'context' => [
                     'transformation_file' => $file,
                     'sources' => $source,
+                    'scripts' => '/app/scripts',
+                    'workpath' => $source,
                     'debug' => $debug,
                 ]
             ])
         );
 
         (new ProcessManager($configuration))->startTransformation();
+
+        // TODO connect the outputs here
+        if ($shellCommands = $configuration->getShellCommands()) {
+            $shellCommands->exec();
+        }
     }
 }

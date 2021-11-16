@@ -17,7 +17,8 @@ $converterRegistry->registerAllByName(
     ),
     new Misery\Component\Converter\XmlDataConverter(),
     new Misery\Component\Converter\KliumCsvToStructuredDataConverter(),
-    new Misery\Component\Converter\AS400CsvToStructuredDataConverter()
+    new Misery\Component\Converter\AS400CsvToStructuredDataConverter(),
+    new Misery\Component\Converter\AS400ArticleAttributesCsvToStructuredDataConverter()
 );
 
 $modifierRegistry = new Misery\Component\Common\Registry\Registry('modifier');
@@ -63,9 +64,12 @@ $actionRegistry
     ->register(Misery\Component\Action\KeyMapperAction::NAME, new Misery\Component\Action\KeyMapperAction())
     ->register(Misery\Component\Action\ExpandAction::NAME, new Misery\Component\Action\ExpandAction())
     ->register(Misery\Component\Action\StatementAction::NAME, new Misery\Component\Action\StatementAction())
+    ->register(Misery\Component\Action\MergeAction::NAME, new Misery\Component\Action\MergeAction())
+    ->register(Misery\Component\Action\UnsetAction::NAME, new Misery\Component\Action\UnsetAction())
     ->register(Misery\Component\Action\FormatAction::NAME, new Misery\Component\Action\FormatAction())
     ->register(Misery\Component\Action\MapAction::NAME, new Misery\Component\Action\MapAction())
     ->register(Misery\Component\Action\CombineAction::NAME, new Misery\Component\Action\CombineAction())
+    ->register(Misery\Component\Action\SkipAction::NAME, new Misery\Component\Action\SkipAction())
 ;
 
 #$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');
@@ -112,6 +116,7 @@ $factoryRegistry->registerAllByName(
     new Misery\Component\Writer\ItemWriterFactory(),
     new Misery\Component\Common\Cursor\CursorFactory(),
     new Misery\Component\Mapping\MappingFactory(),
+    new Misery\Component\Shell\ShellCommandFactory(),
     $list,
     $filter,
     $converter,

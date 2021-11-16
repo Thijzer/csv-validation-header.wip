@@ -93,11 +93,27 @@ class LocalFileManager implements FileManagerInterface
         }
     }
 
+    public function listFilesRecursive(string $subDirectory = null): \Generator
+    {
+        $scandir = $subDirectory ?? $this->workingDirectory;
+        foreach (glob($scandir."/*") as $path) {
+            if (is_dir($path)) {
+                foreach ($this->listFilesRecursive($path) as $subpath) {
+                    yield $subpath;
+                }
+                continue;
+            }
+            if (is_file($path)) {
+                yield $path;
+            }
+        }
+    }
+
     public function listFiles(): \Generator
     {
-        foreach (glob($this->workingDirectory."/*") as $file) {
-            if (is_file($file)) {
-                yield $file;
+        foreach (glob($this->workingDirectory."/*") as $path) {
+            if (is_file($path)) {
+                yield $path;
             }
         }
     }

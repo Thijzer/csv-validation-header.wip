@@ -19,7 +19,7 @@ class ItemReaderFactory implements RegisteredByNameInterface
      */
     public function createFromConfiguration(CursorInterface $cursor, array $configuration)
     {
-        if (isset($configuration['x_filter']) && $configuration['x_filter'] === 'collect_unique_attribute_ids') {
+        if (isset($configuration['x_filter']['type']) && $configuration['x_filter']['type'] === 'collect_unique_attribute_ids') {
             return new ItemReader(new SubFunctionalCollectionCursor($cursor, function ($item) {
                 // we need a reader that can accept cursor in cursor similar to the SubCursor
                 // why? contextually we need the full item to create the correct sub-items
@@ -45,7 +45,7 @@ class ItemReaderFactory implements RegisteredByNameInterface
             }));
         }
 
-        if (isset($configuration['x_filter']['name']) && $configuration['x_filter']['name'] === 'condensed') {
+        if (isset($configuration['x_filter']['type']) && $configuration['x_filter']['type'] === 'condensed') {
             $config = $configuration['x_filter'];
             return new ItemReader(new CondensedCursor($cursor, function ($item) use ($config) {
                 $key = $item[$config['on']];

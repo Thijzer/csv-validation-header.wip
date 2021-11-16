@@ -19,6 +19,6 @@ class ExpandAction implements OptionsInterface
 
     public function apply(array $item): array
     {
-        return array_merge_recursive($this->getOption('set'), $item);
+        return array_replace_recursive($this->getOption('set'), $item);
     }
 }

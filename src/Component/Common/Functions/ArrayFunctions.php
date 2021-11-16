@@ -99,7 +99,8 @@ class ArrayFunctions
     /**
      * Merge Array A and B together as One
      * Some new keys will be generated to avoid collision with same values
-     * Array A is leading
+     * Array A is leading in key-order
+     * Array B has priority on values
      *
      * @param array $a
      * @param array $b

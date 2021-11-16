@@ -13,7 +13,6 @@ class ProcessManager
 
     public function __construct(Configuration $configuration)
     {
-
         $this->configuration = $configuration;
     }
 

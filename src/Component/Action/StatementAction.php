@@ -34,13 +34,19 @@ class StatementAction implements OptionsInterface, ConfigurationAwareInterface
         $then = $this->getOption('then');
 
         $operator = $when['operator'] ?? null;
-        $context = $when['context'] ?? null;
+        $context = $when['context'] ?? [];
 
         if (isset($context['list'])) {
             $context['list'] = $this->configuration->getList($context['list']);
         }
 
-        $this->statement = WhenStatementBuilder::buildFromOperator($operator, $context);
+        if (is_string($when)) {
+            $this->statement = EqualsStatement::prepare(new SetValueAction());
+        }
+
+        if ($operator) {
+            $this->statement = WhenStatementBuilder::buildFromOperator($operator, $context);
+        }
 
         WhenStatementBuilder::build($when, $then, $this->statement);
 

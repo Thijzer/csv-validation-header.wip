@@ -11,8 +11,7 @@ use Misery\Component\Item\Processor\EncoderProcessor;
 use Misery\Component\Item\Processor\NullProcessor;
 use Misery\Component\Parser\CsvParser;
 use Misery\Component\Parser\XmlParser;
-use Misery\Component\Reader\ItemReader;
-use Misery\Component\Reader\ItemReaderInterface;
+use Misery\Component\Parser\YamlParser;
 
 class SourceCollectionFactory implements RegisteredByNameInterface
 {
@@ -20,27 +19,43 @@ class SourceCollectionFactory implements RegisteredByNameInterface
     {
         $sourceCollection = $sourceCollection ?: new SourceCollection('manager');
         foreach ($manager->listFiles() as $file) {
-            $path = pathinfo($file);
-            if (strtolower($path['extension']) === 'csv') {
-                $sourceCollection->add(
-                    Source::createSimple(CsvParser::create($file), $path['basename'])
-                );
-            }
-            if (strtolower($path['extension']) === 'xml') {
-                $sourceCollection->add(
-                    Source::createSimple(XmlParser::create($file), $path['basename'])
-                );
-            }
+            $this->addSourceFileToCollection($sourceCollection, $file);
         }
 
         return $sourceCollection;
     }
 
-    public function createFromConfiguration(array $configuration, SourceCollection $sourceCollection = null): SourceCollection
+    public function createFromConfiguration(LocalFileManager $manager, array $configuration, SourceCollection $sourceCollection = null): SourceCollection
     {
-        foreach ($configuration['sources'] as $sourceName) {
+        $sourceCollection = $sourceCollection ?: new SourceCollection('manager');
+
+        foreach ($configuration as $sourcePath) {
+            $this->addSourceFileToCollection($sourceCollection, $manager->getAbsolutePath($sourcePath));
         }
+
         return $sourceCollection;
+    }
+
+    private function addSourceFileToCollection(SourceCollection $sourceCollection, string $file): void
+    {
+        Assert::that($file)->file();
+
+        $path = pathinfo($file);
+        if (strtolower($path['extension']) === 'csv') {
+            $sourceCollection->add(
+                Source::createSimple(CsvParser::create($file), $path['basename'])
+            );
+        }
+        if (strtolower($path['extension']) === 'xml') {
+            $sourceCollection->add(
+                Source::createSimple(XmlParser::create($file), $path['basename'])
+            );
+        }
+        if (in_array(strtolower($path['extension']), ['yaml', 'yml'])) {
+            $sourceCollection->add(
+                Source::createSimple(YamlParser::create($file), $path['basename'])
+            );
+        }
     }
 
     public static function create(ItemEncoderFactory $encoderFactory, array $sourcePaths): SourceCollection

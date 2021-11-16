@@ -82,7 +82,7 @@ trait StatementTrait
             switch (true) {
                 case !empty($condition['or']) && (true === $this->whenField($condition['when'], $item) || true === $this->whenField($condition['or'], $item)):
                 case !empty($condition['and']) && (true === $this->whenField($condition['when'], $item) && true ===  $this->whenField($condition['and'], $item)):
-                case true === $this->whenField($condition['when'], $item):
+                case empty($condition['and']) && empty($condition['or']) && true === $this->whenField($condition['when'], $item):
                     $item = $this->thenField($condition['then'], $item);
                     break;
                 default:

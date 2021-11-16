@@ -2,7 +2,6 @@
 
 namespace Misery\Component\Source\Command;
 
-use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Item\Builder\KeyValuePairBuilder;
