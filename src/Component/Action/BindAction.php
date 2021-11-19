@@ -46,6 +46,9 @@ class BindAction implements OptionsInterface, ItemReaderAwareInterface
             foreach ($this->getOption('list') as $columnKey) {
                 if (array_key_exists($columnKey, $item)) {
                     $item[$columnKey] = $filter->filter($item);
+                    if (count($item[$columnKey]) <= 1) {
+                        $item[$columnKey] = current($item[$columnKey]);
+                    }
                 }
             }
         }

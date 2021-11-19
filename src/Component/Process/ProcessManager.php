@@ -16,9 +16,10 @@ class ProcessManager
         $this->configuration = $configuration;
     }
 
-    public function startTransformation()
+    public function startProcess()
     {
         $debug = $this->configuration->getContext('debug');
+        $amount = $this->configuration->getContext('try');
 
         if ($pipeline = $this->configuration->getPipeline()) {
             if ($debug === true) {
@@ -27,6 +28,12 @@ class ProcessManager
                     ->run(1);
                 exit;
             }
+
+            if (is_int($amount)) {
+                $pipeline->run($amount);
+                exit;
+            }
+
             $pipeline->run();
         }
     }

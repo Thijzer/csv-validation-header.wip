@@ -2,40 +2,50 @@
 
 namespace Misery\Component\Action;
 
-use Misery\Component\Akeneo\AkeneoValuePicker;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
-use Misery\Component\Common\Utils\ValueFormatter;
-use Misery\Component\Reader\ItemCollection;
-use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ItemReaderAwareInterface;
 use Misery\Component\Reader\ItemReaderAwareTrait;
+use Misery\Component\Source\SourceFilter;
 
-class FormatAction implements OptionsInterface
+class FormatAction implements OptionsInterface, ItemReaderAwareInterface
 {
     use OptionsTrait;
-    private $repo;
-    private $prepReader;
+    use ItemReaderAwareTrait;
+
+    private $mapper;
 
     public const NAME = 'format';
 
     /** @var array */
     private $options = [
-        'key' => null,
-        'format' => '%s',
+        'field' => null,
+        'functions' => [],
     ];
 
     public function apply(array $item): array
     {
-        if (array_key_exists($this->options['key'], $item)) {
-            $item[$this->getOption('key')] = ValueFormatter::format($this->getOption('format'), $item);
+        $functions = $this->getOption('functions');
+        $field = $this->getOption('field');
+
+        // type validation
+        if (!isset($item[$field])) {
+            return $item;
+        }
+
+        foreach ($functions as $function) {
+            switch ($function) {
+                case 'explode':
+                    $item[$field] = explode($this->getOption('separator'), $item[$field]);
+                    break;
+                case 'select_index':
+                    $item[$field] = $item[$field][$this->getOption('index')];
+                    break;
+                default:
+                    break;
+            }
         }
 
         return $item;
-    }
-
-    private function format(string $item = null): ?string
-    {
-        return $item && $this->options['format'] ? sprintf($this->options['format'], $item) : null;
     }
 }

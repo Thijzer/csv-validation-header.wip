@@ -19,6 +19,7 @@ class TransformationCommand extends Command
     private $file;
     private $sources;
     private $debug;
+    private $try;
 
     public function __construct()
     {
@@ -28,6 +29,8 @@ class TransformationCommand extends Command
             ->option('-f --file', 'The transformation file location')
             ->option('-s --source', 'The sources location')
             ->option('-d --debug', 'enable debugging', 'boolval', false)
+            ->option('-t --try', 'tryout a set for larger files')
+
             ->usage(
                 '<bold>  transformation</end> <comment>--file /path/to/transformation_file --source /path/to/sources/dir</end> ## detailed<eol/>'.
                 '<bold>  transformation</end> <comment>-f /path/to/transformation -s /path/to/sources/dir</end> ## short<eol/>'
@@ -35,7 +38,7 @@ class TransformationCommand extends Command
         ;
     }
 
-    public function execute(string $file, string $source, bool $debug)
+    public function execute(string $file, string $source, bool $debug, int $try = null)
     {
         $io = $this->app()->io();
 
@@ -57,11 +60,12 @@ class TransformationCommand extends Command
                     'scripts' => '/app/scripts',
                     'workpath' => $source,
                     'debug' => $debug,
+                    'try' => $try,
                 ]
             ])
         );
 
-        (new ProcessManager($configuration))->startTransformation();
+        (new ProcessManager($configuration))->startProcess();
 
         // TODO connect the outputs here
         if ($shellCommands = $configuration->getShellCommands()) {

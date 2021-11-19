@@ -40,7 +40,13 @@ class WhenStatementBuilder
             static::fromArray($when, $statement);
         }
 
-        $statement->then($then['field'], $then['state'] ?? null);
+        if (isset($then['field'], $then['state'])) {
+            $statement->then($then['field'], $then['state'] ?? null);
+            return;
+        }
+        foreach ($then as $thenField => $thenState) {
+            $statement->then($thenField, $thenState ?? null);
+        }
     }
 
     public static function fromExpression(string $whenString, StatementInterface $statement): void

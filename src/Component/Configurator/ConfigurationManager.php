@@ -93,7 +93,7 @@ class ConfigurationManager
                 ])
             );
 
-            (new ProcessManager($configuration))->startTransformation();
+            (new ProcessManager($configuration))->startProcess();
 
             // TODO connect the outputs here
             if ($shellCommands = $configuration->getShellCommands()) {

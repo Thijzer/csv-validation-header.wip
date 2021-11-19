@@ -54,15 +54,14 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
             $context = $this->header->getContext($item['ATTRIBUTE_CODE']);
             $output['sku'] = $item['SKU'];
 
-            if ($context['has_locale'] === true && $context['type'] === AkeneoHeaderTypes::METRIC && $item['ATTRIBUTE_UNIT']) {
-                dump($context, $item);exit;
-                continue;
-            }
-
             if ($context['type'] === AkeneoHeaderTypes::SELECT || $context['type'] === AkeneoHeaderTypes::MULTISELECT) {
                 $item['ATTRIBUTE_VALUE'] = $this->convertToSelectCode($item['ATTRIBUTE_CODE'], $item['ATTRIBUTE_VALUE']);
                 // ASSUMPTION: the french value is always the dutch value with a french label
                 $item['ATTRIBUTE_VALUE_FR'] = $item['ATTRIBUTE_VALUE'];
+            }
+
+            if ($context['type'] === AkeneoHeaderTypes::PRICE && $item['ATTRIBUTE_UNIT']) {
+                $item['ATTRIBUTE_CODE'] = $this->header->createItemHeader($item['ATTRIBUTE_CODE'], ['extra' => 'EUR']);
             }
 
             if ($context['type'] === AkeneoHeaderTypes::METRIC && $item['ATTRIBUTE_UNIT']) {
@@ -73,10 +72,21 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
                 $output[$this->header->createItemHeader($item['ATTRIBUTE_CODE'], ['extra' => 'unit'])] = $unit;
             }
 
+            if ($context['type'] === AkeneoHeaderTypes::BOOLEAN && $item['ATTRIBUTE_UNIT']) {
+                if ($item['ATTRIBUTE_UNIT'] === 'Ja') {
+                    $item['ATTRIBUTE_UNIT'] = 1;
+                }
+                if ($item['ATTRIBUTE_UNIT'] === 'Nee') {
+                    $item['ATTRIBUTE_UNIT'] = 0;
+                }
+                $item['ATTRIBUTE_UNIT'] = '';
+            }
+
             if ($context['has_locale'] === true) {
                 $output[$this->header->createItemHeader($item['ATTRIBUTE_CODE'], ['locale' => 'nl_BE'])] = $item['ATTRIBUTE_VALUE'];
                 $output[$this->header->createItemHeader($item['ATTRIBUTE_CODE'], ['locale' => 'fr_BE'])] = $item['ATTRIBUTE_VALUE_FR'];
             }
+
             if ($context['has_locale'] === false) {
                 $output[$item['ATTRIBUTE_CODE']] = $item['ATTRIBUTE_VALUE'];
             }

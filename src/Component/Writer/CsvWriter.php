@@ -8,6 +8,8 @@ use Assert\Assertion;
 class CsvWriter implements ItemWriterInterface
 {
     public const DELIMITER = ';';
+    public const APPEND_MODE = 'ab+';
+    public const WRITE_MODE = 'wb+';
 
     private $delimiter;
     private $filename;
@@ -16,12 +18,14 @@ class CsvWriter implements ItemWriterInterface
 
     private static $format = [
         'delimiter' => self::DELIMITER,
+        'mode' => self::WRITE_MODE,
         'allow_headers' => true,
     ];
 
     public function __construct(
         string $filename,
         string $delimiter = self::DELIMITER,
+        string $mode = self::WRITE_MODE,
         bool $allowHeaders = true
     ) {
         #Assertion::writeable($filename);
@@ -29,7 +33,7 @@ class CsvWriter implements ItemWriterInterface
         $this->filename = $filename;
         $this->delimiter = $delimiter;
         $this->allowHeaders = $allowHeaders;
-        $this->handle = fopen($this->filename, 'wb+');
+        $this->handle = fopen($this->filename, $mode);
 
         Assertion::isResource($this->handle);
     }
@@ -38,13 +42,27 @@ class CsvWriter implements ItemWriterInterface
     {
         Assert::that($setup)->keyIsset('filename');
         Assert::that($setup['filename'])->notEmpty();
-        $format = array_merge(self::$format, $setup['format'] = []);
+
+        $format = array_merge(self::$format, $setup['format'] ?? []);
         Assert::that($format['allow_headers'])->boolean();
         Assert::that($format['delimiter'])->maxLength(1);
+        Assert::that($format['mode'])->string();
+
+        $literalModes = [
+            'write' => self::WRITE_MODE,
+            'append' => self::APPEND_MODE,
+        ];
+        $format['mode'] = $literalModes[$format['mode']] ?? $format['mode'];
+        Assert::that($format['mode'])->inArray([self::WRITE_MODE, self::APPEND_MODE]);
+
+        if ($format['mode'] === self::APPEND_MODE) {
+            $format['allow_headers'] = false;
+        }
 
         return new self(
             $setup['filename'],
             $format['delimiter'],
+            $format['mode'],
             $format['allow_headers']
         );
     }

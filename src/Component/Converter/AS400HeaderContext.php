@@ -10,7 +10,7 @@ class AS400HeaderContext
 
         foreach ($attributes as $attribute) {
             foreach ($locales as $locale) {
-                $output[implode('-', [$attribute,'DESCRIPTION', $locale])] = null;
+                $output[implode('-', [$attribute, $locale])] = null;
             }
         }
 

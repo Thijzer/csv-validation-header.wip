@@ -56,7 +56,7 @@ trait StatementTrait
     public function then(string $field, string $value = null): void
     {
         if (isset($this->conditions[$this->key])) {
-            $this->conditions[$this->key] = $this->conditions[$this->key]+['then' => new Field($field, $value)];
+            $this->conditions[$this->key]['then'][] = new Field($field, $value);
         }
     }
 
@@ -83,7 +83,9 @@ trait StatementTrait
                 case !empty($condition['or']) && (true === $this->whenField($condition['when'], $item) || true === $this->whenField($condition['or'], $item)):
                 case !empty($condition['and']) && (true === $this->whenField($condition['when'], $item) && true ===  $this->whenField($condition['and'], $item)):
                 case empty($condition['and']) && empty($condition['or']) && true === $this->whenField($condition['when'], $item):
-                    $item = $this->thenField($condition['then'], $item);
+                    foreach ($condition['then'] as $thenCondition) {
+                        $item = $this->thenField($thenCondition, $item);
+                    }
                     break;
                 default:
                     break;

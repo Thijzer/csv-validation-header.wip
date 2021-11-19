@@ -25,7 +25,7 @@ class ReferenceCodeModifier implements CellModifier
         $delimiter = '_';
 
         if (false === ctype_lower($value)) {
-            $value = (string) \preg_replace('/[^a-zA-Z0-9\._]/',$delimiter, $value);
+            $value = (string) \preg_replace('/[^a-zA-Z0-9_]/',$delimiter, $value);
             $value = trim($value, $delimiter);
         }
 

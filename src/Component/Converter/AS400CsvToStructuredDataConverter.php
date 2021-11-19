@@ -28,7 +28,7 @@ class AS400CsvToStructuredDataConverter implements ConverterInterface, OptionsIn
 
         foreach ($itemCollection as $item) {
             $output['sku'] = $item['SKU'];
-            $output[implode('-', [$item['DESCRIPTION_TYPE'],'DESCRIPTION', $item['LOCALE']])] = $item['DESCRIPTION'];
+            $output[implode('-', [$item['DESCRIPTION_TYPE'], $item['LOCALE']])] = $item['DESCRIPTION'];
         }
 
         return $output;

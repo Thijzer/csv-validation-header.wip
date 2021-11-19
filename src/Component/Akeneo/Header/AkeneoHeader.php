@@ -29,7 +29,7 @@ class AkeneoHeader
         ]);
     }
 
-    public function createItemHeader($code, array $context):? string
+    public function createItemHeader($code, array $context = []):? string
     {
         $code = $this->concat(array_filter([$code, $context['locale'] ?? null, $context['scope'] ?? null, $context['extra'] ?? null]));
         //if (isset($this->getHeaders()[$code])) {

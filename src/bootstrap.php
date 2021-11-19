@@ -66,10 +66,11 @@ $actionRegistry
     ->register(Misery\Component\Action\StatementAction::NAME, new Misery\Component\Action\StatementAction())
     ->register(Misery\Component\Action\MergeAction::NAME, new Misery\Component\Action\MergeAction())
     ->register(Misery\Component\Action\UnsetAction::NAME, new Misery\Component\Action\UnsetAction())
-    ->register(Misery\Component\Action\FormatAction::NAME, new Misery\Component\Action\FormatAction())
+    ->register(Misery\Component\Action\ConcatAction::NAME, new Misery\Component\Action\ConcatAction())
     ->register(Misery\Component\Action\MapAction::NAME, new Misery\Component\Action\MapAction())
     ->register(Misery\Component\Action\CombineAction::NAME, new Misery\Component\Action\CombineAction())
     ->register(Misery\Component\Action\SkipAction::NAME, new Misery\Component\Action\SkipAction())
+    ->register(Misery\Component\Action\FormatAction::NAME, new Misery\Component\Action\FormatAction())
 ;
 
 #$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');

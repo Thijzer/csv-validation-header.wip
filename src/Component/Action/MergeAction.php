@@ -31,10 +31,10 @@ class MergeAction implements OptionsInterface, ConfigurationAwareInterface
         }
 
         if (is_string($list)) {
-            $item[$field] = array_merge($item[$field], $this->configuration->getList($list));
+            $item[$field] = $this->configuration->getList($list);
         }
         if (is_array($list)) {
-            $item[$field] = array_merge($item[$field], $list);
+            $item[$field] = array_filter(array_merge($item[$field], $list));
         }
 
         return $item;
