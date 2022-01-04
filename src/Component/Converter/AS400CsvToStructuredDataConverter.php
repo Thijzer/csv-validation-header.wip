@@ -28,6 +28,16 @@ class AS400CsvToStructuredDataConverter implements ConverterInterface, OptionsIn
 
         foreach ($itemCollection as $item) {
             $output['sku'] = $item['SKU'];
+            if ($item['LOCALE'] === '') {
+                // some cases the locale is empty
+                // see article 01010411
+                continue;
+            }
+            // no need for a supplier label
+            if ($item['DESCRIPTION_TYPE'] === 'SUPPLIER') {
+                continue;
+            }
+
             $output[implode('-', [$item['DESCRIPTION_TYPE'], $item['LOCALE']])] = $item['DESCRIPTION'];
         }
 

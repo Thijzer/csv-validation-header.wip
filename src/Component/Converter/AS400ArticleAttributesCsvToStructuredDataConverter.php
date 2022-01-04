@@ -4,8 +4,10 @@ namespace Misery\Component\Converter;
 
 use Misery\Component\Akeneo\Header\AkeneoHeader;
 use Misery\Component\Akeneo\Header\AkeneoHeaderTypes;
+use Misery\Component\Akeneo\StandardValueCreator;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
+use Misery\Component\Common\Pipeline\Exception\InvalidItemException;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\ConfigurationAwareInterface;
 use Misery\Component\Configurator\ConfigurationTrait;
@@ -26,6 +28,11 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
         'locales' => null,
     ];
 
+    /** @var ProductStructuredDataToAkeneoApiConverter */
+    private $reverter;
+    /** @var StandardValueCreator */
+    private $valueCreator;
+
     public function convert(array $itemCollection): array
     {
         if (null === $this->header) {
@@ -45,14 +52,31 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
                 $this->getOption('localizable_codes:list'),
                 $this->getOption('locales')
             );
+
+            $this->reverter = new ProductStructuredDataToAkeneoApiConverter();
+            $this->reverter->setOption('attributes:list', $this->getOption('attributes:list'));
+            $this->reverter->setOption('localizable_codes:list', $this->getOption('localizable_codes:list'));
+
+            $this->valueCreator = new StandardValueCreator();
         }
 
         $akeneoMapping = $this->getOption('akeneo-mapping:list');
 
         $output = [];
+        $invalid_msgs = [];
         foreach ($itemCollection as $item) {
             $context = $this->header->getContext($item['ATTRIBUTE_CODE']);
-            $output['sku'] = $item['SKU'];
+            $output['identifier'] = $item['SKU'];
+            unset($item['SKU']);
+
+            if (in_array($item['ATTRIBUTE_CODE'], ['5','174','281'])) {
+                continue;
+            }
+
+            // clear up invalid values
+            if (in_array($item['ATTRIBUTE_VALUE'], ['-', '--', '---', '----'])) {
+                $item['ATTRIBUTE_VALUE'] = '';
+            }
 
             if ($context['type'] === AkeneoHeaderTypes::SELECT || $context['type'] === AkeneoHeaderTypes::MULTISELECT) {
                 $item['ATTRIBUTE_VALUE'] = $this->convertToSelectCode($item['ATTRIBUTE_CODE'], $item['ATTRIBUTE_VALUE']);
@@ -60,8 +84,24 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
                 $item['ATTRIBUTE_VALUE_FR'] = $item['ATTRIBUTE_VALUE'];
             }
 
-            if ($context['type'] === AkeneoHeaderTypes::PRICE && $item['ATTRIBUTE_UNIT']) {
-                $item['ATTRIBUTE_CODE'] = $this->header->createItemHeader($item['ATTRIBUTE_CODE'], ['extra' => 'EUR']);
+            if ($context['type'] === AkeneoHeaderTypes::METRIC && $item['ATTRIBUTE_VALUE']) {
+                $item['ATTRIBUTE_VALUE'] = str_replace(',', '.', $item['ATTRIBUTE_VALUE']);
+                $item['ATTRIBUTE_VALUE_FR'] = str_replace(',', '.', $item['ATTRIBUTE_VALUE_FR']);
+
+                if (strpos($item['ATTRIBUTE_VALUE'], '/') !== false) {
+                    $value = $this->frac2dec($item['ATTRIBUTE_VALUE']);
+                    if (is_numeric($value)) {
+                        $item['ATTRIBUTE_VALUE'] = $value;
+                    }
+                }
+                // metrics need a unit
+                $unit = $akeneoMapping[$item['ATTRIBUTE_UNIT']] ?? null;
+                if (null === $unit) {
+                    $invalid_msgs[] = sprintf('metric code %s has no unit', $item['ATTRIBUTE_CODE']);
+                }
+                if (false === is_numeric($item['ATTRIBUTE_VALUE'])) {
+                    $invalid_msgs[] = sprintf('metric code %s is not numeric', $item['ATTRIBUTE_CODE']);
+                }
             }
 
             if ($context['type'] === AkeneoHeaderTypes::METRIC && $item['ATTRIBUTE_UNIT']) {
@@ -69,30 +109,68 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
                 if (null === $unit) {
                     continue;
                 }
-                $output[$this->header->createItemHeader($item['ATTRIBUTE_CODE'], ['extra' => 'unit'])] = $unit;
+
+                $output['values'][$item['ATTRIBUTE_CODE']][] = $this->valueCreator->createUnit($item['ATTRIBUTE_CODE'], $unit, $item['ATTRIBUTE_VALUE']);
+                continue;
             }
 
             if ($context['type'] === AkeneoHeaderTypes::BOOLEAN && $item['ATTRIBUTE_UNIT']) {
                 if ($item['ATTRIBUTE_UNIT'] === 'Ja') {
-                    $item['ATTRIBUTE_UNIT'] = 1;
+                    $item['ATTRIBUTE_UNIT'] = true;
+                } elseif ($item['ATTRIBUTE_UNIT'] === 'Nee') {
+                    $item['ATTRIBUTE_UNIT'] = false;
+                } else {
+                    $item['ATTRIBUTE_UNIT'] = '';
                 }
-                if ($item['ATTRIBUTE_UNIT'] === 'Nee') {
-                    $item['ATTRIBUTE_UNIT'] = 0;
+
+                $output['values'][$item['ATTRIBUTE_CODE']][] = $this->valueCreator->create($item['ATTRIBUTE_CODE'], $item['ATTRIBUTE_UNIT']);
+                continue;
+            }
+
+            if ($context['type'] === AkeneoHeaderTypes::PRICE && $item['ATTRIBUTE_UNIT']) {
+                $output['values'][$item['ATTRIBUTE_CODE']][] = $this->valueCreator->createArrayData($item['ATTRIBUTE_CODE'], [
+                    'amount' => $item['ATTRIBUTE_UNIT'],
+                    'currency' => 'EUR',
+                ]);
+                continue;
+            }
+
+            if ($context['type'] === AkeneoHeaderTypes::MULTISELECT) {
+                if ($context['has_locale'] === true) {
+                    $output['values'][$item['ATTRIBUTE_CODE']][] = $this->valueCreator->createArrayData($item['ATTRIBUTE_CODE'], [$item['ATTRIBUTE_VALUE']], 'nl_BE');
+                    $output['values'][$item['ATTRIBUTE_CODE']][] = $this->valueCreator->createArrayData($item['ATTRIBUTE_CODE'], [$item['ATTRIBUTE_VALUE_FR']], 'fr_BE');
+                } elseif ($context['has_locale'] === false) {
+                    $output['values'][$item['ATTRIBUTE_CODE']][] = $this->valueCreator->createArrayData($item['ATTRIBUTE_CODE'], [$item['ATTRIBUTE_VALUE']]);
                 }
-                $item['ATTRIBUTE_UNIT'] = '';
+                continue;
             }
 
             if ($context['has_locale'] === true) {
-                $output[$this->header->createItemHeader($item['ATTRIBUTE_CODE'], ['locale' => 'nl_BE'])] = $item['ATTRIBUTE_VALUE'];
-                $output[$this->header->createItemHeader($item['ATTRIBUTE_CODE'], ['locale' => 'fr_BE'])] = $item['ATTRIBUTE_VALUE_FR'];
-            }
-
-            if ($context['has_locale'] === false) {
-                $output[$item['ATTRIBUTE_CODE']] = $item['ATTRIBUTE_VALUE'];
+                $output['values'][$item['ATTRIBUTE_CODE']][] = $this->valueCreator->create($item['ATTRIBUTE_CODE'], $item['ATTRIBUTE_VALUE'], 'nl_BE');
+                $output['values'][$item['ATTRIBUTE_CODE']][] = $this->valueCreator->create($item['ATTRIBUTE_CODE'], $item['ATTRIBUTE_VALUE_FR'], 'fr_BE');
+            } elseif ($context['has_locale'] === false) {
+                $output['values'][$item['ATTRIBUTE_CODE']][] = $this->valueCreator->create($item['ATTRIBUTE_CODE'], $item['ATTRIBUTE_VALUE']);
             }
         }
 
+        if (count($invalid_msgs) > 0) {
+            throw new InvalidItemException(implode(', ', $invalid_msgs), $output);
+        }
+
         return $output;
+    }
+
+    private function frac2dec(string $fraction)
+    {
+        list($whole, $fractional) = explode(' ', $fraction);
+
+        $type = empty($fractional) ? 'improper' : 'mixed';
+
+        list($numerator, $denominator) = explode('/', $type == 'improper' ? $whole : $fractional);
+
+        $decimal = $numerator / ( 0 == $denominator ? 1 : $denominator );
+
+        return $type == 'improper' ? $decimal : $whole + $decimal;
     }
 
     public function convertToSelectCode(string $code, string $value)
@@ -105,7 +183,9 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
 
     public function revert(array $item): array
     {
-        return array_replace($this->header->getHeaders(), $item);
+        $item = $this->reverter->revert($item);
+
+        return $item;
     }
 
     public function getName(): string

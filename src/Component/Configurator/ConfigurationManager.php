@@ -6,8 +6,10 @@ use Assert\Assert;
 use Assert\Assertion;
 use Misery\Component\Action\ItemActionProcessor;
 use Misery\Component\Action\ItemActionProcessorFactory;
+use Misery\Component\Akeneo\Client\HttpWriterFactory;
 use Misery\Component\BluePrint\BluePrint;
 use Misery\Component\BluePrint\BluePrintFactory;
+use Misery\Component\Common\Client\ApiClientFactory;
 use Misery\Component\Common\Cursor\CursorFactory;
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\FileManager\LocalFileManager;
@@ -120,6 +122,15 @@ class ConfigurationManager
         );
     }
 
+    public function createAccounts(array $configuration): void
+    {
+        /** @var ApiClientFactory $factory */
+        $factory = $this->factory->getFactory('api_client');
+        foreach ($configuration as $account) {
+            $this->config->addAccount($account['name'], $factory->createFromConfiguration($account));
+        }
+    }
+
     public function createActions(array $configuration): ItemActionProcessor
     {
         /** @var ItemActionProcessorFactory $factory */
@@ -199,6 +210,17 @@ class ConfigurationManager
         /** @var MappingFactory $factory */
         $factory = $this->factory->getFactory('mapping');
         $factory->createFromConfiguration($configuration, $this->fileManager->getWorkingDirectory(), $this);
+    }
+
+    public function createHTTPWriter(array $configuration): ItemWriterInterface
+    {
+        /** @var HttpWriterFactory $factory */
+        $factory = $this->factory->getFactory('http_writer');
+        $writer = $factory->createFromConfiguration($configuration, $this->config);
+
+        $this->config->setWriter($writer);
+
+        return $writer;
     }
 
     public function createWriter(array $configuration): ItemWriterInterface

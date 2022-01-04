@@ -2,12 +2,15 @@
 
 namespace Misery\Component\Common\Pipeline;
 
+use Misery\Component\Common\Pipeline\Exception\InvalidItemException;
 use Misery\Component\Common\Pipeline\Exception\SkipPipeLineException;
 
 class Pipeline
 {
     /** @var PipeReaderInterface */
     private $in;
+    /** @var PipeWriterInterface */
+    private $invalid;
     /** @var PipeInterface[] */
     private $lines = [];
     /** @var PipeWriterInterface[] */
@@ -27,6 +30,13 @@ class Pipeline
         return $this;
     }
 
+    public function invalid(PipeWriterInterface $writer): self
+    {
+        $this->invalid = $writer;
+
+        return $this;
+    }
+
     public function output(PipeWriterInterface $writer): self
     {
         $this->out[] = $writer;
@@ -38,17 +48,20 @@ class Pipeline
     {
         $i = 0;
         while ($i !== $amount && $item = $this->in->read()) {
+            $i++;
             try {
                 foreach ($this->lines as $line) {
                     $item = $line->pipe($item);
                 }
             } catch (SkipPipeLineException $exception) {
                 continue;
+            } catch (InvalidItemException $exception) {
+                //$this->invalid->write(['line' => $i, 'msg' => $exception->getMessage(), 'item' => json_encode($exception->getInvalidItem())]);
+                continue;
             }
             foreach ($this->out as $out) {
                 $out->write($item);
             }
-            $i++;
         }
     }
 }

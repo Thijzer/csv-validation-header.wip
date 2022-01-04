@@ -44,6 +44,9 @@ class ConfigurationFactory
                 case $key === 'sources';
                     $this->manager->addSources($configuration['sources']);
                     break;
+                case $key === 'account';
+                    $this->manager->createAccounts($configuration['account']);
+                    break;
                 case $key === 'transformation_steps';
                     $this->manager->addTransformationSteps($configuration['transformation_steps']);
                     break;

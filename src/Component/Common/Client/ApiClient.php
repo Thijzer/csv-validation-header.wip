@@ -11,6 +11,8 @@ class ApiClient
     private $urlGenerator;
     /** @var AuthenticatedAccount */
     private $authenticatedAccount;
+    /** @var array */
+    private $headers = [];
 
     public function __construct(string $domain)
     {
@@ -27,16 +29,36 @@ class ApiClient
         }
     }
 
+    public function refreshToken(): void
+    {
+        $account = $this->authenticatedAccount->getAccount();
+        $authenticatedAccount = $this->authenticatedAccount;
+        $this->authenticatedAccount = null;
+        $this->authenticatedAccount = $account->refresh($this, $authenticatedAccount);
+    }
+
     /**
      * A GET HTTP VERB
      */
-    public function get(string $endpoint, array $params = []): self
+    public function search(string $endpoint, array $params = []): self
     {
-        if ($this->authenticatedAccount instanceof AuthenticatedAccount) {
-            $this->authenticatedAccount->useToken($this);
-        }
+        $this->setAuthenticationHeaders();
+        $this->setHeaders(['Content-Type' => 'application/json']);
 
-        \curl_setopt($this->handle, CURLOPT_URL, $this->getUrlGenerator()->generate($endpoint, $params));
+        \curl_setopt($this->handle, CURLOPT_URL, $endpoint . $this->urlGenerator->createParams($params));
+
+        return $this;
+    }
+
+    /**
+     * A GET HTTP VERB
+     */
+    public function get(string $endpoint): self
+    {
+        $this->setAuthenticationHeaders();
+        $this->setHeaders(['Content-Type' => 'application/json']);
+
+        \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
 
         return $this;
     }
@@ -47,10 +69,11 @@ class ApiClient
      */
     public function post(string $endpoint, array $postData): self
     {
-        if ($this->authenticatedAccount instanceof AuthenticatedAccount) {
-            $this->authenticatedAccount->useToken($this);
-        }
+        $this->setAuthenticationHeaders();
+        $this->setHeaders(['Content-Type' => 'application/json']);
 
+        //dump($endpoint, $this->headers);
+        \curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, "POST");
         \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
         \curl_setopt($this->handle, CURLOPT_POST, true);
         \curl_setopt($this->handle, CURLOPT_POSTFIELDS, \json_encode($postData));
@@ -60,12 +83,12 @@ class ApiClient
 
     /**
      * HTTP PATCH VERB That supports a multi patch insert
+     * max 100 inserts per request
      */
     public function multiPatch(string $endpoint, array $dataSet): self
     {
-        if ($this->authenticatedAccount instanceof AuthenticatedAccount) {
-            $this->authenticatedAccount->useToken($this);
-        }
+        $this->setAuthenticationHeaders();
+        $this->setHeaders(['Content-Type' => 'application/vnd.akeneo.collection+json']);
 
         $patchData = "";
         foreach($dataSet as $item) {
@@ -84,9 +107,8 @@ class ApiClient
      */
     public function patch(string $endpoint, array $patchData): self
     {
-        if ($this->authenticatedAccount instanceof AuthenticatedAccount) {
-            $this->authenticatedAccount->useToken($this);
-        }
+        $this->setAuthenticationHeaders();
+        $this->setHeaders(['Content-Type' => 'application/json']);
 
         \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
         \curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, "PATCH");
@@ -96,13 +118,51 @@ class ApiClient
     }
 
     /**
+     * A DELETE HTTP VERB
+     */
+    public function delete(string $endpoint): self
+    {
+        $this->setAuthenticationHeaders();
+        $this->setHeaders(['Content-Type' => 'application/json']);
+
+        \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
+        \curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+        return $this;
+    }
+
+    public function log(string $message, int $statusCode = null, $content): void
+    {
+        $message = sprintf("[%s] %s %s %s",
+            date('Y-m-d H:i:s'),
+            $message,
+            $statusCode,
+            json_encode($content)
+        );
+
+        file_put_contents(
+            '/app/var/logs/curl.log',
+            PHP_EOL . $message,
+            FILE_APPEND
+        );
+    }
+
+    /**
      * Set HTTP Headers
      */
     public function setHeaders(array $headerData): self
     {
-        \curl_setopt($this->handle, CURLOPT_HTTPHEADER, $headerData);
+        $this->headers = array_merge($this->headers, $headerData);
 
         return $this;
+    }
+
+    public function generateHeaders(): void
+    {
+        \curl_setopt($this->handle, CURLOPT_HTTPHEADER, array_map(function ($key, $value) {
+            return $key . ': ' . $value;
+        }, array_keys($this->headers), $this->headers));
+        $this->headers = [];
     }
 
     /**
@@ -110,19 +170,36 @@ class ApiClient
      */
     public function getResponse(): ApiResponse
     {
+        $this->generateHeaders();
         \curl_setopt($this->handle, CURLOPT_HEADER, false);
         \curl_setopt($this->handle, CURLOPT_RETURNTRANSFER, true);
 
         // obtain response
         $content = \curl_exec($this->handle);
+        $status = \curl_getinfo($this->handle, CURLINFO_HTTP_CODE);
+        if (in_array($status, [200, 204]) && !$content) {
+            return ApiResponse::create([], 200);
+        }
+
+        if ($status === 401) {
+            throw new Exception\UnauthorizedException($content['message'] ?? 'Unauthorized');
+        }
+
         if (!$content) {
             throw new \RuntimeException(curl_error($this->handle), curl_errno($this->handle));
         }
 
         return ApiResponse::create(
-            \json_decode($content, true),
-            \curl_getinfo($this->handle, CURLINFO_HTTP_CODE)
+            \json_decode($content, true) ?? [],
+            $status
         );
+    }
+
+    private function setAuthenticationHeaders(): void
+    {
+        if ($this->authenticatedAccount instanceof AuthenticatedAccount) {
+            $this->authenticatedAccount->useToken($this);
+        }
     }
 
     public function clear(): void
@@ -140,6 +217,7 @@ class ApiClient
             $this->clear();
             \curl_close($this->handle);
             $this->handle = null;
+            $this->authenticatedAccount = null;
         }
     }
 

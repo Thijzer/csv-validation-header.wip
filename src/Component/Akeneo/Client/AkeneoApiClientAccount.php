@@ -9,7 +9,7 @@ use Misery\Component\Common\Client\AuthenticatedAccount;
 class AkeneoApiClientAccount implements ApiClientAccountInterface
 {
     private const AUTH_URI = '/api/oauth/v1/token';
-    public const ROOT_URI = '/api/rest/v1/%s';
+    public const ROOT_URI = '/api/rest/v1';
 
     /** @var string */
     private $username;
@@ -31,14 +31,15 @@ class AkeneoApiClientAccount implements ApiClientAccountInterface
 
     public function authorize(ApiClient $client): AuthenticatedAccount
     {
+        $authorization = \base64_encode($this->clientId.':'.$this->secret);
+
         $client->setHeaders([
-            'Content-Type: application/json',
-            'Authorization: Basic '. \base64_encode($this->clientId.':'.$this->secret),
+            'Authorization' => 'Basic '. $authorization,
         ]);
 
         $response = $client
             ->post(
-                self::AUTH_URI,
+                $client->getUrlGenerator()->generateFromDomain(self::AUTH_URI),
                 [
                     'grant_type' => 'password',
                     'username' => $this->username,
@@ -53,9 +54,42 @@ class AkeneoApiClientAccount implements ApiClientAccountInterface
         $client->getUrlGenerator()->append(self::ROOT_URI);
 
         return new AuthenticatedAccount(
+            $this,
             $this->username,
             $response->getContent('access_token'),
-            $response->getContent('refresh_token')
+            $response->getContent('refresh_token'),
+            $response->getContent('expires_in')
+        );
+    }
+
+    public function refresh(ApiClient $client, AuthenticatedAccount $account): AuthenticatedAccount
+    {
+        $account->invalidate();
+        $authorization = \base64_encode($this->clientId.':'.$this->secret);
+
+        $client->setHeaders([
+            'Authorization' => 'Basic '. $authorization,
+        ]);
+
+        $response = $client
+            ->post(
+                $client->getUrlGenerator()->generateFromDomain(self::AUTH_URI),
+                [
+                    'grant_type' => 'refresh_token',
+                    'refresh_token' => $account->getRefreshToken(),
+                ]
+            )->getResponse();
+
+        if ($response->getCode() === 422) {
+            throw new \RuntimeException($response->getMessage());
+        }
+
+        return new AuthenticatedAccount(
+            $this,
+            $account->getUsername(),
+            $response->getContent('access_token'),
+            $response->getContent('refresh_token'),
+            $response->getContent('expires_in')
         );
     }
 }

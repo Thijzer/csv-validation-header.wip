@@ -118,6 +118,8 @@ $factoryRegistry->registerAllByName(
     new Misery\Component\Common\Cursor\CursorFactory(),
     new Misery\Component\Mapping\MappingFactory(),
     new Misery\Component\Shell\ShellCommandFactory(),
+    new Misery\Component\Common\Client\ApiClientFactory(),
+    new Misery\Component\Akeneo\Client\HttpWriterFactory(),
     $list,
     $filter,
     $converter,

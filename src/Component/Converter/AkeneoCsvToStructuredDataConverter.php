@@ -23,14 +23,14 @@ class AkeneoCsvToStructuredDataConverter implements ConverterInterface, Register
     public function convert(array $item): array
     {
         $codes = $this->getOption('list');
-        $keyCodes = array_keys($codes);
+        $keyCodes = is_array($codes) ? array_keys($codes): null;
         $separator = '-';
         $output = [];
 
         foreach ($item as $key => $value) {
 
             $keys = explode($separator, $key);
-            if (false === in_array($keys[0], $keyCodes)) {
+            if ($keyCodes && false === in_array($keys[0], $keyCodes)) {
                 continue;
             }
 

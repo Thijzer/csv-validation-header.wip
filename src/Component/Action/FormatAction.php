@@ -41,6 +41,9 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
                 case 'select_index':
                     $item[$field] = $item[$field][$this->getOption('index')];
                     break;
+                case 'sprintf':
+                    $item[$field] = sprintf($this->getOption('format'), $item[$field]);
+                    break;
                 default:
                     break;
             }

@@ -6,6 +6,8 @@ use Misery\Component\Common\Client\ApiEndpointInterface;
 
 class ApiAttributesEndpoint implements ApiEndpointInterface
 {
+    public const NAME = 'attributes';
+
     private const ALL = 'attributes';
     private const ONE = 'attributes/%s';
 

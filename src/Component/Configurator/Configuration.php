@@ -4,6 +4,7 @@ namespace Misery\Component\Configurator;
 
 use Misery\Component\Action\ItemActionProcessor;
 use Misery\Component\BluePrint\BluePrint;
+use Misery\Component\Common\Client\ApiClient;
 use Misery\Component\Common\Collection\ArrayCollection;
 use Misery\Component\Common\Pipeline\Pipeline;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
@@ -32,6 +33,8 @@ class Configuration
     private $sources;
     private $context = [];
     private $shellCommands;
+    /** @var ApiClient[] */
+    private $accounts;
 
     public function __construct()
     {
@@ -59,6 +62,16 @@ class Configuration
     public function getSources(): SourceCollection
     {
         return $this->sources;
+    }
+
+    public function addAccount(string $name, ApiClient $apiClient)
+    {
+        $this->accounts[$name] = $apiClient;
+    }
+
+    public function getAccount(string $name): ?ApiClient
+    {
+        return $this->accounts[$name] ?? null;
     }
 
     public function setPipeline(Pipeline $pipeline): void

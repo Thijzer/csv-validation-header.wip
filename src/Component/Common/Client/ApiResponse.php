@@ -15,7 +15,7 @@ class ApiResponse
         $this->content = $content;
     }
 
-    public static function create(array $data, string $code = null): self
+    public static function create(array $data = [], string $code = null): self
     {
         return new self(
             $data['code'] ?? $code,

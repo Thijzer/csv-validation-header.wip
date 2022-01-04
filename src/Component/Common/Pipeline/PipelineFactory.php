@@ -19,10 +19,25 @@ class PipelineFactory implements RegisteredByNameInterface
 
         foreach ($configuration as $key => $valueConfiguration) {
             switch (true) {
+                case $key === 'output' && isset($configuration['output']['http']):
+                    $writer = $configurationManager->createHTTPWriter($configuration['output']['http']);
+                    $pipeline->output(new PipeWriter($writer));
+                    break;
+
                 case isset($configuration[$key]['writer']);
                     $writer = $configurationManager->createWriter($configuration['output']['writer']);
                     $pipeline->output(new PipeWriter($writer));
+
+                    // invalid item configuration TODO move
+                    $filename = $configuration['output']['writer']['filename'];
+                    $filePath = pathinfo($filename);
+                    $filename = sprintf('%s/invalid_%s', $filePath['dirname'], $filePath['basename']);
+                    $configuration['output']['writer']['filename'] = $filename;
+
+                    $writer = $configurationManager->createWriter($configuration['output']['writer']);
+                    $pipeline->invalid(new PipeWriter($writer));
                     break;
+
                 case $key === 'encoder';
                     $encoder = $configurationManager->createEncoder($configuration['encoder']);
                     $pipeline->line(new EncodingPipe($encoder));
