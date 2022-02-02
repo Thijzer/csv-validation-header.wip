@@ -12,7 +12,7 @@ class KeyMapperAction implements OptionsInterface
 
     private $mapper;
 
-    public const NAME = 'map_key_from_list';
+    public const NAME = 'key_mapping';
 
     public function __construct()
     {

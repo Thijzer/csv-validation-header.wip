@@ -25,7 +25,7 @@ class ProcessManager
             if ($debug === true) {
                 $pipeline
                     ->line(New LoggingPipe())
-                    ->run(1);
+                    ->run($amount ?? 1);
                 exit;
             }
 

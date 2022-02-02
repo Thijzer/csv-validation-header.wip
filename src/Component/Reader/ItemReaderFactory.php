@@ -45,7 +45,7 @@ class ItemReaderFactory implements RegisteredByNameInterface
             }));
         }
 
-        if (isset($configuration['x_filter']['type']) && $configuration['x_filter']['type'] === 'condensed') {
+        if (isset($configuration['x_filter']['type']) && $configuration['x_filter']['type'] === 'funnel') {
             $config = $configuration['x_filter'];
             return new ItemReader(new CondensedCursor($cursor, function ($item) use ($config) {
                 $key = $item[$config['on']];

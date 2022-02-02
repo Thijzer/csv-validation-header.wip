@@ -2,7 +2,7 @@
 
 namespace Tests\Misery\Component\Statement;
 
-use Misery\Component\Action\MapAction;
+use Misery\Component\Action\ListMapperAction;
 use Misery\Component\Action\SetValueAction;
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Statement\ContainsStatement;
@@ -20,7 +20,7 @@ class StatementFactoryTest extends TestCase
         $registry->register(ContainsStatement::NAME, ContainsStatement::class);
         $actionRegistry = new Registry('action');
         $actionRegistry->register(SetValueAction::NAME, new SetValueAction());
-        $actionRegistry->register(MapAction::NAME, new MapAction());
+        $actionRegistry->register(ListMapperAction::NAME, new ListMapperAction());
 
         $factory = new StatementFactory();
         $factory->addRegistry($registry);
@@ -139,7 +139,7 @@ class StatementFactoryTest extends TestCase
                     'state' => 'bags',
                 ],
                 'then' => [
-                    'action' => 'map_from_list',
+                    'action' => 'value_mapping_in_list',
                     'field' => 'brand',
                 ],
                 'context' => [
