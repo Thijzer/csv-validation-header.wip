@@ -58,6 +58,7 @@ class ApiClient
         $this->setAuthenticationHeaders();
         $this->setHeaders(['Content-Type' => 'application/json']);
 
+        \curl_reset($this->handle);
         \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
 
         return $this;
@@ -72,7 +73,6 @@ class ApiClient
         $this->setAuthenticationHeaders();
         $this->setHeaders(['Content-Type' => 'application/json']);
 
-        //dump($endpoint, $this->headers);
         \curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, "POST");
         \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
         \curl_setopt($this->handle, CURLOPT_POST, true);
