@@ -8,19 +8,20 @@ class ApiResponse
     private $message;
     private $content;
 
-    public function __construct(int $code = null, string $message = null, $content)
+    private function __construct(int $code = null, string $message = null, $content)
     {
         $this->code = $code;
         $this->message = $message;
         $this->content = $content;
     }
 
-    public static function create(array $data = [], string $code = null): self
+    public static function create(array $data = [], int $code = null): self
     {
         return new self(
-            $data['code'] ?? $code,
+            $code,
             $data['message'] ?? null,
-            $data);
+            $data
+        );
     }
 
     public function getCode(): ?int
@@ -40,6 +41,21 @@ class ApiResponse
      */
     public function getContent(string $key = null)
     {
-        return $key ? $this->content[$key] ?? null: $this->content;
+        return $key ? $this->content[$key] ?? $this->getContentByKeys(...explode('.', $key)) : $this->content;
+    }
+
+    private function getContentByKeys(...$keys)
+    {
+        $content = $this->content;
+        foreach ($keys as $key) {
+            $content = $content[$key] ?? null;
+        }
+
+        return $content;
+    }
+
+    public function isSuccessful(): bool
+    {
+        return $this->code >= 200 && $this->code < 300;
     }
 }
