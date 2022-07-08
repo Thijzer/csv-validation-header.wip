@@ -3,6 +3,7 @@
 namespace Misery\Component\Reader;
 
 use Misery\Component\Item\Builder\ReferenceBuilder;
+use Misery\Component\Statement\StatementCollection;
 
 class ItemReader implements ItemReaderInterface
 {
@@ -68,6 +69,10 @@ class ItemReader implements ItemReaderInterface
                     $list[] = $id;
                     return true;
                 });
+            } elseif ($rowValue === ['NOT_EMPTY']) {
+                $reader = $reader->filter(static function ($row) use ($columnName) {
+                    return !empty($row[$columnName]);
+                });
             } elseif ($rowValue === ['NOT_NULL']) {
                 $reader = $reader->filter(static function ($row) use ($columnName) {
                     return false === in_array($row[$columnName], [NULL]);
@@ -80,26 +85,6 @@ class ItemReader implements ItemReaderInterface
         }
 
         return $reader;
-    }
-
-    /**
-     * PLEASE don't use the sort on very large data sets
-     * array_multisort can only sort on the whole data_set in memory
-     */
-    public function sort(array $criteria): ReaderInterface
-    {
-        $flags = ['ASC' => SORT_ASC, 'DSC' => SORT_DESC, 'DESC' => SORT_DESC];
-        $setup = [];
-        foreach ($criteria as $keyName => $sortDirection) {
-            $setup[] = $index = ReferenceBuilder::buildValues($this, $keyName);
-            $setup[] = $flags[strtoupper($sortDirection)];
-            $setup[] = SORT_NUMERIC;
-            $setup[] = array_keys($index);
-        }
-
-        array_multisort(...$setup);
-
-        return $this->index(end($setup));
     }
 
     public function filter(callable $callable): ReaderInterface

@@ -4,9 +4,11 @@ namespace Misery\Component\Common\Cursor;
 
 class CachedCursor implements CursorInterface
 {
+    # larger caches might break the memory limit so be alert
     const SMALL_CACHE_SIZE = 1000;
     const MEDIUM_CACHE_SIZE = 5000;
     const LARGE_CACHE_SIZE = 10000;
+    const EXTRA_LARGE_CACHE_SIZE = 50000;
 
     /** @var int|mixed */
     private $position = 0;

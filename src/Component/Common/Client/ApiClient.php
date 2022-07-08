@@ -178,7 +178,11 @@ class ApiClient
         $content = \curl_exec($this->handle);
         $status = \curl_getinfo($this->handle, CURLINFO_HTTP_CODE);
         if (in_array($status, [200, 204]) && !$content) {
-            return ApiResponse::create([], 200);
+            return ApiResponse::create([], $status);
+        }
+        $multi = [];
+        foreach (explode("\n", $content) as $c) {
+            $multi[] = \json_decode($c, true);
         }
 
         if ($status === 401) {
@@ -189,10 +193,7 @@ class ApiClient
             throw new \RuntimeException(curl_error($this->handle), curl_errno($this->handle));
         }
 
-        return ApiResponse::create(
-            \json_decode($content, true) ?? [],
-            $status
-        );
+        return count($multi) > 1 ? ApiResponse::createFromMulti($multi): ApiResponse::create($multi[0], $status);
     }
 
     private function setAuthenticationHeaders(): void

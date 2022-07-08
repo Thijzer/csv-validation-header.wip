@@ -16,4 +16,15 @@ class StatementCollection extends ArrayCollection
         return $item;
     }
 
+    public function isApplicable(array $item): bool
+    {
+        /** @var StatementInterface $statement */
+        foreach ($this->getValues() as $statement) {
+            if (false === $statement->isApplicable($item)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

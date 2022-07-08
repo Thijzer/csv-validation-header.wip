@@ -16,10 +16,12 @@ use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Common\Pipeline\PipelineFactory;
 use Misery\Component\Converter\ConverterFactory;
 use Misery\Component\Converter\ConverterInterface;
+use Misery\Component\Feed\FeedFactory;
 use Misery\Component\Decoder\ItemDecoder;
 use Misery\Component\Decoder\ItemDecoderFactory;
 use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
+use Misery\Component\Feed\FeedInterface;
 use Misery\Component\Mapping\MappingFactory;
 use Misery\Component\Parser\ItemParserFactory;
 use Misery\Component\Process\ProcessManager;
@@ -68,6 +70,7 @@ class ConfigurationManager
         /** @var SourceCollectionFactory $factory */
         $factory = $this->factory->getFactory('source');
         $this->sources = $factory->createFromConfiguration($this->fileManager, $configuration, $this->sources);
+        $this->config->addSources($this->sources);
     }
 
     public function addContext(array $configuration): void
@@ -151,6 +154,17 @@ class ConfigurationManager
         $this->config->addConverter($converter);
 
         return $converter;
+    }
+
+    public function createFeed(array $configuration): FeedInterface
+    {
+        /** @var FeedFactory $factory */
+        $factory = $this->factory->getFactory('feed');
+        $feed = $factory->createFromConfiguration($configuration, $this->config);
+
+        $this->config->addFeed($feed);
+
+        return $feed;
     }
 
     public function createEncoder(array $configuration): ItemEncoder
@@ -244,9 +258,19 @@ class ConfigurationManager
             $parser = $this->createConnectedCursor($configuration['cursor'], $parser);
         }
 
-        if ($parser instanceof ItemCollection) {
+        if ($parser instanceof ItemCollection && $configuration['type'] === 'list') {
             $parser->add(
                 $this->config->getList($configuration['list'])
+            );
+        }
+        if ($parser instanceof ItemCollection && $configuration['type'] === 'list') {
+            $parser->add(
+                $this->config->getList($configuration['list'])
+            );
+        }
+        if ($parser instanceof ItemCollection && $configuration['type'] === 'feed') {
+            $parser->add(
+                $this->config->getFeed($configuration['name'])->feed()
             );
         }
 

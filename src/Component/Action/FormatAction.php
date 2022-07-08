@@ -21,6 +21,9 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
     private $options = [
         'field' => null,
         'functions' => [],
+        'decimals' => 4,
+        'decimal_sep' => '.',
+        'mille_sep' => ',',
     ];
 
     public function apply(array $item): array
@@ -35,6 +38,17 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
 
         foreach ($functions as $function) {
             switch ($function) {
+                case 'replace':
+                    $item[$field] = str_replace($this->getOption('search'), $this->getOption('replace'), $item[$field]);
+                    break;
+                case 'number':
+                    $item[$field] = number_format(
+                        $item[$field],
+                        $this->getOption('decimals'),
+                        $this->getOption('decimal_sep'),
+                        $this->getOption('mille_sep')
+                    );
+                    break;
                 case 'explode':
                     $item[$field] = explode($this->getOption('separator'), $item[$field]);
                     break;

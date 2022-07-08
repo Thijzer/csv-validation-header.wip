@@ -3,10 +3,15 @@
 namespace Misery\Component\Parser;
 
 use Assert\Assert;
+use Misery\Component\Combine\ItemCombine;
 use Misery\Component\Common\Collection\ArrayCollection;
+use Misery\Component\Common\Cursor\CachedCursor;
+use Misery\Component\Common\Cursor\CachedZoneFetcher;
 use Misery\Component\Common\Cursor\CursorInterface;
+use Misery\Component\Common\Cursor\FunctionalCursor;
 use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
+use Misery\Component\Filter\ColumnReducer;
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Writer\CsvWriter;
 
@@ -20,7 +25,31 @@ class ItemParserFactory implements RegisteredByNameInterface
         Assert::that(
             $type,
             'type must be filled in.'
-        )->notEmpty()->string()->inArray(['xml', 'csv', 'xlsx', 'list']);
+        )->notEmpty()->string()->inArray(['xml', 'csv', 'xlsx', 'list', 'feed']);
+
+        if (isset($configuration['join'])) {
+            $joins = $configuration['join'];
+            unset($configuration['join']);
+            $mainParser = $this->createFromConfiguration($configuration, $manager);
+
+            foreach ($joins as $join) {
+                $fetcher = clone new CachedZoneFetcher($this->createFromConfiguration($join, $manager), $join['link_join']);
+                $mainParser = new FunctionalCursor($mainParser, function ($row) use ($fetcher, $join) {
+                    $masterID = $row[$join['link']];
+                    $item = $fetcher->get($masterID) ?? [];
+
+                    if (false === $item) {
+                       $item = [];
+                    }
+
+                    $item = ColumnReducer::reduceItem($item, ...$join['return']);
+
+                    return array_merge($row, $item);
+                });
+            }
+
+            return $mainParser;
+        }
 
         if ($type === 'xml') {
             return XmlParser::create(
@@ -42,7 +71,7 @@ class ItemParserFactory implements RegisteredByNameInterface
                 $manager->getWorkingDirectory(). DIRECTORY_SEPARATOR . $configuration['filename']
             );
         }
-        if ($configuration['type'] === 'list') {
+        if (in_array($type, ['list', 'feed'])) {
             return new ItemCollection();
         }
 

@@ -4,8 +4,13 @@ namespace Misery\Component\Source\Command;
 
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
+use Misery\Component\Reader\ReaderInterface;
 use Misery\Component\Source\SourceAwareInterface;
 use Misery\Component\Source\SourceTrait;
+use Misery\Component\Statement\StatementBuilder;
+use Misery\Component\Statement\StatementCollection;
+use Misery\Component\Statement\StatementFactory;
+use mysql_xdevapi\Statement;
 
 class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareInterface, RegisteredByNameInterface
 {
@@ -18,12 +23,25 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
         'return_value' => null,
         'cache' => [],
         'filter' => null,
+        'statement' => null,
     ];
 
     public function execute()
     {
         if ($this->reader === null) {
             $this->reader = $this->getSource()->getCachedReader($this->getOption('cache'));
+        }
+
+        if ($this->getOption('statement')) {
+            $collection = new StatementCollection(
+                StatementBuilder::fromArray(
+                    $this->getOption('statement')
+                )
+            );
+
+            $this->reader = $this->reader->filter(function ($item) use ($collection) {
+                return $collection->isApplicable($item);
+            });
         }
 
         $items = $this->reader->find($this->getOption('criteria'));

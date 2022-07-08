@@ -74,12 +74,6 @@ class ApiReader implements ReaderInterface
         return $reader;
     }
 
-    public function sort(array $criteria): ReaderInterface
-    {
-        // TODO implement sort option
-        return $this;
-    }
-
     public function filter(callable $callable): ReaderInterface
     {
         return new ItemReader($this->processFilter($callable));

@@ -23,4 +23,9 @@ class SourceCollection
     {
         return $this->items[$alias] ?? null;
     }
+
+    public function getAliases(): array
+    {
+        return array_keys($this->items);
+    }
 }

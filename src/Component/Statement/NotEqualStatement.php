@@ -2,11 +2,9 @@
 
 namespace Misery\Component\Statement;
 
-use Misery\Component\Common\Options\OptionsInterface;
-
-class NotEmptyStatement implements StatementInterface
+class NotEqualStatement implements StatementInterface
 {
-    public const NAME = 'NOT_EMPTY';
+    public const NAME = 'NOT_EQUAL';
 
     use StatementTrait;
 
@@ -14,7 +12,8 @@ class NotEmptyStatement implements StatementInterface
     {
         return
             isset($item[$field->getField()]) &&
-            false === empty($item[$field->getField()])
+            is_string($item[$field->getField()]) &&
+            $item[$field->getField()] !== $field->getValue()
         ;
     }
 }

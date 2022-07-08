@@ -25,6 +25,23 @@ class MappingFactory implements RegisteredByNameInterface
                         }
                     }
                 }
+
+                if (null === $mapping && isset($mappingList['map'])) {
+                    $mapping = $mappingList['map'];
+                }
+
+                // @TODO join mapping and lists into one principle
+                if (null === $mapping && isset($mappingList['intersect'])) {
+                    $mapping = array_intersect(...array_map(function ($mappingName) use ($configurationManager) {
+                        return $configurationManager->getConfig()->getList($mappingName);
+                    }, $mappingList['intersect']));
+                }
+                if (null === $mapping && isset($mappingList['diff'])) {
+                    $mapping = array_diff(...array_map(function ($mappingName) use ($configurationManager) {
+                        return $configurationManager->getConfig()->getList($mappingName);
+                    }, $mappingList['diff']));
+                }
+
                 if (null === $mapping && isset($mappingList['sets'])) {
                     $mapping = array_merge(...array_map(function ($mappingName) use ($configurationManager) {
                         return $configurationManager->getConfig()->getMapping($mappingName);

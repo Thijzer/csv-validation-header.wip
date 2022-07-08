@@ -11,6 +11,7 @@ use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Converter\ConverterInterface;
 use Misery\Component\Decoder\ItemDecoder;
 use Misery\Component\Encoder\ItemEncoder;
+use Misery\Component\Feed\FeedInterface;
 use Misery\Component\Reader\ItemReaderInterface;
 use Misery\Component\Reader\ReaderInterface;
 use Misery\Component\Shell\ShellCommands;
@@ -30,6 +31,7 @@ class Configuration
     private $mappings = [];
     private $filters = [];
     private $converters;
+    private $feeds;
     private $sources;
     private $context = [];
     private $shellCommands;
@@ -39,6 +41,7 @@ class Configuration
     public function __construct()
     {
         $this->converters = new ArrayCollection();
+        $this->feeds = new ArrayCollection();
         $this->encoders = new ArrayCollection();
         $this->decoders = new ArrayCollection();
         $this->blueprints = new ArrayCollection();
@@ -168,6 +171,18 @@ class Configuration
         })->first();
     }
 
+    public function addFeed(FeedInterface $feed): void
+    {
+        $this->feeds->add($feed);
+    }
+
+    public function getFeed(string $name): ?FeedInterface
+    {
+        return $this->feeds->filter(function (RegisteredByNameInterface $feed) use ($name) {
+            return $feed->getName() === $name;
+        })->first();
+    }
+
     public function addDecoder(ItemDecoder $decoders): void
     {
         $this->decoders->add($decoders);
@@ -199,20 +214,17 @@ class Configuration
 
     public function addMapping(string $alias, array $mappings): void
     {
-        $this->mappings[$alias] = $mappings;
-
-        // todo we add it to the lists here
         $this->addLists([$alias => $mappings]);
     }
 
     public function getMappings(): array
     {
-        return $this->mappings;
+        return $this->getLists();
     }
 
     public function getMapping(string $alias)
     {
-        return $this->mappings[$alias] ?? null;
+        return $this->getList($alias);
     }
 
     /**

@@ -15,10 +15,27 @@ class ApiResponse
         $this->content = $content;
     }
 
+    public static function createFromMulti(array $data): self
+    {
+        $data = array_filter($data, function ($line) {
+            return isset($line['message']) && !in_array($line['status_code'], [204, 200]);
+        });
+
+        if (count($data) > 0) {
+            $line = current($data);
+            return new self(
+                $line['status_code'],
+                $line['message'] ?? null,
+                $data);
+        }
+
+        return new self(204, null, $data);
+    }
+
     public static function create(array $data = [], string $code = null): self
     {
         return new self(
-            $data['code'] ?? $code,
+            $data['status_code'] ?? $code,
             $data['message'] ?? null,
             $data);
     }

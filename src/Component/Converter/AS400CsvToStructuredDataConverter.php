@@ -15,16 +15,17 @@ class AS400CsvToStructuredDataConverter implements ConverterInterface, OptionsIn
 
     private $header;
     private $options = [
-        'attributes' => null,
+        'attributes_map' => null,
         'locales' => null,
     ];
 
     public function convert(array $itemCollection): array
     {
         if (null === $this->header) {
-            $this->header = (new AS400HeaderContext())->create($this->getOption('attributes'), $this->getOption('locales'));
+            $this->header = (new AS400HeaderContext())->create(array_values($this->getOption('attributes_map')), $this->getOption('locales'));
         }
         $output = $this->header;
+        $mapping = $this->getOption('attributes_map');
 
         foreach ($itemCollection as $item) {
             $output['sku'] = $item['SKU'];
@@ -33,12 +34,12 @@ class AS400CsvToStructuredDataConverter implements ConverterInterface, OptionsIn
                 // see article 01010411
                 continue;
             }
-            // no need for a supplier label
-            if ($item['DESCRIPTION_TYPE'] === 'SUPPLIER') {
+            // no need to process unmapped attributes
+            if (!in_array($item['TYPE'], array_keys($mapping))) {
                 continue;
             }
 
-            $output[implode('-', [$item['DESCRIPTION_TYPE'], $item['LOCALE']])] = $item['DESCRIPTION'];
+            $output[implode('-', [$mapping[$item['TYPE']], $item['LOCALE']])] = $item['DESCRIPTION'];
         }
 
         return $output;

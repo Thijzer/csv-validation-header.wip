@@ -7,8 +7,8 @@ use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Cursor\SubFunctionalCollectionCursor;
 use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
-use Misery\Component\Filter\ColumnReducer;
-use Misery\Component\Item\ItemsFactoryIntoItem;
+use Misery\Component\Filter\ItemSortFilter;
+use Misery\Component\Filter\ItemTreeSortFilter;
 
 class ItemReaderFactory implements RegisteredByNameInterface
 {
@@ -47,31 +47,7 @@ class ItemReaderFactory implements RegisteredByNameInterface
 
         if (isset($configuration['x_filter']['type']) && $configuration['x_filter']['type'] === 'funnel') {
             $config = $configuration['x_filter'];
-            return new ItemReader(new CondensedCursor($cursor, function ($item) use ($config) {
-                $key = $item[$config['on']];
-                $this->collection[$key][] = $item;
-
-                // new id check
-                if (!isset($this->collection['current_id']) || $this->collection['current_id'] !== $key) {
-                    $prevId = $this->collection['current_id'] ?? null;
-                    $this->collection['current_id'] = $key;
-
-                    if (!$prevId) {
-                        return null;
-                    }
-
-                    $prev = $this->collection[$prevId];
-                    unset($this->collection[$prevId]);
-
-                    if (isset($config['join_into'])) {
-                        return ItemsFactoryIntoItem::createFromConfig($prev, $config['join_into']);
-                    }
-
-                    return $prev;
-                }
-
-                return null;
-            }));
+            return new ItemReader(new CondensedCursor($cursor, $config));
         }
 
         $reader = new ItemReader($cursor);
@@ -79,8 +55,12 @@ class ItemReaderFactory implements RegisteredByNameInterface
             $reader = $reader->find($configuration['filter']);
         }
 
+        if (isset($configuration['tree_sort'])) {
+            $reader = ItemTreeSortFilter::sort($reader, $configuration['tree_sort']);
+        }
+
         if (isset($configuration['sort'])) {
-            $reader = $reader->sort($configuration['sort']);
+            $reader = ItemSortFilter::sort($reader, $configuration['sort']);
         }
 
         return $reader;

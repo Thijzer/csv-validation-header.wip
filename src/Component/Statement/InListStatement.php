@@ -20,18 +20,4 @@ class InListStatement implements StatementInterface
             in_array($item[$field->getField()], $this->context['list'])
         ;
     }
-
-    private function thenField(Field $field, array $item): array
-    {
-        if ($this->action instanceof OptionsInterface) {
-            $this->action->setOptions([
-                'key' => $field->getField(),
-                'value' => $field->getValue(),
-            ] + $this->context);
-
-            return $this->action->apply($item);
-        }
-
-        return $item;
-    }
 }

@@ -18,18 +18,4 @@ class ContainsStatement implements StatementInterface
             strpos($item[$field->getField()], $field->getValue()) !== false
         ;
     }
-
-    private function thenField(Field $field, array $item): array
-    {
-        if ($this->action instanceof OptionsInterface) {
-            $this->action->setOptions([
-                'key' => $field->getField(),
-                'value' => $field->getValue(),
-            ] + $this->context);
-
-            return $this->action->apply($item);
-        }
-
-        return $item;
-    }
 }

@@ -6,12 +6,7 @@ use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Configurator\ConfigurationAwareInterface;
 use Misery\Component\Configurator\ConfigurationTrait;
-use Misery\Component\Statement\ContainsStatement;
-use Misery\Component\Statement\EmptyStatement;
-use Misery\Component\Statement\EqualsStatement;
-use Misery\Component\Statement\InListStatement;
-use Misery\Component\Statement\NotEmptyStatement;
-use Misery\Component\Statement\WhenStatementBuilder;
+use Misery\Component\Statement\StatementBuilder;
 
 class StatementAction implements OptionsInterface, ConfigurationAwareInterface
 {
@@ -33,23 +28,21 @@ class StatementAction implements OptionsInterface, ConfigurationAwareInterface
         $when = $this->getOption('when');
         $then = $this->getOption('then');
 
-        $operator = $when['operator'] ?? null;
-        $context = $when['context'] ?? [];
-
-        if (isset($context['list'])) {
-            $context['list'] = $this->configuration->getList($context['list']);
+        $context = [];
+        if (isset($when['context']['list'])) {
+            $context['list'] = $this->configuration->getList($when['context']['list']);
         }
 
-        if (is_string($when)) {
-            $this->statement = EqualsStatement::prepare(new SetValueAction());
+        $statement = StatementBuilder::build($when, $context);
+
+        if (isset($then['field'], $then['state'])) {
+            $statement->then($then['field'], $then['state'] ?? null);
+        } else {
+            foreach ($then as $thenField => $thenState) {
+                $statement->then($thenField, $thenState ?? null);
+            }
         }
 
-        if ($operator) {
-            $this->statement = WhenStatementBuilder::buildFromOperator($operator, $context);
-        }
-
-        WhenStatementBuilder::build($when, $then, $this->statement);
-
-        return $this->statement->apply($item);
+        return $statement->apply($item);
     }
 }

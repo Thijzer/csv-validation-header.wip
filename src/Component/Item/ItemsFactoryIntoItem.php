@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Item;
 
-use Misery\Component\Statement\WhenStatementBuilder;
+use Misery\Component\Statement\StatementBuilder;
 
 class ItemsFactoryIntoItem
 {
@@ -14,7 +14,7 @@ class ItemsFactoryIntoItem
             $main = $item;
             foreach ($configuration as $code => $options) {
                 if (isset($options['when'])) {
-                    $statement = WhenStatementBuilder::buildFromOperator($options['when']['operator']);
+                    $statement = StatementBuilder::buildFromOperator($options['when']['operator']);
                     $statement->when($options['when']['field'], $options['when']['state']);
                     if ($statement->isApplicable($item)) {
                         $result[$code][] = $item[$options['value']];

@@ -31,8 +31,10 @@ class SourceFilter
         $options = $this->command->getOptions();
 
         foreach ($options['filter'] as $key => $value) {
-            if (strpos($value, '$') !== false && isset($item[$key])) {
-                $options['filter'][$key] = $item[$key];
+            $field = ltrim($value, '$');
+            if (strpos($value, '$') !== false && isset($item[$field])) {
+                $options['criteria'][$key] = $item[$field];
+                unset($options['filter']);
             }
         }
 

@@ -18,7 +18,14 @@ $converterRegistry->registerAllByName(
     new Misery\Component\Converter\XmlDataConverter(),
     new Misery\Component\Converter\KliumCsvToStructuredDataConverter(),
     new Misery\Component\Converter\AS400CsvToStructuredDataConverter(),
-    new Misery\Component\Converter\AS400ArticleAttributesCsvToStructuredDataConverter()
+    new Misery\Component\Converter\AS400ArticleAttributesCsvToStructuredDataConverter(),
+    new Misery\Component\Converter\RelatedProductsCsvToStructuredDataConverter(),
+    new Misery\Component\Converter\OldAS400ArticleAttributesCsvToStructuredDataConverter()
+);
+
+$feedRegistry = new Misery\Component\Common\Registry\Registry('feed');
+$feedRegistry->registerAllByName(
+    new Misery\Component\Feed\CategoryFeed(),
 );
 
 $modifierRegistry = new Misery\Component\Common\Registry\Registry('modifier');
@@ -71,6 +78,7 @@ $actionRegistry
     ->register(Misery\Component\Action\CombineAction::NAME, new Misery\Component\Action\CombineAction())
     ->register(Misery\Component\Action\SkipAction::NAME, new Misery\Component\Action\SkipAction())
     ->register(Misery\Component\Action\FormatAction::NAME, new Misery\Component\Action\FormatAction())
+    ->register(Misery\Component\Action\GenerateIdAction::NAME, new Misery\Component\Action\GenerateIdAction())
 ;
 
 #$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');
@@ -93,6 +101,9 @@ $decoder
 
 $converter = new Misery\Component\Converter\ConverterFactory();
 $converter->addRegistry($converterRegistry);
+
+$feed = new Misery\Component\Feed\FeedFactory();
+$feed->addRegistry($feedRegistry);
 
 $list = new Misery\Component\Source\ListFactory();
 $list->addRegistry($sourceRegistry);
@@ -123,6 +134,7 @@ $factoryRegistry->registerAllByName(
     $list,
     $filter,
     $converter,
+    $feed,
     $decoder,
     $encoder,
     $actions

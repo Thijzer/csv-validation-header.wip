@@ -45,7 +45,7 @@ class ColumnReducer
     {
         $nRow = [];
         foreach ($columnNames as $columnName) {
-            $nRow[$columnName] = $item[$columnName];
+            $nRow[$columnName] = $item[$columnName] ?? null;
         }
 
         return $nRow;

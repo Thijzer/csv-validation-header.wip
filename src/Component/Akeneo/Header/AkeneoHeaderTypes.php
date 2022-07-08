@@ -9,4 +9,5 @@ class AkeneoHeaderTypes implements HeaderTypes
     public const METRIC = 'pim_catalog_metric';
     public const PRICE = 'pim_catalog_price_collection';
     public const BOOLEAN = 'pim_catalog_boolean';
+    public const TEXT = 'pim_catalog_text';
 }

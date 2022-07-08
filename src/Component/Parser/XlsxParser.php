@@ -18,6 +18,7 @@ class XlsxParser implements CursorInterface
     public function __construct(string $filename)
     {
         $this->filename = $filename;
+        $this->init();
     }
 
     public static function create(string $filename): self
@@ -39,7 +40,6 @@ class XlsxParser implements CursorInterface
     public function current()
     {
         if ($this->cursor === null) {
-            $this->init();
         }
 
         $current = $this->cursor->current();

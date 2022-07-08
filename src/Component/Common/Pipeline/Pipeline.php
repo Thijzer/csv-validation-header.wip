@@ -47,20 +47,41 @@ class Pipeline
     public function run(int $amount = -1)
     {
         $i = 0;
+        // looping
         while ($i !== $amount && $item = $this->in->read()) {
             $i++;
             try {
                 foreach ($this->lines as $line) {
                     $item = $line->pipe($item);
                 }
+                foreach ($this->out as $out) {
+                    $out->write($item);
+                }
             } catch (SkipPipeLineException $exception) {
                 continue;
             } catch (InvalidItemException $exception) {
-                //$this->invalid->write(['line' => $i, 'msg' => $exception->getMessage(), 'item' => json_encode($exception->getInvalidItem())]);
+                $this->invalid->write([
+                    'line' => $i,
+                    'msg' => $exception->getMessage(),
+                    'item' => json_encode($exception->getInvalidItem()),
+                ]);
                 continue;
             }
-            foreach ($this->out as $out) {
-                $out->write($item);
+        }
+        // stopping
+        foreach ($this->out as $out) {
+            try {
+                $out->stop();
+            } catch (SkipPipeLineException $exception) {
+                continue;
+
+            } catch (InvalidItemException $exception) {
+                $this->invalid->write([
+                    'line' => $i,
+                    'msg' => $exception->getMessage(),
+                    'item' => json_encode($exception->getInvalidItem()),
+                ]);
+                continue;
             }
         }
     }

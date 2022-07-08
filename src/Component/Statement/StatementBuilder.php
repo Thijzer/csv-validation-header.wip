@@ -4,7 +4,7 @@ namespace Misery\Component\Statement;
 
 use Misery\Component\Action\SetValueAction;
 
-class WhenStatementBuilder
+class StatementBuilder
 {
     public static function buildFromOperator(string $operator, array $context = []): StatementInterface
     {
@@ -15,6 +15,9 @@ class WhenStatementBuilder
             case 'EQUALS':
             case null:
                 $statement = EqualsStatement::prepare(new SetValueAction());
+                break;
+            case 'NOT_EQUAL':
+                $statement = NotEqualStatement::prepare(new SetValueAction());
                 break;
             case 'CONTAINS':
                 $statement = ContainsStatement::prepare(new SetValueAction());
@@ -32,25 +35,34 @@ class WhenStatementBuilder
         return $statement;
     }
 
-    public static function build($when, array $then, StatementInterface $statement): void
+    public static function build($when, array $context = []): StatementInterface
     {
+        $statement = null;
+
         if (is_string($when)) {
-            static::fromExpression($when, $statement);
-        } else {
-            static::fromArray($when, $statement);
+            $statement = static::fromExpression($when);
+        }
+        if (is_array($when)) {
+            $operator = $when['operator'] ?? null;
+            $context = array_merge($when['context'] ?? [], $context);
+
+            if ($operator) {
+                $statement = self::buildFromOperator($operator, $context);
+                $statement->when($when['field'], $when['state'] ?? null);
+            }
         }
 
-        if (isset($then['field'], $then['state'])) {
-            $statement->then($then['field'], $then['state'] ?? null);
-            return;
+        if (null === $statement) {
+            throw new \RuntimeException('Unprocessable WHEN field');
         }
-        foreach ($then as $thenField => $thenState) {
-            $statement->then($thenField, $thenState ?? null);
-        }
+
+        return $statement;
     }
 
-    public static function fromExpression(string $whenString, StatementInterface $statement): void
+    private static function fromExpression(string $whenString): StatementInterface
     {
+        $statement = EqualsStatement::prepare(new SetValueAction());
+
         $andFields = explode(' AND ', $whenString) ?? [];
         if (count($andFields) === 2) {
             $fields = explode(' == ', $andFields[0]);
@@ -66,10 +78,23 @@ class WhenStatementBuilder
             $fields = explode(' == ', $orFields[1]);
             $statement->or($fields[0], $fields[1]);
         }
+
+        $containsFields = explode(' CONTAINS ', $whenString) ?? [];
+        if (count($containsFields) === 2) {
+            $statement = ContainsStatement::prepare(new SetValueAction());
+            $statement->when($containsFields[0], $containsFields[1]);
+        }
+
+        return $statement;
     }
 
-    public static function fromArray(array $whenArray, StatementInterface $statement): void
+    public static function fromArray(array $whenArray, array $context = []): array
     {
-        $statement->when($whenArray['field'], $whenArray['state'] ?? null);
+        $statements = [];
+        foreach ($whenArray as $when) {
+            $statements[] = self::build($when);
+        }
+
+        return $statements;
     }
 }

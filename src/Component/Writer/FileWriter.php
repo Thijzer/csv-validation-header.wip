@@ -25,7 +25,7 @@ abstract class FileWriter implements ItemWriterInterface
 
     public function close(): void
     {
-        fclose($this->handle);
+        @fclose($this->handle);
     }
 
     public function __destruct()

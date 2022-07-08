@@ -21,4 +21,14 @@ class ReferenceBuilder
     {
         return current(static::build($reader, ...$references));
     }
+
+    public static function buildIndexList(ReaderInterface $reader, string ...$references):array
+    {
+        $tmp = [];
+        foreach (self::buildValues($reader, ...$references) as $index => $code) {
+            $tmp[(string) $code][$index] = $code;
+        }
+
+        return $tmp;
+    }
 }

@@ -16,4 +16,9 @@ class PipeWriter implements PipeWriterInterface
     {
         $this->writer->write($data);
     }
+
+    public function stop(): void
+    {
+        $this->writer->close();
+    }
 }

@@ -6,6 +6,7 @@ use Misery\Component\Common\Client\ApiClient;
 use Misery\Component\Common\Client\ApiEndpointInterface;
 use Misery\Component\Common\Client\ApiResponse;
 use Misery\Component\Common\Client\Exception\UnauthorizedException;
+use Misery\Component\Common\Pipeline\Exception\InvalidItemException;
 use Misery\Component\Writer\ItemWriterInterface;
 
 class ApiWriter implements ItemWriterInterface
@@ -28,6 +29,10 @@ class ApiWriter implements ItemWriterInterface
 
     public function write(array $data): void
     {
+        if ($data === []) {
+            return;
+        }
+
         if ($this->method === 'MULTI_PATCH') {
             if (count($this->pack) < 100) {
                 $this->pack[] = $data;
@@ -38,11 +43,31 @@ class ApiWriter implements ItemWriterInterface
                 $this->pack = [];
             }
         }
+
+        $this->doWrite($data);
+    }
+
+    public function close(): void
+    {
+        if (count($this->pack) < 100 && $this->pack !== []) {
+            $this->doWrite($this->pack);
+        }
+    }
+
+    private function doWrite(array $data)
+    {
         try {
-            $response = $this->doWrite($data);
+            $response = $this->execute($data);
+        } catch (\RuntimeException $e) {
+            // do nothing
+            throw new InvalidItemException('API Runtime exception', [], $data);
         } catch (UnauthorizedException $e) {
             $this->client->refreshToken();
-            $response = $this->doWrite($data);
+            $response = $this->execute($data);
+        }
+
+        if (!in_array($response->getCode(),  [200, 204])) {
+            throw new InvalidItemException('API exception', ['message' => $response->getContent()], $data);
         }
 
         if ($this->method === 'DELETE') {
@@ -53,7 +78,7 @@ class ApiWriter implements ItemWriterInterface
     /**
      * @throws UnauthorizedException
      */
-    private function doWrite(array $data): ApiResponse
+    private function execute(array $data): ApiResponse
     {
         switch ($this->method) {
             case 'DELETE':

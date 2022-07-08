@@ -100,7 +100,7 @@ class AkeneoHeader
 
     private function applyWithType(string $type, ...$strings): void
     {
-        if ($type === AkeneoHeaderTypes::METRIC) {
+        if (in_array($type, [AkeneoHeaderTypes::METRIC, 'pim_catalog_metric_as400'])) {
             $this->addLine($this->concat($strings));
             $strings[] = 'unit';
         }

@@ -4,6 +4,7 @@ namespace Misery\Component\Common\Pipeline;
 
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\ConfigurationManager;
+use Misery\Component\Writer\ItemWriterInterface;
 
 class PipelineFactory implements RegisteredByNameInterface
 {
@@ -22,20 +23,19 @@ class PipelineFactory implements RegisteredByNameInterface
                 case $key === 'output' && isset($configuration['output']['http']):
                     $writer = $configurationManager->createHTTPWriter($configuration['output']['http']);
                     $pipeline->output(new PipeWriter($writer));
+
+                    $pipeline->invalid(
+                        new PipeWriter($this->createInvalid($configurationManager, $configuration))
+                    );
                     break;
 
                 case isset($configuration[$key]['writer']);
                     $writer = $configurationManager->createWriter($configuration['output']['writer']);
                     $pipeline->output(new PipeWriter($writer));
 
-                    // invalid item configuration TODO move
-                    $filename = $configuration['output']['writer']['filename'];
-                    $filePath = pathinfo($filename);
-                    $filename = sprintf('%s/invalid_%s', $filePath['dirname'], $filePath['basename']);
-                    $configuration['output']['writer']['filename'] = $filename;
-
-                    $writer = $configurationManager->createWriter($configuration['output']['writer']);
-                    $pipeline->invalid(new PipeWriter($writer));
+                    $pipeline->invalid(
+                        new PipeWriter($this->createInvalid($configurationManager, $configuration))
+                    );
                     break;
 
                 case $key === 'encoder';
@@ -65,6 +65,15 @@ class PipelineFactory implements RegisteredByNameInterface
         }
 
         return $pipeline;
+    }
+
+    private function createInvalid(ConfigurationManager $configurationManager, array $configuration): ItemWriterInterface
+    {
+        $configuration['output']['writer']['filename'] = 'processed/invalid_items.csv';
+        $configuration['output']['writer']['type'] = 'csv';
+        $configuration['output']['writer']['format']['mode'] = 'append';
+
+        return $configurationManager->createWriter($configuration['output']['writer']);
     }
 
     public function getName(): string

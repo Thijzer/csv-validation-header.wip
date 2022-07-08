@@ -3,6 +3,7 @@
 namespace Misery\Component\Statement;
 
 use Misery\Component\Action\ActionInterface;
+use Misery\Component\Common\Options\OptionsInterface;
 
 trait StatementTrait
 {
@@ -62,7 +63,7 @@ trait StatementTrait
 
     public function isApplicable(array $item): bool
     {
-        return count($this->conditions) !== count(array_filter($this->conditions, function ($condition) use ($item) {
+        return count($this->conditions) === count(array_filter($this->conditions, function ($condition) use ($item) {
             $condition = array_merge($this->template, $condition);
             switch (true) {
                 case !empty($condition['or']) && (true === $this->whenField($condition['when'], $item) || true === $this->whenField($condition['or'], $item)):
@@ -90,6 +91,20 @@ trait StatementTrait
                 default:
                     break;
             }
+        }
+
+        return $item;
+    }
+
+    private function thenField(Field $field, array $item): array
+    {
+        if ($this->action instanceof OptionsInterface) {
+            $this->action->setOptions([
+                    'key' => $field->getField(),
+                    'value' => $field->getValue(),
+                ] + $this->context);
+
+            return $this->action->apply($item);
         }
 
         return $item;

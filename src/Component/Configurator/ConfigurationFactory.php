@@ -68,6 +68,9 @@ class ConfigurationFactory
                 case $key === 'converter';
                     $this->manager->createConverter($configuration['converter']);
                     break;
+                case $key === 'feed';
+                    $this->manager->createFeed($configuration['feed']);
+                    break;
                 case $key === 'blueprint';
                     $this->manager->createBlueprints($configuration['blueprint']);
                     break;
