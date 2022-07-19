@@ -23,6 +23,7 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
         'return_value' => null,
         'cache' => [],
         'filter' => null,
+        'criteria' => null,
         'statement' => null,
     ];
 
@@ -44,7 +45,10 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
             });
         }
 
-        $items = $this->reader->find($this->getOption('criteria'));
+        $items = $this->reader;
+        if ($this->getOption('criteria')) {
+            $items = $this->reader->find($this->getOption('criteria'));
+        }
 
         if (!empty($this->getOption('return_value'))) {
             return array_map(function (array $item) {

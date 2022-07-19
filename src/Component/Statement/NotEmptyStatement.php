@@ -2,9 +2,7 @@
 
 namespace Misery\Component\Statement;
 
-use Misery\Component\Common\Options\OptionsInterface;
-
-class NotEmptyStatement implements StatementInterface
+class NotEmptyStatement implements PredeterminedStatementInterface
 {
     public const NAME = 'NOT_EMPTY';
 
@@ -12,6 +10,10 @@ class NotEmptyStatement implements StatementInterface
 
     private function whenField(Field $field, array $item): bool
     {
+        if (is_array($item[$field->getField()])) {
+            return array_filter($item[$field->getField()]) !== [];
+        }
+
         return
             isset($item[$field->getField()]) &&
             false === empty($item[$field->getField()])

@@ -2,9 +2,7 @@
 
 namespace Misery\Component\Statement;
 
-use Misery\Component\Common\Options\OptionsInterface;
-
-class InListStatement implements StatementInterface
+class InListStatement implements PredeterminedStatementInterface
 {
     public const NAME = 'IN_LIST';
 

@@ -21,9 +21,15 @@ class SkipAction implements OptionsInterface
     public function apply(array $item): array
     {
         $field = $this->getOption('field');
+        $state = $this->getOption('state');
+
         $value = $item[$field] ?? null;
 
-        if (empty($value)) {
+        if (empty($value) && $state === 'EMPTY') {
+            throw new SkipPipeLineException();
+        }
+
+        if ($value === $state) {
             throw new SkipPipeLineException();
         }
 

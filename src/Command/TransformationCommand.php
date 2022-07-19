@@ -5,8 +5,6 @@ namespace Misery\Command;
 use Ahc\Cli\Input\Command;
 use Assert\Assertion;
 use Misery\Component\Common\FileManager\LocalFileManager;
-use Misery\Component\Common\Pipeline\LoggingPipe;
-use Misery\Component\Common\Pipeline\Pipeline;
 use Misery\Component\Process\ProcessManager;
 use Symfony\Component\Yaml\Yaml;
 
@@ -19,6 +17,7 @@ class TransformationCommand extends Command
     private $file;
     private $sources;
     private $debug;
+    private $showMappings;
     private $try;
 
     public function __construct()
@@ -29,6 +28,7 @@ class TransformationCommand extends Command
             ->option('-f --file', 'The transformation file location')
             ->option('-s --source', 'The sources location')
             ->option('-d --debug', 'enable debugging', 'boolval', false)
+            ->option('-m --showMappings', 'show lists or mappings', 'boolval', false)
             ->option('-t --try', 'tryout a set for larger files')
 
             ->usage(
@@ -38,7 +38,7 @@ class TransformationCommand extends Command
         ;
     }
 
-    public function execute(string $file, string $source, bool $debug, int $try = null)
+    public function execute(string $file, string $source, bool $debug, int $try = null, bool $showMappings = null)
     {
         $io = $this->app()->io();
 
@@ -61,6 +61,7 @@ class TransformationCommand extends Command
                     'workpath' => $source,
                     'debug' => $debug,
                     'try' => $try,
+                    'show_mappings' => $showMappings,
                 ]
             ])
         );
@@ -70,6 +71,7 @@ class TransformationCommand extends Command
         // TODO connect the outputs here
         if ($shellCommands = $configuration->getShellCommands()) {
             $shellCommands->exec();
+            $configuration->clearShellCommands();
         }
     }
 }

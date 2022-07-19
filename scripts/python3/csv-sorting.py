@@ -36,8 +36,8 @@ delimiter = sys.argv[5]
 
 import pandas as pd
 
-df = pd.read_csv(in_file, delimiter=';')
+df = pd.read_csv(in_file, delimiter)
 
-sorted_df = df.sort_values(by=["SKU"], ascending=True)
+sorted_df = df.sort_values(by=["UID"], ascending=True)
 
 sorted_df.to_csv(out_file, index=False, sep=';')

@@ -2,8 +2,8 @@
 
 namespace Misery\Component\Reader;
 
-use Misery\Component\Item\Builder\ReferenceBuilder;
-use Misery\Component\Statement\StatementCollection;
+use Misery\Component\Common\Cursor\CursorInterface;
+use Misery\Component\Common\Cursor\ItemCursor;
 
 class ItemReader implements ItemReaderInterface
 {
@@ -69,6 +69,10 @@ class ItemReader implements ItemReaderInterface
                     $list[] = $id;
                     return true;
                 });
+            } elseif ($rowValue === ['IS_NOT_NUMERIC']) {
+                $reader = $reader->filter(static function ($row) use ($columnName) {
+                    return !is_numeric($row[$columnName]);
+                });
             } elseif ($rowValue === ['NOT_EMPTY']) {
                 $reader = $reader->filter(static function ($row) use ($columnName) {
                     return !empty($row[$columnName]);
@@ -113,6 +117,11 @@ class ItemReader implements ItemReaderInterface
                 yield $key => $callable($row);
             }
         }
+    }
+
+    public function getCursor(): CursorInterface
+    {
+        return new ItemCursor($this);
     }
 
     public function getIterator(): \Iterator

@@ -97,6 +97,11 @@ class Configuration
         return $this->shellCommands;
     }
 
+    public function clearShellCommands(): void
+    {
+        $this->shellCommands = null;
+    }
+
     public function setActions(ItemActionProcessor $actionProcessor): void
     {
         $this->actions = $actionProcessor;

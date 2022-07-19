@@ -2,9 +2,9 @@
 
 namespace Misery\Component\Statement;
 
-class NotEqualStatement implements PredeterminedStatementInterface
+class IsNotNumericsStatement implements PredeterminedStatementInterface
 {
-    public const NAME = 'NOT_EQUAL';
+    public const NAME = 'IS_NOT_NUMERIC';
 
     use StatementTrait;
 
@@ -12,8 +12,7 @@ class NotEqualStatement implements PredeterminedStatementInterface
     {
         return
             isset($item[$field->getField()]) &&
-            is_string($item[$field->getField()]) &&
-            $item[$field->getField()] !== $field->getValue()
+            false === is_numeric(str_replace(',', '.', $item[$field->getField()]))
         ;
     }
 }

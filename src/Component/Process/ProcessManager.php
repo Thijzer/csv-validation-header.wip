@@ -20,9 +20,13 @@ class ProcessManager
     {
         $debug = $this->configuration->getContext('debug');
         $amount = $this->configuration->getContext('try');
+        $mappings = $this->configuration->getContext('show_mappings');
 
         if ($pipeline = $this->configuration->getPipeline()) {
             if ($debug === true) {
+                if ($mappings === true) {
+                    dump($this->configuration->getMappings());
+                }
                 $pipeline
                     ->line(New LoggingPipe())
                     ->run($amount ?? 1);

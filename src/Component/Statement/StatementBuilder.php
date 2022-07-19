@@ -12,10 +12,18 @@ class StatementBuilder
             case 'IN_LIST':
                 $statement = InListStatement::prepare(new SetValueAction(), $context);
                 break;
+            case 'IS_NUMERIC':
+                $statement = IsNumericsStatement::prepare(new SetValueAction(), $context);
+                break;
+            case 'IS_NOT_NUMERIC':
+                $statement = IsNotNumericsStatement::prepare(new SetValueAction(), $context);
+                break;
+            case '==':
             case 'EQUALS':
             case null:
                 $statement = EqualsStatement::prepare(new SetValueAction());
                 break;
+            case '!=':
             case 'NOT_EQUAL':
                 $statement = NotEqualStatement::prepare(new SetValueAction());
                 break;
@@ -41,6 +49,9 @@ class StatementBuilder
 
         if (is_string($when)) {
             $statement = static::fromExpression($when);
+            if ($statement instanceof StatementCollection) {
+                return new CollectionStatement($statement, new SetValueAction(), $context);
+            }
         }
         if (is_array($when)) {
             $operator = $when['operator'] ?? null;
@@ -61,15 +72,19 @@ class StatementBuilder
 
     private static function fromExpression(string $whenString): StatementInterface
     {
-        $statement = EqualsStatement::prepare(new SetValueAction());
-
         $andFields = explode(' AND ', $whenString) ?? [];
-        if (count($andFields) === 2) {
-            $fields = explode(' == ', $andFields[0]);
-            $statement->when($fields[0], $fields[1]);
-            $fields = explode(' == ', $andFields[1]);
-            $statement->and($fields[0], $fields[1]);
+        if (count($andFields) > 1) {
+            $collection = new StatementCollection();
+            foreach ($andFields as $i => $andField) {
+                $fields = explode(' ', $andField);
+                $statement = self::buildFromOperator($fields[1]);
+                $statement->when($fields[0], $fields[2] ?? null);
+                $collection->add($statement);
+            }
+            return $collection;
         }
+
+        $statement = EqualsStatement::prepare(new SetValueAction());
 
         $orFields = explode(' OR ', $whenString) ?? [];
         if (count($orFields) === 2) {

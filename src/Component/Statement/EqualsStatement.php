@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Statement;
 
-class EqualsStatement implements StatementInterface
+class EqualsStatement implements PredeterminedStatementInterface
 {
     public const NAME = 'EQUALS';
 

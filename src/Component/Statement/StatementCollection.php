@@ -4,7 +4,7 @@ namespace Misery\Component\Statement;
 
 use Misery\Component\Common\Collection\ArrayCollection;
 
-class StatementCollection extends ArrayCollection
+class StatementCollection extends ArrayCollection implements StatementInterface
 {
     public function apply(array $item): array
     {

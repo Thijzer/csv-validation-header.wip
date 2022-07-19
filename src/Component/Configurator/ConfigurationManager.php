@@ -103,6 +103,7 @@ class ConfigurationManager
             // TODO connect the outputs here
             if ($shellCommands = $configuration->getShellCommands()) {
                 $shellCommands->exec();
+                $configuration->clearShellCommands();
             }
         }
     }

@@ -2,9 +2,7 @@
 
 namespace Misery\Component\Statement;
 
-use Misery\Component\Common\Options\OptionsInterface;
-
-class ContainsStatement implements StatementInterface
+class ContainsStatement implements PredeterminedStatementInterface
 {
     public const NAME = 'CONTAINS';
 
