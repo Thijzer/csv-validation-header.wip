@@ -1,7 +1,5 @@
 <?php
 
-require __DIR__.'/../vendor/autoload.php';
-
 // formatters are reversable // Modifiers are NOT reversable
 
 $sourceRegistry = new Misery\Component\Common\Registry\Registry('source_command');
