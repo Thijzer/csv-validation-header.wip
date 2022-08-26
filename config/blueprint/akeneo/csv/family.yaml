@@ -28,5 +28,11 @@ parse:
     delimiter: ';'
     enclosure: '"'
 
+filenames:
+  - family.csv
+  - families.csv
+  - akeneo_family.csv
+  - akeneo_families.csv
+
 validations:
   include: 'validation/family.yaml'

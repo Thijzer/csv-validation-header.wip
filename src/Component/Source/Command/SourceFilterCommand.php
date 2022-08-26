@@ -4,13 +4,11 @@ namespace Misery\Component\Source\Command;
 
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
-use Misery\Component\Reader\ReaderInterface;
+use Misery\Component\Filter\ColumnReducer;
 use Misery\Component\Source\SourceAwareInterface;
 use Misery\Component\Source\SourceTrait;
 use Misery\Component\Statement\StatementBuilder;
 use Misery\Component\Statement\StatementCollection;
-use Misery\Component\Statement\StatementFactory;
-use mysql_xdevapi\Statement;
 
 class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareInterface, RegisteredByNameInterface
 {
@@ -21,6 +19,8 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
 
     private $options = [
         'return_value' => null,
+        'return_values' => [],
+        'return_mode' => null,
         'cache' => [],
         'filter' => null,
         'criteria' => null,
@@ -51,12 +51,23 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
         }
 
         if (!empty($this->getOption('return_value'))) {
-            return array_map(function (array $item) {
+            $items = array_map(function (array $item) {
+                $item = $this->source->encode($item);
                 return $item[$this->getOption('return_value')];
             }, $items->getItems());
+
+            if ($this->getOption('return_mode') === 'merge') {
+                $items = array_unique(array_merge_recursive(...$items));
+            }
+
+            return $items;
         }
 
-        return $items;
+        if (count($this->getOption('return_values')) > 0) {
+            $items = ColumnReducer::reduce($items, ...$this->getOption('return_values'));
+        }
+
+        return $items->getItems();
     }
 
     public function executeWithOptions(array $options)

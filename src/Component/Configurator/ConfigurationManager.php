@@ -70,6 +70,12 @@ class ConfigurationManager
         /** @var SourceCollectionFactory $factory */
         $factory = $this->factory->getFactory('source');
         $this->sources = $factory->createFromConfiguration($this->fileManager, $configuration, $this->sources);
+
+        /** @var BluePrint $blueprint */
+        foreach ($this->config->getBlueprints()->getValues() as $blueprint) {
+            $factory->createFromBluePrint($blueprint, $this->sources);
+        }
+
         $this->config->addSources($this->sources);
     }
 
@@ -260,15 +266,25 @@ class ConfigurationManager
         }
 
         if ($parser instanceof ItemCollection && $configuration['type'] === 'list') {
-            $parser->add(
-                $this->config->getList($configuration['list'])
-            );
+
+            $list = $this->config->getList($configuration['list']);
+            // list tech
+            if (isset($configuration['create_item'])) {
+                foreach ($list as $listItem) {
+                    $items[] = array_map(function ($item) use ($listItem) {
+                        if ($item === '<list_item>') {
+                            return $listItem;
+                        }
+                    }, $configuration['create_item']);
+                }
+                $parser->add($items);
+            } else {
+                $parser->add(
+                    $this->config->getList($configuration['list'])
+                );
+            }
         }
-        if ($parser instanceof ItemCollection && $configuration['type'] === 'list') {
-            $parser->add(
-                $this->config->getList($configuration['list'])
-            );
-        }
+
         if ($parser instanceof ItemCollection && $configuration['type'] === 'feed') {
             $parser->add(
                 $this->config->getFeed($configuration['name'])->feed()

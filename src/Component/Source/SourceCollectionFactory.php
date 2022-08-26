@@ -3,10 +3,12 @@
 namespace Misery\Component\Source;
 
 use Assert\Assert;
+use Misery\Component\BluePrint\BluePrint;
 use Misery\Component\Common\Cursor\CachedCursor;
 use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Encoder\ItemEncoderFactory;
+use Misery\Component\Item\Processor\DecoderProcessor;
 use Misery\Component\Item\Processor\EncoderProcessor;
 use Misery\Component\Item\Processor\NullProcessor;
 use Misery\Component\Parser\CsvParser;
@@ -34,6 +36,27 @@ class SourceCollectionFactory implements RegisteredByNameInterface
         }
 
         return $sourceCollection;
+    }
+
+    /**
+     * This method will convert a regular source into a blueprint compatible source
+     */
+    public function createFromBluePrint(BluePrint $bluePrint, SourceCollection $sourceCollection = null)
+    {
+        foreach ($sourceCollection->getAliases() as $alias) {
+            // find a blueprint match
+            if (in_array($alias, $bluePrint->getFilenames())) {
+                $source = $sourceCollection->get($alias);
+                $sourceCollection->add(
+                    new Source(
+                        $source->getCursor(),
+                        new EncoderProcessor($bluePrint->getEncoder()),
+                        new DecoderProcessor($bluePrint->getDecoder()),
+                        $alias
+                    )
+                );
+            }
+        }
     }
 
     private function addSourceFileToCollection(SourceCollection $sourceCollection, string $file): void

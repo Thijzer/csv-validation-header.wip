@@ -13,22 +13,30 @@ class BluePrint implements RegisteredByNameInterface
     private $encoder;
     private $decoder;
     private $converter;
+    private $filenames;
 
     public function __construct(
         string $name,
         ItemEncoder $encoder,
         ItemDecoder $decoder,
-        ConverterInterface $converter = null
+        ConverterInterface $converter = null,
+        array $filenames = []
     ) {
         $this->encoder = $encoder;
         $this->decoder = $decoder;
         $this->name = $name;
         $this->converter = $converter;
+        $this->filenames = $filenames;
     }
 
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getFilenames(): array
+    {
+        return $this->filenames;
     }
 
     public function getEncoder(): ItemEncoder

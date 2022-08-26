@@ -2,9 +2,11 @@
 
 namespace Misery\Component\Source;
 
+use Misery\Component\BluePrint\BluePrint;
+
 class SourceCollection
 {
-    /** @var array */
+    /** @var array|Source[] */
     private $items = [];
     /** @var string */
     private $alias;

@@ -35,6 +35,20 @@ class ConfigurationFactory
 
     public function parseDirectivesFromConfiguration(array $configuration): Configuration
     {
+        // sort the keys
+        $order = [
+            'context',
+            'blueprint',
+            'sources',
+            'list',
+            'mapping',
+        ];
+        // remove unused keys
+        $order = array_filter($order, function ($orderItem) use ($configuration) {
+            return key_exists($orderItem, $configuration);
+        });
+        $configuration = array_merge(array_flip($order), $configuration);
+
         // level 0 directives only
         foreach ($configuration as $key => $valueConfiguration) {
             switch ($key) {

@@ -49,6 +49,11 @@ class Source
         return $this->processorOut->process($item);
     }
 
+    public function getCursor(): CursorInterface
+    {
+        return $this->cursor;
+    }
+
     public function getReader(): ItemReaderInterface
     {
         return new ItemReader(clone $this->cursor);

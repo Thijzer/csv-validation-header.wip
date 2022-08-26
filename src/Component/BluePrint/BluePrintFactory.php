@@ -43,8 +43,7 @@ class BluePrintFactory implements RegisteredByNameInterface
 
         if (is_file($file = $this->bluePrintPath.DIRECTORY_SEPARATOR.$name.'.yaml')) {
             // exception Config location not found
-            $configuration = Yaml::parseFile($file);
-            return $this->createBlueprint($name, $configuration, $configurationManager);
+            return $this->createBlueprint($name, Yaml::parseFile($file), $configurationManager);
         }
 
         return null;
@@ -66,7 +65,8 @@ class BluePrintFactory implements RegisteredByNameInterface
             $name,
             $configurationManager->createEncoder($configuration),
             $configurationManager->createDecoder($configuration),
-            $converter
+            $converter,
+            $configuration['filenames'] ?? []
         );
     }
 
