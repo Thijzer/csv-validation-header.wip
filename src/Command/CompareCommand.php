@@ -51,6 +51,8 @@ class CompareCommand extends Command
 
         $report = $compare->compare(...array_filter(explode(',', $reference)));
 
+        dump($report);
+
         if (isset($report['headers']['REMOVED'])) {
             $report['items'] = [];
         }

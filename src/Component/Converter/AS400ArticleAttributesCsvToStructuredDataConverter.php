@@ -102,6 +102,12 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
                 continue;
             }
 
+            if ($context['type'] === AkeneoHeaderTypes::NUMBER) {
+                $value = $this->numberize($item['VALUE_NL']);
+                $output['values'][$item['UID']][] = $this->valueCreator->create($item['UID'], $value);
+                continue;
+            }
+
             if ($context['type'] === AkeneoHeaderTypes::SELECT) {
                 $value = $this->findSelectCode($item['UID'], $item['VALUE_NL']);
                 if (null === $value) {
@@ -127,7 +133,10 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
                     //continue;
                 }
 
-                $output['values'][$item['UID']][] = $this->valueCreator->createUnit($item['UID'], $unit, $item['VALUE_NL']);
+                // only replace when we work with non string metrics
+                $value = $this->numberize($item['VALUE_NL']);
+
+                $output['values'][$item['UID']][] = $this->valueCreator->createUnit($item['UID'], $unit, $value);
                 continue;
             }
 
@@ -154,6 +163,12 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
         }
 
         return $output;
+    }
+
+    private function numberize(string $value)
+    {
+        $posNum = str_replace(',', '.', $value);
+        return is_numeric($posNum) ? $posNum: $value;
     }
 
     public function findSelectCode(string $code, string $value)
