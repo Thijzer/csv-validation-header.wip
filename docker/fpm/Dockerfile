@@ -1,5 +1,4 @@
 FROM debian:stable-slim
-USER root
 
 ENV DEBIAN_FRONTEND="noninteractive" \
     OS_ARCH="amd64" \
@@ -40,3 +39,5 @@ RUN apt-get update && \
     rm -rf  /var/lib/apt/lists/* /tmp/* /var/tmp/* \
             /usr/share/doc/* /usr/share/groff/* /usr/share/info/* /usr/share/linda/* \
             /usr/share/lintian/* /usr/share/locale/* /usr/share/man/*
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer

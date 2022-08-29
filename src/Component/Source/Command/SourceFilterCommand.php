@@ -20,7 +20,7 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
     private $options = [
         'return_value' => null,
         'return_values' => [],
-        'return_mode' => null,
+        'mode' => null,
         'cache' => [],
         'filter' => null,
         'criteria' => null,
@@ -56,7 +56,7 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
                 return $item[$this->getOption('return_value')];
             }, $items->getItems());
 
-            if ($this->getOption('return_mode') === 'merge') {
+            if ($this->getOption('mode') === 'merge_return_values') {
                 $items = array_unique(array_merge_recursive(...$items));
             }
 

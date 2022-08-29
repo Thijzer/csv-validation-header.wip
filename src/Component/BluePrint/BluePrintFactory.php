@@ -22,7 +22,7 @@ class BluePrintFactory implements RegisteredByNameInterface
 
         foreach ($configuration as $blueprintConf) {
             if (isset($blueprintConf['name'])) {
-                $blueprint = $this->createFromName($blueprintConf['name'], $configurationManager);
+                $blueprint = $this->createFromName($blueprintConf['name'], $configurationManager, $blueprintConf);
                 if (null === $blueprint) {
                     $blueprint = $this->createBlueprint($blueprintConf['name'], $blueprintConf, $configurationManager);
                 }
@@ -33,7 +33,7 @@ class BluePrintFactory implements RegisteredByNameInterface
         return $collection;
     }
 
-    public function createFromName(string $name, ConfigurationManager $configurationManager): ?BluePrint
+    public function createFromName(string $name, ConfigurationManager $configurationManager, array $configuration = []): ?BluePrint
     {
         // we check the configuration manager if we have this blueprint.
         $blueprint = $configurationManager->getConfig()->getBlueprint($name);
@@ -43,7 +43,7 @@ class BluePrintFactory implements RegisteredByNameInterface
 
         if (is_file($file = $this->bluePrintPath.DIRECTORY_SEPARATOR.$name.'.yaml')) {
             // exception Config location not found
-            return $this->createBlueprint($name, Yaml::parseFile($file), $configurationManager);
+            return $this->createBlueprint($name, array_merge(Yaml::parseFile($file), $configuration), $configurationManager);
         }
 
         return null;
