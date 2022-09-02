@@ -4,6 +4,8 @@ namespace Misery\Component\Common\Pipeline;
 
 use Misery\Component\Common\Pipeline\Exception\InvalidItemException;
 use Misery\Component\Common\Pipeline\Exception\SkipPipeLineException;
+use Misery\Component\Debugger\ItemDebugger;
+use Misery\Component\Debugger\NullItemDebugger;
 
 class Pipeline
 {
@@ -15,10 +17,13 @@ class Pipeline
     private $lines = [];
     /** @var PipeWriterInterface[] */
     private $out = [];
+    /** @var NullItemDebugger */
+    private $debugger;
 
     public function input(PipeReaderInterface $reader): self
     {
         $this->in = $reader;
+        $this->debugger = new NullItemDebugger();
 
         return $this;
     }
@@ -44,12 +49,22 @@ class Pipeline
         return $this;
     }
 
-    public function run(int $amount = -1)
+    public function runInDebugMode(int $amount = -1, int $lineNumber = -1)
+    {
+        $this->debugger = new ItemDebugger();
+        $this->run($amount, $lineNumber);
+    }
+
+    public function run(int $amount = -1, int $lineNumber = -1)
     {
         $i = 0;
         // looping
         while ($i !== $amount && $item = $this->in->read()) {
             $i++;
+            if ($i !== $lineNumber && $lineNumber !== -1) {
+                continue;
+            }
+            $this->debugger->log($item, 'original item');
             try {
                 foreach ($this->lines as $line) {
                     $item = $line->pipe($item);
@@ -66,6 +81,9 @@ class Pipeline
                     'item' => json_encode($exception->getInvalidItem()),
                 ]);
                 continue;
+            }
+            if ($i === $lineNumber) {
+                break;
             }
         }
         // stopping

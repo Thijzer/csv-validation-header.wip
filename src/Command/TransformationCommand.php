@@ -30,6 +30,7 @@ class TransformationCommand extends Command
             ->option('-d --debug', 'enable debugging', 'boolval', false)
             ->option('-m --showMappings', 'show lists or mappings', 'boolval', false)
             ->option('-t --try', 'tryout a set for larger files')
+            ->option('-l --line', 'target a line nr')
 
             ->usage(
                 '<bold>  transformation</end> <comment>--file /path/to/transformation_file --source /path/to/sources/dir</end> ## detailed<eol/>'.
@@ -38,7 +39,7 @@ class TransformationCommand extends Command
         ;
     }
 
-    public function execute(string $file, string $source, bool $debug, int $try = null, bool $showMappings = null)
+    public function execute(string $file, string $source, bool $debug, int $line = null,  int $try = null, bool $showMappings = null)
     {
         $io = $this->app()->io();
 
@@ -61,6 +62,7 @@ class TransformationCommand extends Command
                     'workpath' => $source,
                     'debug' => $debug,
                     'try' => $try,
+                    'line' => $line,
                     'show_mappings' => $showMappings,
                 ]
             ])

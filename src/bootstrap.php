@@ -77,6 +77,7 @@ $actionRegistry
     ->register(Misery\Component\Action\SkipAction::NAME, new Misery\Component\Action\SkipAction())
     ->register(Misery\Component\Action\FormatAction::NAME, new Misery\Component\Action\FormatAction())
     ->register(Misery\Component\Action\GenerateIdAction::NAME, new Misery\Component\Action\GenerateIdAction())
+    ->register(Misery\Component\Action\FilterAction::NAME, new Misery\Component\Action\FilterAction())
 ;
 
 #$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');

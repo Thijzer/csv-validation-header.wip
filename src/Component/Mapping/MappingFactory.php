@@ -48,6 +48,10 @@ class MappingFactory implements RegisteredByNameInterface
                     }, $mappingList['sets']));
                 }
 
+                if ($mapping === null) {
+                    throw new \Exception('Unknown mapping ' . $mappingList['name']);
+                }
+
                 $configurationManager->getConfig()->addMapping($mappingList['name'], $mapping);
             }
         }

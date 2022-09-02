@@ -19,8 +19,13 @@ class ProcessManager
     public function startProcess()
     {
         $debug = $this->configuration->getContext('debug');
+        $line = $this->configuration->getContext('line') ?? -1;
         $amount = $this->configuration->getContext('try');
         $mappings = $this->configuration->getContext('show_mappings');
+        if ($line !== -1) {
+            $debug = true;
+            $amount = -1;
+        }
 
         if ($pipeline = $this->configuration->getPipeline()) {
             if ($debug === true) {
@@ -29,7 +34,7 @@ class ProcessManager
                 }
                 $pipeline
                     ->line(New LoggingPipe())
-                    ->run($amount ?? 1);
+                    ->runInDebugMode($amount ?? 1, $line);
                 exit;
             }
 

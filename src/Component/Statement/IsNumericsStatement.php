@@ -13,12 +13,12 @@ class IsNumericsStatement implements PredeterminedStatementInterface
         if (is_array($item[$field->getField()])) {
             return count(array_filter($item[$field->getField()], function ($itemValue) use ($field) {
                 return $this->whenField($field, [$field->getField() => $itemValue]);
-            })) === count($item[$field->getField()]);
+            })) === count(array_filter($item[$field->getField()]));
         }
 
         return
             isset($item[$field->getField()]) &&
-            is_numeric(str_replace(',', '.', $item[$field->getField()]))
+            is_numeric(str_replace([',', '.'], '', $item[$field->getField()]))
         ;
     }
 }

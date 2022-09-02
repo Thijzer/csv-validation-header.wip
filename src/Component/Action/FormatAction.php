@@ -28,41 +28,53 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
 
     public function apply(array $item): array
     {
-        $functions = $this->getOption('functions');
         $field = $this->getOption('field');
 
         // type validation
         if (!isset($item[$field])) {
             return $item;
         }
+        if (is_array($item[$field])) {
+            $item[$field] = array_map(function ($value) {
+                return $this->doApply($value);
+            }, $item[$field]);
+            return $item;
+        }
 
-        foreach ($functions as $function) {
+        $item[$field] = $this->doApply($item[$field]);
+
+        return $item;
+    }
+
+    public function doApply($value)
+    {
+        foreach ($this->getOption('functions') as $function) {
             switch ($function) {
                 case 'replace':
-                    $item[$field] = str_replace($this->getOption('search'), $this->getOption('replace'), $item[$field]);
+                    $value = str_replace($this->getOption('search'), $this->getOption('replace'), $value);
                     break;
                 case 'number':
-                    $item[$field] = number_format(
-                        $item[$field],
+                    $value = number_format(
+                        $value,
                         $this->getOption('decimals'),
                         $this->getOption('decimal_sep'),
                         $this->getOption('mille_sep')
                     );
                     break;
                 case 'explode':
-                    $item[$field] = explode($this->getOption('separator'), $item[$field]);
+                    $value = explode($this->getOption('separator'), $value);
                     break;
                 case 'select_index':
-                    $item[$field] = $item[$field][$this->getOption('index')];
+                    $value = $value[$this->getOption('index')];
                     break;
                 case 'sprintf':
-                    $item[$field] = sprintf($this->getOption('format'), $item[$field]);
+                    $value = sprintf($this->getOption('format'), $value);
                     break;
                 default:
                     break;
             }
         }
 
-        return $item;
+        return $value;
     }
 }
