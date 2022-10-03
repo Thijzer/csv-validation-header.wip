@@ -38,10 +38,12 @@ class ConfigurationFactory
         // sort the keys
         $order = [
             'context',
-            'blueprint',
             'sources',
             'list',
             'mapping',
+            'blueprint',
+
+
         ];
         // remove unused keys
         $order = array_filter($order, function ($orderItem) use ($configuration) {

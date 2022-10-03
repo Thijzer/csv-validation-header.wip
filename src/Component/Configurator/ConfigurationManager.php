@@ -270,6 +270,7 @@ class ConfigurationManager
             $list = $this->config->getList($configuration['list']);
             // list tech
             if (isset($configuration['create_item'])) {
+                $items = [];
                 foreach ($list as $listItem) {
                     $items[] = array_map(function ($item) use ($listItem) {
                         if ($item === '<list_item>') {

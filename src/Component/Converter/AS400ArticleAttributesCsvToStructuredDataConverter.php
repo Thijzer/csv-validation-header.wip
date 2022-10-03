@@ -134,7 +134,12 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
                 }
 
                 // only replace when we work with non string metrics
-                $value = $this->numberize($item['VALUE_NL']);
+                // AS400 metric do NOT SUPPORT numerics with . separator
+                if ($context['type'] === AkeneoHeaderTypes::METRIC) {
+                    $value = $this->numberize($item['VALUE_NL']);
+                } else {
+                    $value = $item['VALUE_NL'];
+                }
 
                 $output['values'][$item['UID']][] = $this->valueCreator->createUnit($item['UID'], $unit, $value);
                 continue;

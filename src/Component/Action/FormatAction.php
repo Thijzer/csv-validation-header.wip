@@ -6,7 +6,6 @@ use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Reader\ItemReaderAwareInterface;
 use Misery\Component\Reader\ItemReaderAwareTrait;
-use Misery\Component\Source\SourceFilter;
 
 class FormatAction implements OptionsInterface, ItemReaderAwareInterface
 {
@@ -30,6 +29,16 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
     {
         $field = $this->getOption('field');
 
+        if (is_array($field)) {
+            foreach ($field as $fieldValue) {
+                $this->setOption('field', $fieldValue);
+                $item = $this->apply($item);
+            }
+            $this->setOption('field', $field);
+
+            return $item;
+        }
+
         // type validation
         if (!isset($item[$field])) {
             return $item;
@@ -46,7 +55,7 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
         return $item;
     }
 
-    public function doApply($value)
+    private function doApply($value)
     {
         foreach ($this->getOption('functions') as $function) {
             switch ($function) {
@@ -69,6 +78,9 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
                     break;
                 case 'sprintf':
                     $value = sprintf($this->getOption('format'), $value);
+                    break;
+                case 'prefix':
+                    $value = $this->getOption('prefix'). ltrim($value, $this->getOption('prefix'));
                     break;
                 default:
                     break;
