@@ -14,6 +14,7 @@ class FilterAction implements OptionsInterface
     /** @var array */
     private $options = [
         'match' => null,
+        'equals' => null,
         'key' => null,
         'case-sensitive' => false,
     ];
@@ -25,21 +26,43 @@ class FilterAction implements OptionsInterface
         }
         $listItem = $item[$this->options['key']];
 
-        if (is_array($listItem)) {
-            $item[$this->options['key']] = array_filter($listItem,function ($itemValue) {
-                return $this->hasMatch($itemValue) !== true;
-            });
+        if ($this->getOption('match')) {
+            if (is_array($listItem)) {
+                $item[$this->options['key']] = array_filter($listItem,function ($itemValue) {
+                    return $this->hasMatch($itemValue) !== true;
+                });
+            }
+
+            if (is_string($listItem) && $this->hasMatch($listItem)) {
+                $item[$this->options['key']] = null;
+                return $item;
+            }
         }
 
-        if (is_string($listItem) && $this->hasMatch($listItem)) {
-            $item[$this->options['key']] = null;
-            return $item;
+        if ($this->getOption('equals')) {
+            if (is_array($listItem)) {
+                $item[$this->options['key']] = array_filter($listItem,function ($itemValue) {
+                    return $this->equals($itemValue) !== true;
+                });
+            }
+
+            if (is_string($listItem) && $this->equals($listItem)) {
+                $item[$this->options['key']] = null;
+                return $item;
+            }
         }
 
         return $item;
     }
 
-    private function hasMatch($listItem)
+    private function equals(string $listItem): bool
+    {
+        return $this->options['case-sensitive'] ?
+            $listItem === $this->options['equals'] :
+            strtolower($listItem) === strtolower($this->options['equals']);
+    }
+
+    private function hasMatch($listItem): bool
     {
         return $this->options['case-sensitive'] ?
             strpos($listItem, $this->options['match']) === false :

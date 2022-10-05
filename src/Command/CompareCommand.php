@@ -60,5 +60,8 @@ class CompareCommand extends Command
         foreach (array_slice($report['items'][ItemCompare::CHANGED], -50) as $item) {
             dump($item);
         }
+
+        // Changed References
+        dump(array_column($report['items'][ItemCompare::CHANGED], $reference));
     }
 }
