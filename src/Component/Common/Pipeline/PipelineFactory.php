@@ -69,7 +69,7 @@ class PipelineFactory implements RegisteredByNameInterface
 
     private function createInvalid(ConfigurationManager $configurationManager, array $configuration): ItemWriterInterface
     {
-        $configuration['output']['writer']['filename'] = 'processed/invalid_items.csv';
+        $configuration['output']['writer']['filename'] = 'invalid_items.csv';
         $configuration['output']['writer']['type'] = 'csv';
         $configuration['output']['writer']['format']['mode'] = 'append';
 

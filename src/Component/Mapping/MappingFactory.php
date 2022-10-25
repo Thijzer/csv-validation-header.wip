@@ -2,6 +2,7 @@
 
 namespace Misery\Component\Mapping;
 
+use Misery\Component\Common\FileManager\InMemoryFileManager;
 use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\ConfigurationManager;
@@ -9,13 +10,13 @@ use Symfony\Component\Yaml\Yaml;
 
 class MappingFactory implements RegisteredByNameInterface
 {
-    public function createFromConfiguration(array $configuration, string $workingDirectory, ConfigurationManager $configurationManager)
+    public function createFromConfiguration(array $configuration, InMemoryFileManager $fm, ConfigurationManager $configurationManager)
     {
         foreach ($configuration as $mappingList) {
             if (isset($mappingList['name'])) {
                 $mapping = $configurationManager->getConfig()->getMapping($mappingList['name']);
                 if (null === $mapping && isset($mappingList['source'])) {
-                    $mapping = $this->create($workingDirectory . DIRECTORY_SEPARATOR . $mappingList['source']);
+                    $mapping = $this->create($fm->getFile($mappingList['source']));
                     if (isset($mappingList['options'])) {
                         if (in_array('flatten', $mappingList['options'])) {
                             $mapping = ArrayFunctions::flatten($mapping);

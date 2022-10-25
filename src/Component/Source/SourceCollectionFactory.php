@@ -27,12 +27,12 @@ class SourceCollectionFactory implements RegisteredByNameInterface
         return $sourceCollection;
     }
 
-    public function createFromConfiguration(LocalFileManager $manager, array $configuration, SourceCollection $sourceCollection = null): SourceCollection
+    public function createFromConfiguration(array $configuration, SourceCollection $sourceCollection = null): SourceCollection
     {
         $sourceCollection = $sourceCollection ?: new SourceCollection('manager');
 
         foreach ($configuration as $sourcePath) {
-            $this->addSourceFileToCollection($sourceCollection, $manager->getAbsolutePath($sourcePath));
+            $this->addSourceFileToCollection($sourceCollection, $sourcePath);
         }
 
         return $sourceCollection;

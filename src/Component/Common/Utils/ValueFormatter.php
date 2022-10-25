@@ -22,4 +22,13 @@ class ValueFormatter
 
         return str_replace($tmp, array_values($values), $format);
     }
+
+    public static function formatMulti(array $formats, array $values): array
+    {
+        foreach ($formats as &$format) {
+            $format = static::format($format, $values);
+        }
+
+        return $formats;
+    }
 }

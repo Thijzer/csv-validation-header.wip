@@ -31,6 +31,11 @@ class LocalFileManager implements FileManagerInterface
         return $this->workingDirectory;
     }
 
+    public function getFile(string $filename): string
+    {
+        return $this->getAbsolutePath($filename);
+    }
+
     public function provisionPath(string $filename): string
     {
         return $this->getAbsolutePath($filename);

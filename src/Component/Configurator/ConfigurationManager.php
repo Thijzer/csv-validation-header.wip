@@ -12,7 +12,9 @@ use Misery\Component\BluePrint\BluePrintFactory;
 use Misery\Component\Common\Client\ApiClientFactory;
 use Misery\Component\Common\Cursor\CursorFactory;
 use Misery\Component\Common\Cursor\CursorInterface;
+use Misery\Component\Common\FileManager\FileManagerInterface;
 use Misery\Component\Common\FileManager\LocalFileManager;
+use Misery\Component\Common\FileManager\InMemoryFileManager;
 use Misery\Component\Common\Pipeline\PipelineFactory;
 use Misery\Component\Converter\ConverterFactory;
 use Misery\Component\Converter\ConverterInterface;
@@ -41,20 +43,26 @@ use Symfony\Component\Yaml\Yaml;
 class ConfigurationManager
 {
     private $sources;
-    private $fileManager;
+    private $sourceFiles;
     private $config;
     private $factory;
+    private $workFiles;
+    /** @var FileManagerInterface|InMemoryFileManager  */
+    private $inMemoryFileManager;
 
     public function __construct(
-        Configuration $config,
+        Configuration        $config,
         ConfigurationFactory $factory,
-        SourceCollection $sources,
-        LocalFileManager $fileManager
+        SourceCollection     $sources,
+        LocalFileManager     $sourceFiles,
+        LocalFileManager     $workFiles
     ) {
         $this->sources = $sources;
-        $this->fileManager = $fileManager;
+        $this->sourceFiles = $sourceFiles;
         $this->config = $config;
         $this->factory = $factory;
+        $this->workFiles = $workFiles;
+        $this->inMemoryFileManager = InMemoryFileManager::createFromFileManager($this->sourceFiles);
     }
 
     /**
@@ -69,12 +77,14 @@ class ConfigurationManager
     {
         /** @var SourceCollectionFactory $factory */
         $factory = $this->factory->getFactory('source');
-        $this->sources = $factory->createFromConfiguration($this->fileManager, $configuration, $this->sources);
+        $this->sources = $factory->createFromConfiguration($configuration, $this->sources);
 
         /** @var BluePrint $blueprint */
         foreach ($this->config->getBlueprints()->getValues() as $blueprint) {
             $factory->createFromBluePrint($blueprint, $this->sources);
         }
+
+        $this->inMemoryFileManager->addFiles($configuration);
 
         $this->config->addSources($this->sources);
     }
@@ -230,7 +240,7 @@ class ConfigurationManager
     {
         /** @var MappingFactory $factory */
         $factory = $this->factory->getFactory('mapping');
-        $factory->createFromConfiguration($configuration, $this->fileManager->getWorkingDirectory(), $this);
+        $factory->createFromConfiguration($configuration, $this->inMemoryFileManager, $this);
     }
 
     public function createHTTPWriter(array $configuration): ItemWriterInterface
@@ -248,7 +258,7 @@ class ConfigurationManager
     {
         /** @var ItemWriterFactory $factory */
         $factory = $this->factory->getFactory('writer');
-        $writer = $factory->createFromConfiguration($configuration, $this->fileManager->getWorkingDirectory());
+        $writer = $factory->createFromConfiguration($configuration, $this->workFiles->getWorkingDirectory());
 
         $this->config->setWriter($writer);
 
@@ -259,7 +269,7 @@ class ConfigurationManager
     {
         /** @var ItemParserFactory $factory */
         $factory = $this->factory->getFactory('parser');
-        $parser = $factory->createFromConfiguration($configuration, $this->fileManager);
+        $parser = $factory->createFromConfiguration($configuration, $this->inMemoryFileManager);
 
         if (isset($configuration['cursor'])) {
             $parser = $this->createConnectedCursor($configuration['cursor'], $parser);

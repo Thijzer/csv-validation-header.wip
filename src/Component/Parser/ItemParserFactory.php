@@ -9,6 +9,7 @@ use Misery\Component\Common\Cursor\CachedCursor;
 use Misery\Component\Common\Cursor\CachedZoneFetcher;
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Cursor\FunctionalCursor;
+use Misery\Component\Common\FileManager\InMemoryFileManager;
 use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Filter\ColumnReducer;
@@ -19,7 +20,7 @@ class ItemParserFactory implements RegisteredByNameInterface
 {
     public function createFromConfiguration(
         array $configuration,
-        LocalFileManager $manager
+        InMemoryFileManager $manager
     ) : CursorInterface {
         $type = strtolower($configuration['type']);
         Assert::that(
@@ -53,13 +54,13 @@ class ItemParserFactory implements RegisteredByNameInterface
 
         if ($type === 'xml') {
             return XmlParser::create(
-                $manager->getWorkingDirectory(). DIRECTORY_SEPARATOR . $configuration['filename'],
+                $manager->getFile($configuration['filename']),
                 $configuration['container'] ?? null
             );
         }
         if ($type === 'csv') {
             return CsvParser::create(
-                $manager->getWorkingDirectory(). DIRECTORY_SEPARATOR . $configuration['filename'],
+                $manager->getFile($configuration['filename']),
                 $configuration['delimiter'] ?? CsvParser::DELIMITER,
                 $configuration['enclosure'] ?? CsvParser::ENCLOSURE,
                 $configuration['escape'] ?? CsvParser::ESCAPE,
@@ -68,7 +69,7 @@ class ItemParserFactory implements RegisteredByNameInterface
         }
         if ($type === 'xlsx') {
             return XlsxParser::create(
-                $manager->getWorkingDirectory(). DIRECTORY_SEPARATOR . $configuration['filename']
+                $manager->getFile($configuration['filename']),
             );
         }
         if (in_array($type, ['list', 'feed'])) {

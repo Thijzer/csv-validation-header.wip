@@ -3,7 +3,6 @@
 namespace Misery\Component\Process;
 
 use Misery\Component\Common\Pipeline\LoggingPipe;
-use Misery\Component\Common\Pipeline\Pipeline;
 use Misery\Component\Configurator\Configuration;
 
 class ProcessManager
@@ -15,9 +14,15 @@ class ProcessManager
     {
         $this->configuration = $configuration;
     }
+    private function log(string $message)
+    {
+        echo $message . PHP_EOL;
+    }
 
     public function startProcess()
     {
+        $this->log(sprintf("Running Step %s ", $this->configuration->getContext('transformation_file')));
+
         $debug = $this->configuration->getContext('debug');
         $line = $this->configuration->getContext('line') ?? -1;
         $amount = $this->configuration->getContext('try');

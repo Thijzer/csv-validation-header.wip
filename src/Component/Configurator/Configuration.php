@@ -37,6 +37,7 @@ class Configuration
     private $shellCommands;
     /** @var ApiClient[] */
     private $accounts;
+    private $isMultiStep = false;
 
     public function __construct()
     {
@@ -45,6 +46,16 @@ class Configuration
         $this->encoders = new ArrayCollection();
         $this->decoders = new ArrayCollection();
         $this->blueprints = new ArrayCollection();
+    }
+
+    public function isMultiStep(): bool
+    {
+        return $this->isMultiStep;
+    }
+
+    public function setAsMultiStep(): void
+    {
+        $this->isMultiStep = true;
     }
 
     public function addContext(array $context)

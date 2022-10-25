@@ -10,7 +10,7 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * @usage
- * bin/console transformation --file /path/to/transformation_file --sources /path/to/sources/dir
+ * bin/console transformation --file /path/to/transformation_file --sources /path/to/sources/dir --workpath /path/to/work-dir
  */
 class TransformationCommand extends Command
 {
@@ -19,6 +19,7 @@ class TransformationCommand extends Command
     private $debug;
     private $showMappings;
     private $try;
+    private $workpath;
 
     public function __construct()
     {
@@ -31,6 +32,7 @@ class TransformationCommand extends Command
             ->option('-m --showMappings', 'show lists or mappings', 'boolval', false)
             ->option('-t --try', 'tryout a set for larger files')
             ->option('-l --line', 'target a line nr')
+            ->option('-w --workpath', 'target work path')
 
             ->usage(
                 '<bold>  transformation</end> <comment>--file /path/to/transformation_file --source /path/to/sources/dir</end> ## detailed<eol/>'.
@@ -39,27 +41,29 @@ class TransformationCommand extends Command
         ;
     }
 
-    public function execute(string $file, string $source, bool $debug, int $line = null,  int $try = null, bool $showMappings = null)
+    public function execute(string $file, string $source, string $workpath, bool $debug, int $line = null, int $try = null, bool $showMappings = null)
     {
         $io = $this->app()->io();
 
         Assertion::file($file);
         Assertion::directory($source);
+        Assertion::directory($workpath);
 
         require_once __DIR__.'/../../src/bootstrap.php';
 
-        $fm = new LocalFileManager($source);
-
         $configurationFactory = initConfigurationFactory();
-        $configurationFactory->init($fm);
+        $configurationFactory->init(
+            new LocalFileManager($source),
+            new LocalFileManager($workpath)
+        );
 
         $configuration = $configurationFactory->parseDirectivesFromConfiguration(
             array_merge(Yaml::parseFile($file), [
                 'context' => [
                     'transformation_file' => $file,
                     'sources' => $source,
-                    'scripts' => '/app/scripts',
-                    'workpath' => $source,
+                    'scripts' => __DIR__.'/../../scripts',
+                    'workpath' => $workpath,
                     'debug' => $debug,
                     'try' => $try,
                     'line' => $line,
@@ -68,12 +72,14 @@ class TransformationCommand extends Command
             ])
         );
 
-        (new ProcessManager($configuration))->startProcess();
+        if (false === $configuration->isMultiStep()) {
+            (new ProcessManager($configuration))->startProcess();
 
-        // TODO connect the outputs here
-        if ($shellCommands = $configuration->getShellCommands()) {
-            $shellCommands->exec();
-            $configuration->clearShellCommands();
+            // TODO connect the outputs here
+            if ($shellCommands = $configuration->getShellCommands()) {
+                $shellCommands->exec();
+                $configuration->clearShellCommands();
+            }
         }
     }
 }

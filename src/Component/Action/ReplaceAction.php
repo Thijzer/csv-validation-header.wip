@@ -95,7 +95,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
     {
         // this is a tmp performance improvement
         // todo create a in de Source Collection named filters per source,
-        // example de filter name attribute_option/attribute:brand is a subset collection of attribute_option where attribute = brand
+        // app-example de filter name attribute_option/attribute:brand is a subset collection of attribute_option where attribute = brand
         // this will effect the find performance method that no longer needs to loop the whole attribute_option file.
         // these named filters should be stored automatically as collections per Source.
         if (null === $this->prepReader) {
