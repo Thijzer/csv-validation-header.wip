@@ -76,7 +76,9 @@ class CsvWriter implements ItemWriterInterface
 
     public function close(): void
     {
-        @fclose($this->handle);
+        if(is_resource($this->handle)) {
+            @fclose($this->handle);
+        }
     }
 
     public function clear(): void

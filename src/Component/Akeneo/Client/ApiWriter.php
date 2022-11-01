@@ -7,6 +7,7 @@ use Misery\Component\Common\Client\ApiEndpointInterface;
 use Misery\Component\Common\Client\ApiResponse;
 use Misery\Component\Common\Client\Exception\UnauthorizedException;
 use Misery\Component\Common\Pipeline\Exception\InvalidItemException;
+use Misery\Component\Common\Processor\BatchSizeProcessor;
 use Misery\Component\Writer\ItemWriterInterface;
 
 class ApiWriter implements ItemWriterInterface
@@ -16,6 +17,8 @@ class ApiWriter implements ItemWriterInterface
     private $endpoint;
     /** @var string */
     private $method;
+    /** @var BatchSizeProcessor */
+    private $batch;
 
     // TODO: add support for batching
     private $pack = [];
@@ -25,6 +28,7 @@ class ApiWriter implements ItemWriterInterface
         $this->client = $client;
         $this->endpoint = $endpoint;
         $this->method = $method;
+        $this->batch = new BatchSizeProcessor(10);
     }
 
     public function write(array $data): void
@@ -39,6 +43,8 @@ class ApiWriter implements ItemWriterInterface
                 return;
             }
             if (count($this->pack) === 100) {
+                $this->batch->next();
+                echo $this->batch->hasNewBatchPart() ? $this->batch->getBatchPart().'k':'.';
                 $data = $this->pack;
                 $this->pack = [];
             }

@@ -6,10 +6,10 @@ class BatchSizeProcessor
 {
     private $batchSize;
     private $itemCount;
-    private $batchPart = 0;
+    private $batchPart = 1;
     private $index = 1;
 
-    public function __construct(int $batchSize, int $itemCount)
+    public function __construct(int $batchSize, int $itemCount = -1)
     {
         $this->itemCount = $itemCount;
         $this->batchSize = $batchSize;
@@ -37,7 +37,7 @@ class BatchSizeProcessor
 
     private function shouldBatchSize(): bool
     {
-        return $this->itemCount > $this->getBatchSize();
+        return $this->itemCount === -1 || $this->itemCount > $this->getBatchSize();
     }
 
     public function next()

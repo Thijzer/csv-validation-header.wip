@@ -3,6 +3,7 @@
 namespace Misery\Component\Source;
 
 use Misery\Component\BluePrint\BluePrint;
+use function PHPUnit\Framework\throwException;
 
 class SourceCollection
 {
@@ -21,9 +22,9 @@ class SourceCollection
         $this->items[$source->getAlias()] = $source;
     }
 
-    public function get($alias): ? Source
+    public function get($alias): Source
     {
-        return $this->items[$alias] ?? null;
+        return $this->items[$alias] ?? throw new \Exception(sprintf('Source with alias %s not Found', $alias));
     }
 
     public function getAliases(): array

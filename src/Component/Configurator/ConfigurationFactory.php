@@ -24,7 +24,7 @@ class ConfigurationFactory
         return $this->factoryRegistry->filterByAlias($alias);
     }
 
-    public function init(LocalFileManager $source, LocalFileManager $workpath)
+    public function init(LocalFileManager $source, LocalFileManager $workpath, LocalFileManager $additionalSources = null)
     {
         $this->config = new Configuration();
         $this->manager = new ConfigurationManager(
@@ -32,7 +32,8 @@ class ConfigurationFactory
             $this,
             $this->getFactory('source')->createFromFileManager($source),
             $source,
-            $workpath
+            $workpath,
+            $additionalSources
         );
     }
 

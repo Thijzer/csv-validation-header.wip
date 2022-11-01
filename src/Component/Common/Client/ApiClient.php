@@ -192,8 +192,16 @@ class ApiClient
         if (!$content) {
             throw new \RuntimeException(curl_error($this->handle), curl_errno($this->handle));
         }
+        $multi = array_filter($multi);
 
-        return count($multi) > 1 ? ApiResponse::createFromMulti($multi): ApiResponse::create($multi[0], $status);
+        if (count($multi) > 1) {
+            return ApiResponse::createFromMulti($multi);
+        }
+        if (count($multi) === 1) {
+            return ApiResponse::create($multi[0], $status);
+        }
+
+        return ApiResponse::create([], $status);
     }
 
     private function setAuthenticationHeaders(): void

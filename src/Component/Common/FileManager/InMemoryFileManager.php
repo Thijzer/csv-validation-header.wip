@@ -16,6 +16,11 @@ class InMemoryFileManager
         return $fm;
     }
 
+    public function addFromFileManager(FileManagerInterface $sourceCollection): void
+    {
+        $this->addFiles($sourceCollection->listFiles());
+    }
+
     public function getFile(string $filename): string
     {
         foreach ($this->files as $file => $file_name) {
@@ -31,9 +36,8 @@ class InMemoryFileManager
         Assert::that($files)->isTraversable();
 
         foreach ($files as $file) {
-            $pathInfo = pathInfo($file);
             Assert::that($file)->file();
-            $this->files[$file] = $pathInfo['basename'];
+            $this->files[$file] = pathInfo($file, PATHINFO_BASENAME);
         }
     }
 }
