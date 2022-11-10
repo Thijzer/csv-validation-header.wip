@@ -29,6 +29,7 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
         'source_reference' => 'code',
         'key' => null,
         'list' => null,
+        'set' => [],
         'format' => '[%s]',
         'content' => 'label',
         'locale' => null,
@@ -37,6 +38,10 @@ class ReplaceAction implements OptionsInterface, ItemReaderAwareInterface
 
     public function apply(array $item): array
     {
+        if ($set = $this->getOption('set')) {
+            return array_replace_recursive($item, $set);
+        }
+
         if (array_key_exists($this->options['key'], $item)) {
             $label = $this->options['content'];
 

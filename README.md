@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/Thijzer/csv-validation-header.wip.svg?branch=master)](https://travis-ci.org/Thijzer/csv-validation-header.wip)
-
 # Item processor
 
 ## require this into your project 
@@ -20,6 +18,11 @@ This branch is using docker for development.
 bin/composer install -o 
 
 bin/composer unit-test
+```
+
+### example commands
+```
+bin/docker/console transformation --file examples/imes-events-2/transformations_v2_nov/main-insights.yaml --source examples/imes-events-2/sources_v4_nov --workpath examples/imes-events-2/processed_v2
 ```
 
 ```yaml

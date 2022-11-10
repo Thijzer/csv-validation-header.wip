@@ -15,7 +15,8 @@ use Symfony\Component\Yaml\Yaml;
 class TransformationCommand extends Command
 {
     private $file;
-    private $sources;
+    private $source;
+    private $addSource;
     private $debug;
     private $showMappings;
     private $try;
@@ -28,6 +29,7 @@ class TransformationCommand extends Command
         $this
             ->option('-f --file', 'The transformation file location')
             ->option('-s --source', 'The sources location')
+            ->option('-s --addSource', 'Add additional sources location', null)
             ->option('-d --debug', 'enable debugging', 'boolval', false)
             ->option('-m --showMappings', 'show lists or mappings', 'boolval', false)
             ->option('-t --try', 'tryout a set for larger files')
@@ -41,11 +43,16 @@ class TransformationCommand extends Command
         ;
     }
 
-    public function execute(string $file, string $source, string $workpath, bool $debug, int $line = null, int $try = null, bool $showMappings = null)
+    public function execute(string $file, string $source, string $workpath, bool $debug, string $addSource = null, int $line = null, int $try = null, bool $showMappings = null)
     {
         $io = $this->app()->io();
 
         Assertion::file($file);
+
+        if (null !== $addSource) {
+            Assertion::directory($addSource);
+        }
+
         Assertion::directory($source);
         Assertion::directory($workpath);
 
@@ -54,7 +61,8 @@ class TransformationCommand extends Command
         $configurationFactory = initConfigurationFactory();
         $configurationFactory->init(
             new LocalFileManager($source),
-            new LocalFileManager($workpath)
+            new LocalFileManager($workpath),
+            $addSource ? new LocalFileManager($addSource): null
         );
 
         $configuration = $configurationFactory->parseDirectivesFromConfiguration(
