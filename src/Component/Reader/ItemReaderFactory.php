@@ -7,6 +7,8 @@ use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Cursor\SubFunctionalCollectionCursor;
 use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
+use Misery\Component\Configurator\Configuration;
+use Misery\Component\Configurator\ConfigurationManager;
 use Misery\Component\Filter\ItemSortFilter;
 use Misery\Component\Filter\ItemTreeSortFilter;
 
@@ -17,7 +19,7 @@ class ItemReaderFactory implements RegisteredByNameInterface
     /**
      * @return ItemReader|ReaderInterface
      */
-    public function createFromConfiguration(CursorInterface $cursor, array $configuration)
+    public function createFromConfiguration(CursorInterface $cursor, array $configuration, Configuration $configurationObject)
     {
         if (isset($configuration['x_filter']['type']) && $configuration['x_filter']['type'] === 'collect_unique_attribute_ids') {
             return new ItemReader(new SubFunctionalCollectionCursor($cursor, function ($item) {
@@ -46,6 +48,10 @@ class ItemReaderFactory implements RegisteredByNameInterface
         }
 
         if (isset($configuration['x_filter']['type']) && $configuration['x_filter']['type'] === 'funnel') {
+            if (isset($configuration['x_filter']['list'])) {
+                $configuration['x_filter']['list'] = $configurationObject->getList($configuration['x_filter']['list']);
+            }
+
             $config = $configuration['x_filter'];
             return new ItemReader(new CondensedCursor($cursor, $config));
         }

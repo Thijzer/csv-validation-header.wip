@@ -93,6 +93,9 @@ class CondensedCursor implements CursorInterface
 
         // reset
         $this->collection = [];
+        if (isset($this->context['spread'])) {
+            return ItemsFactoryIntoItem::spreadFromConfig($collection, $this->context);
+        }
 
         if (isset($this->context['join_into'])) {
             return ItemsFactoryIntoItem::createFromConfig($collection, $this->context['join_into']);

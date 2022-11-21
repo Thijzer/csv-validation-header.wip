@@ -18,6 +18,10 @@ class ItemReader implements ItemReaderInterface
     public function read()
     {
         $item = $this->cursor->current();
+        if ($item === false) {
+            return false;
+        }
+
         $this->cursor->next();
 
         return $item;

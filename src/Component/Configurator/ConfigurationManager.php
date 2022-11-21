@@ -318,7 +318,7 @@ class ConfigurationManager
 
         /** @var ItemReaderFactory $factory */
         $factory = $this->factory->getFactory('reader');
-        $reader = $factory->createFromConfiguration($cursor, $configuration);
+        $reader = $factory->createFromConfiguration($cursor, $configuration, $this->getConfig());
 
         $this->config->setReader($reader);
 
