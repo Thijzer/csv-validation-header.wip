@@ -23,8 +23,6 @@ class ApiClient
     {
         if (null === $this->handle) {
             $this->handle = \curl_init();
-            //curl_setopt($this->handle, CURLOPT_SSL_VERIFYHOST, FALSE);
-            //curl_setopt($this->handle, CURLOPT_SSL_VERIFYPEER, FALSE);
             $this->authenticatedAccount = $account->authorize($this);
         }
     }
@@ -59,6 +57,7 @@ class ApiClient
         $this->setHeaders(['Content-Type' => 'application/json']);
 
         \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
+        \curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, "GET");
 
         return $this;
     }
@@ -162,6 +161,7 @@ class ApiClient
         \curl_setopt($this->handle, CURLOPT_HTTPHEADER, array_map(function ($key, $value) {
             return $key . ': ' . $value;
         }, array_keys($this->headers), $this->headers));
+
         $this->headers = [];
     }
 
@@ -171,6 +171,7 @@ class ApiClient
     public function getResponse(): ApiResponse
     {
         $this->generateHeaders();
+
         \curl_setopt($this->handle, CURLOPT_HEADER, false);
         \curl_setopt($this->handle, CURLOPT_RETURNTRANSFER, true);
 

@@ -177,7 +177,7 @@ class Configuration
 
     public function addConverter(ConverterInterface $converter): void
     {
-        $this->decoders->add($converter);
+        $this->converters->add($converter);
     }
 
     public function getConverter(string $name): ?ConverterInterface

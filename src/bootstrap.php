@@ -2,6 +2,12 @@
 
 // formatters are reversable // Modifiers are NOT reversable
 
+use Misery\Component\Action\UnsetAction;
+use Misery\Component\Akeneo\Client\HttpWriterFactory;
+use Misery\Component\Converter\Akeneo\Api\Attribute;
+use Misery\Component\Converter\AkeneoCsvHeaderContext;
+use Misery\Component\Converter\AkeneoCsvToStructuredDataConverter;
+
 $sourceRegistry = new Misery\Component\Common\Registry\Registry('source_command');
 $sourceRegistry->registerAllByName(
     new Misery\Component\Source\Command\SourceFilterCommand(),
@@ -10,15 +16,21 @@ $sourceRegistry->registerAllByName(
 
 $converterRegistry = new Misery\Component\Common\Registry\Registry('converter');
 $converterRegistry->registerAllByName(
-    new Misery\Component\Converter\AkeneoCsvToStructuredDataConverter(
-        new Misery\Component\Converter\AkeneoCsvHeaderContext()
-    ),
     new Misery\Component\Converter\XmlDataConverter(),
     new Misery\Component\Converter\KliumCsvToStructuredDataConverter(),
     new Misery\Component\Converter\AS400CsvToStructuredDataConverter(),
     new Misery\Component\Converter\AS400ArticleAttributesCsvToStructuredDataConverter(),
     new Misery\Component\Converter\RelatedProductsCsvToStructuredDataConverter(),
-    new Misery\Component\Converter\OldAS400ArticleAttributesCsvToStructuredDataConverter()
+    new Misery\Component\Converter\OldAS400ArticleAttributesCsvToStructuredDataConverter(),
+    new Misery\Component\Converter\AkeneoCsvToStructuredDataConverter(
+        new Misery\Component\Converter\AkeneoCsvHeaderContext()
+    ),
+    new Misery\Component\Converter\Akeneo\Api\Attribute(
+        new Misery\Component\Converter\AkeneoCsvHeaderContext()
+    ),
+    new Misery\Component\Converter\Akeneo\Api\Product(
+        new Misery\Component\Converter\AkeneoCsvHeaderContext()
+    ),
 );
 
 $feedRegistry = new Misery\Component\Common\Registry\Registry('feed');
@@ -71,6 +83,7 @@ $actionRegistry
     ->register(Misery\Component\Action\StatementAction::NAME, new Misery\Component\Action\StatementAction())
     ->register(Misery\Component\Action\MergeAction::NAME, new Misery\Component\Action\MergeAction())
     ->register(Misery\Component\Action\UnsetAction::NAME, new Misery\Component\Action\UnsetAction())
+    ->register(Misery\Component\Action\EmptyAction::NAME, new Misery\Component\Action\EmptyAction())
     ->register(Misery\Component\Action\ConcatAction::NAME, new Misery\Component\Action\ConcatAction())
     ->register(Misery\Component\Action\ListMapperAction::NAME, new Misery\Component\Action\ListMapperAction())
     ->register(Misery\Component\Action\CombineAction::NAME, new Misery\Component\Action\CombineAction())
@@ -129,6 +142,7 @@ $factoryRegistry->registerAllByName(
     new Misery\Component\Mapping\MappingFactory(),
     new Misery\Component\Shell\ShellCommandFactory(),
     new Misery\Component\Common\Client\ApiClientFactory(),
+    new Misery\Component\Akeneo\Client\HttpReaderFactory(),
     new Misery\Component\Akeneo\Client\HttpWriterFactory(),
     $list,
     $filter,

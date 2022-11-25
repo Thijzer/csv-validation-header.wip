@@ -12,11 +12,10 @@ class PipelineFactory implements RegisteredByNameInterface
         array $configuration,
         ConfigurationManager $configurationManager
     ): Pipeline {
-        $pipeline = new Pipeline();
-
-        // input is mandatory
-        $reader = $configurationManager->createReader($configuration['input']['reader']);
-        $pipeline->input(new PipeReader($reader));
+        $pipeline = $this->getPipeLine(
+            $configurationManager,
+            $configuration
+        );
 
         foreach ($configuration as $key => $valueConfiguration) {
             switch (true) {
@@ -50,8 +49,13 @@ class PipelineFactory implements RegisteredByNameInterface
                         $pipeline->line(new ConverterPipe($blueprint->getConverter()));
                         $pipeline->line(new RevertPipe($blueprint->getConverter()));
                     }
+
                     $pipeline->line(new DecodingPipe($blueprint->getDecoder()));
                     // what about decode and revert
+                    break;
+                case $key === 'converter':
+                    $converter = $configurationManager->getConfig()->getConverter($configuration['converter']);
+                    $pipeline->line(new ConverterPipe($converter));
                     break;
                 case $key === 'actions';
                     $actions = $configurationManager->createActions($configuration['actions']);
@@ -74,6 +78,19 @@ class PipelineFactory implements RegisteredByNameInterface
         $configuration['output']['writer']['format']['mode'] = 'append';
 
         return $configurationManager->createWriter($configuration['output']['writer']);
+    }
+
+    private function getPipeLine(
+        ConfigurationManager $configurationManager,
+        array $configuration
+    ): Pipeline
+    {
+        $pipeline = new Pipeline();
+
+        $reader = (isset($configuration['input']['http'])) ? $configurationManager->createHTTPReader($configuration['input']['http']) : $configurationManager->createReader($configuration['input']['reader']);
+        $pipeline->input(new PipeReader($reader));
+
+        return $pipeline;
     }
 
     public function getName(): string

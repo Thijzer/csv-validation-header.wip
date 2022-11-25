@@ -42,6 +42,7 @@ class ApiWriter implements ItemWriterInterface
                 $this->pack[] = $data;
                 return;
             }
+
             if (count($this->pack) === 100) {
                 $this->batch->next();
                 echo $this->batch->hasNewBatchPart() ? $this->batch->getBatchPart().'k':'.';

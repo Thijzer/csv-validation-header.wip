@@ -223,7 +223,6 @@ class ConfigurationManager
     {
         /** @var BluePrintFactory $factory */
         $factory = $this->factory->getFactory('blueprint');
-
         $blueprint = null;
         if (is_string($configuration)) {
             $blueprint = $factory->createFromName($configuration, $this);
@@ -245,6 +244,16 @@ class ConfigurationManager
         /** @var MappingFactory $factory */
         $factory = $this->factory->getFactory('mapping');
         $factory->createFromConfiguration($configuration, $this->inMemoryFileManager, $this);
+    }
+
+    public function createHTTPReader(array $configuration): ReaderInterface
+    {
+        $factory = $this->factory->getFactory('http_reader');
+        $reader = $factory->createFromConfiguration($configuration, $this->config);
+
+        $this->config->setReader($reader);
+
+        return $reader;
     }
 
     public function createHTTPWriter(array $configuration): ItemWriterInterface

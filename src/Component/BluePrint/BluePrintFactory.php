@@ -36,12 +36,21 @@ class BluePrintFactory implements RegisteredByNameInterface
     public function createFromName(string $name, ConfigurationManager $configurationManager, array $configuration = []): ?BluePrint
     {
         // we check the configuration manager if we have this blueprint.
-        $blueprint = $configurationManager->getConfig()->getBlueprint($name);
+        $config = $configurationManager->getConfig();
+        $blueprint = $config->getBlueprint($name);
         if ($blueprint) {
             return $blueprint;
         }
 
-        if (is_file($file = $this->bluePrintPath.DIRECTORY_SEPARATOR.$name.'.yaml')) {
+        $configDir = $this->bluePrintPath;
+        if (dirname($name) === '.') {
+            $name = basename($name);
+            $transformationFile = $configurationManager->getConfig()->getContext('transformation_file');
+            $configDir = dirname($transformationFile);
+        }
+
+        $configPath = sprintf('%s/%s.yaml', $configDir, $name);
+        if (is_file($file = $configPath)) {
             // exception Config location not found
             return $this->createBlueprint($name, array_merge(Yaml::parseFile($file), $configuration), $configurationManager);
         }

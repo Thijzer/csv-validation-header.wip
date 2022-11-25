@@ -13,29 +13,42 @@ class ApiReader implements ReaderInterface
     private $client;
     private $page;
     private $endpoint;
+    private $filters;
 
-    public function __construct(ApiClient $client, ApiEndpointInterface  $endpoint)
+    public function __construct(
+        ApiClient $client,
+        ApiEndpointInterface $endpoint,
+        array $filters = []
+    )
     {
         $this->client = $client;
         $this->endpoint = $endpoint;
+        $this->filters = $filters;
     }
 
-    private function all(int $pageSize = 10, array $queryParameters = []): array
+    private function request(int $pageSize = 100, array $queryParameters = []): array
     {
+        $endpoint = $this->endpoint->getAll();
+        if (!empty($this->filters)) {
+            $endpoint = sprintf('%s?search=', $endpoint);
+            foreach ($this->filters as $attrCode => $value) {
+                $filter = [$attrCode => [['operator' => 'IN', 'value' => array_values($value)]]];
+                $endpoint .= json_encode($filter);
+            }
+        }
+
         return $this->client
-            ->get($this->client->getUrlGenerator()->generate($this->endpoint->getAll()))
+            ->get($this->client->getUrlGenerator()->generate($endpoint))
             ->getResponse()
-            ->getContent()
-        ;
+            ->getContent();
     }
 
     public function read()
     {
         if (null === $this->page) {
-            $this->page = Paginator::create($this->client, $this->all());
+            $this->page = Paginator::create($this->client, $this->request());
         }
         $item = $this->page->getItems()->current();
-
         if (!$item) {
             $this->page = $this->page->getNextPage();
             if (!$this->page) {

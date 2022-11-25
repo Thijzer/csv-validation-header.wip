@@ -7,7 +7,6 @@ use Misery\Component\Common\Client\ApiEndpointInterface;
 class ApiProductsEndpoint implements ApiEndpointInterface
 {
     public const NAME = 'products';
-
     private const ALL = 'products';
     private const ONE = 'products/%s';
 

@@ -7,12 +7,12 @@ use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Configurator\ConfigurationAwareInterface;
 use Misery\Component\Configurator\ConfigurationTrait;
 
-class UnsetAction implements OptionsInterface, ConfigurationAwareInterface
+class EmptyAction implements OptionsInterface, ConfigurationAwareInterface
 {
     use OptionsTrait;
     use ConfigurationTrait;
 
-    public const NAME = 'unset';
+    public const NAME = 'empty';
 
     /** @var array */
     private $options = [
@@ -31,7 +31,13 @@ class UnsetAction implements OptionsInterface, ConfigurationAwareInterface
         }
 
         foreach($list as $key) {
-            unset($item[$field][$key]);
+            if (isset($item[$field][$key]) && is_array($item[$field][$key])) {
+                foreach ($item[$field][$key] as $index => $value) {
+                    if (is_array($value) && isset($value['data'])) {
+                        $item[$field][$key][$index]['data'] = null;
+                    }
+                }
+            }
         }
 
         return $item;
