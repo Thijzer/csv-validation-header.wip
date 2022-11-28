@@ -11,6 +11,16 @@ use Misery\Component\Converter\ConverterInterface;
 class Attribute implements ConverterInterface, RegisteredByNameInterface
 {
     private $csvHeaderContext;
+    private $boolValuesToCheck = [
+        'useable_as_grid_filter',
+        'wysiwyg_enabled',
+        'decimals_allowed',
+        'negative_allowed',
+        'default_value',
+        'unique',
+        'localizable',
+        'scopable'
+    ];
 
     public function __construct(AkeneoCsvHeaderContext $csvHeaderContext)
     {
@@ -20,6 +30,11 @@ class Attribute implements ConverterInterface, RegisteredByNameInterface
     public function convert(array $item): array
     {
         $item = ArrayFunctions::unflatten($item, '-');
+        foreach ($this->boolValuesToCheck as $boolValueToCheck) {
+            if (isset($item[$boolValueToCheck]) && !is_bool($item[$boolValueToCheck])) {
+                $item[$boolValueToCheck] = (bool)$item[$boolValueToCheck];
+            }
+        }
 
         return $item;
     }

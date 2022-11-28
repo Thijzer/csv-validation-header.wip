@@ -110,14 +110,7 @@ class ApiWriter implements ItemWriterInterface
             case 'post':
                 return $this->client
                     ->post($this->client->getUrlGenerator()->generate($this->endpoint->getAll()), $data)
-                    ->getResponse()
-                ;
-//            case 'PUT':
-//            case 'put':
-//                return $this->client
-//                    ->put($this->client->getUrlGenerator()->generate($this->endpoint->getSingleEndPoint()), $data['identifier'])
-//                    ->getResponse()
-//                ;
+                    ->getResponse();
             default:
                 throw new \InvalidArgumentException(sprintf('Method %s is not supported', $this->method));
         }

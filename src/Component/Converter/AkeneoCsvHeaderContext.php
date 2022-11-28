@@ -56,4 +56,8 @@ class AkeneoCsvHeaderContext
 
         return $prep;
     }
+
+    public function unsetHeader() {
+        $this->header = null;
+    }
 }

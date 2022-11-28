@@ -28,4 +28,20 @@ class ColumnMapper implements Mapper
 
         return array_combine($keys, array_values($item));
     }
+
+    public function mapWithSuffix(array $item, string $suffix, array $excludeList)
+    {
+        $itemToReturn = [];
+        foreach ($item as $key => $value) {
+            if (in_array($key, $excludeList)) {
+                $itemToReturn[$key] = $value;
+
+                continue;
+            }
+
+            $itemToReturn[$key.$suffix] = $value;
+        }
+
+        return $itemToReturn;
+    }
 }

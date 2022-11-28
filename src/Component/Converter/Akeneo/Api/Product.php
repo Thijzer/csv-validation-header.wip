@@ -25,31 +25,22 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
 
     public function convert(array $item): array
     {
+        $this->csvHeaderContext->unsetHeader();
         $codes = $this->getOption('list');
         $keyCodes = is_array($codes) ? array_keys($codes): null;
         $separator = '-';
         $output = [];
 
         foreach ($item as $key => $value) {
-
             $keys = explode($separator, $key);
             if ($keyCodes && false === in_array($keys[0], $keyCodes)) {
-                continue;
-            }
-
-            if (strpos($key, '-unit') !== false) {
-                unset($item[$key]);
                 continue;
             }
 
             # values
             $prep = $this->csvHeaderContext->create($item)[$key];
             $prep['data'] = $value;
-
-            # metric exception
-            if ($codes[$keys[0]] === 'pim_catalog_metric') {
-                $prep['unit'] = $item[str_replace($keys[0], $keys[0].'-unit', $key)] ?? null;
-            }
+            unset($prep['key']);
 
             $output['values'][$keys[0]][] = $prep;
             unset($item[$key]);

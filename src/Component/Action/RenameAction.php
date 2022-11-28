@@ -23,10 +23,20 @@ class RenameAction implements OptionsInterface
     private $options = [
         'from' => null,
         'to' => null,
+        'suffix' => null,
+        'exclude-list' => []
     ];
 
     public function apply(array $item): array
     {
+        if (!empty($this->options['suffix'])) {
+            return $this->mapper->mapWithSuffix(
+                $item,
+                $this->options['suffix'],
+                $this->options['exclude-list']
+            );
+        }
+
         return $this->mapper->map($item, [$this->options['from'] => $this->options['to']]);
     }
 }
