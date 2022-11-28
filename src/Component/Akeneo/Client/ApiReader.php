@@ -29,18 +29,36 @@ class ApiReader implements ReaderInterface
     private function request(int $pageSize = 100, array $queryParameters = []): array
     {
         $endpoint = $this->endpoint->getAll();
+        $items = [];
+
         if (!empty($this->filters)) {
             $endpoint = sprintf('%s?search=', $endpoint);
-            foreach ($this->filters as $attrCode => $value) {
-                $filter = [$attrCode => [['operator' => 'IN', 'value' => array_values($value)]]];
-                $endpoint .= json_encode($filter);
+            foreach ($this->filters as $attrCode => $filterValues) {
+                $valueChunks = array_chunk(array_values($filterValues),100);
+                foreach ($valueChunks as $filterChunk) {
+                    $filter = [$attrCode => [['operator' => 'IN', 'value' => $filterChunk]]];
+                    $chunkEndpoint = sprintf('%s%s&limit=100', $endpoint, json_encode($filter));
+
+                    $result = $this->client
+                        ->get($this->client->getUrlGenerator()->generate($chunkEndpoint))
+                        ->getResponse()
+                        ->getContent();
+
+                    if (empty($items)){
+                        $items = $result;
+
+                        continue;
+                    }
+
+                    $items['_embedded']['items'] = array_merge(
+                        $items['_embedded']['items'],
+                        $result['_embedded']['items']
+                    );
+                }
             }
         }
 
-        return $this->client
-            ->get($this->client->getUrlGenerator()->generate($endpoint))
-            ->getResponse()
-            ->getContent();
+        return $items;
     }
 
     public function read()

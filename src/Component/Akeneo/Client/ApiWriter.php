@@ -44,10 +44,12 @@ class ApiWriter implements ItemWriterInterface
             }
 
             if (count($this->pack) === 100) {
+                $item = $data;
                 $this->batch->next();
                 echo $this->batch->hasNewBatchPart() ? $this->batch->getBatchPart().'k':'.';
                 $data = $this->pack;
                 $this->pack = [];
+                $this->pack[] = $item;
             }
         }
 
@@ -59,6 +61,8 @@ class ApiWriter implements ItemWriterInterface
         if (count($this->pack) < 100 && $this->pack !== []) {
             $this->doWrite($this->pack);
         }
+
+        echo PHP_EOL;
     }
 
     private function doWrite(array $data)
