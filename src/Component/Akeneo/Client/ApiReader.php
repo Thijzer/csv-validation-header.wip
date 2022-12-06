@@ -56,7 +56,15 @@ class ApiReader implements ReaderInterface
                     );
                 }
             }
+
+            return $items;
         }
+
+        $items = $this->client
+            ->get($this->client->getUrlGenerator()->generate($endpoint))
+            ->getResponse()
+            ->getContent();
+
 
         return $items;
     }

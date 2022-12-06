@@ -52,6 +52,10 @@ class ItemReaderFactory implements RegisteredByNameInterface
                 $configuration['x_filter']['list'] = $configurationObject->getList($configuration['x_filter']['list']);
             }
 
+            if (isset($configuration['x_filter']['spread']['filter_list'])) {
+                $configuration['x_filter']['spread']['filter_list'] = $configurationObject->getList($configuration['x_filter']['spread']['filter_list']);
+            }
+
             $config = $configuration['x_filter'];
             return new ItemReader(new CondensedCursor($cursor, $config));
         }

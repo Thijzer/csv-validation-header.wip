@@ -52,6 +52,11 @@ class ItemActionProcessorFactory implements RegisteredByNameInterface
                     if ($manager && isset($value['list']) && is_string($value['list'])) {
                         $value['list'] = $manager->getConfig()->getList($value['list']);
                     }
+
+                    if (isset($value['filter_list'])) {
+                        $value['filter_list'] = $manager->getConfig()->getList($value['filter_list']);
+                    }
+
                     $action->setOptions($value);
                 }
 

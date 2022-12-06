@@ -48,7 +48,8 @@ class ItemParserFactory implements RegisteredByNameInterface
                         $item = ColumnReducer::reduceItem($item, ...$join['return']);
                     }
 
-                    return array_merge($row, $item);
+                    // by using the + sign, we keep our array keys
+                    return $row+$item;
                 });
             }
 

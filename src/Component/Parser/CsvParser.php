@@ -95,7 +95,6 @@ class CsvParser implements CursorInterface
             return $current;
         }
 
-        // here we need to use the filter
         $row = @array_combine($this->headers, $current);
         if (!is_array($row)) {
             if ($this->invalidLines === self::INVALID_SKIP_ON_LARGER && count($current) < count($this->headers)) {

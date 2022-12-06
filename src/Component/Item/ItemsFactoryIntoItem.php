@@ -17,7 +17,16 @@ class ItemsFactoryIntoItem
 
         $result = array_fill_keys($configuration['list'], '');
         $spreadConfiguration = $configuration['spread'];
-        $attributesToKeep = $spreadConfiguration['keep_attributes'];
+        $attributesToKeep = [];
+
+        if (isset($spreadConfiguration['keep_attributes'])) {
+            $attributesToKeep = array_merge($attributesToKeep, $spreadConfiguration['keep_attributes']);
+        }
+
+        if (isset($spreadConfiguration['filter_list'])) {
+            $attributesToKeep = array_merge($attributesToKeep, $spreadConfiguration['filter_list']);
+        }
+
         $result = array_filter(
             $result,
             function($attrCode) use ($attributesToKeep) {
