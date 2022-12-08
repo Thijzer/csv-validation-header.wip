@@ -2,6 +2,8 @@
 
 // formatters are reversable // Modifiers are NOT reversable
 
+use Misery\Component\Action\EmptyAction;
+use Misery\Component\Action\FilterAction;
 use Misery\Component\Action\UnsetAction;
 use Misery\Component\Akeneo\Client\HttpWriterFactory;
 use Misery\Component\Converter\Akeneo\Api\Attribute;
@@ -91,6 +93,9 @@ $actionRegistry
     ->register(Misery\Component\Action\FormatAction::NAME, new Misery\Component\Action\FormatAction())
     ->register(Misery\Component\Action\GenerateIdAction::NAME, new Misery\Component\Action\GenerateIdAction())
     ->register(Misery\Component\Action\FilterAction::NAME, new Misery\Component\Action\FilterAction())
+    ->register(Misery\Component\Action\PopAction::NAME, new Misery\Component\Action\PopAction())
+    ->register(Misery\Component\Action\ColumnValueMapperAction::NAME, new Misery\Component\Action\ColumnValueMapperAction())
+
 ;
 
 #$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');

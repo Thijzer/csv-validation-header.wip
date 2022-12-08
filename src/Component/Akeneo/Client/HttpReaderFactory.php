@@ -23,7 +23,6 @@ class HttpReaderFactory implements RegisteredByNameInterface
         )->notEmpty()->string();
 
         if ($configuration['type'] === 'rest_api') {
-
             Assert::that(
                 $configuration['endpoint'],
                 'endpoint must be filled in.'
@@ -38,11 +37,17 @@ class HttpReaderFactory implements RegisteredByNameInterface
 
             $endpoint = $configuration['endpoint'];
             $method = $configuration['method'];
-
+            $context = ['filters' => []];
             $endpointSet = [
+                ApiOptionsEndpoint::NAME => ApiOptionsEndpoint::class,
                 ApiAttributesEndpoint::NAME => ApiAttributesEndpoint::class,
                 ApiProductsEndpoint::NAME => ApiProductsEndpoint::class,
             ];
+
+            if (isset($configuration['attribute_list'])) {
+                $context['multiple'] = true;
+                $context['list'] = $config->getList($configuration['attribute_list']);
+            }
 
             $endpoint = $endpointSet[$endpoint] ?? null;
             Assert::that(
@@ -50,13 +55,12 @@ class HttpReaderFactory implements RegisteredByNameInterface
                 'endpoint must be valid.'
             )->notNull();
 
-            $httpFilters = [];
             if (isset($configuration['filters'])) {
                 $filters = $configuration['filters'];
                 foreach ($filters as $fieldCode => $filterConfig) {
                     foreach ($filterConfig as $filterType => $value) {
                         if ($filterType === 'list') {
-                            $httpFilters[$fieldCode] = $config->getList($value);
+                            $context['filters'][$fieldCode] = $config->getList($value);
                         }
                     }
                 }
@@ -65,7 +69,7 @@ class HttpReaderFactory implements RegisteredByNameInterface
             return new ApiReader(
                 $config->getAccount($configuration['account']),
                 new $endpoint,
-                $httpFilters
+                $context
             );
         }
 

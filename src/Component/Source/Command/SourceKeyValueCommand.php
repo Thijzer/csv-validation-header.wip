@@ -17,6 +17,7 @@ class SourceKeyValueCommand implements SourceAwareInterface, ExecuteSourceComman
         'list' => null,
         'key' => null,
         'value' => null,
+        'key_prefix' => ''
     ];
 
     public function execute(): array
@@ -24,7 +25,8 @@ class SourceKeyValueCommand implements SourceAwareInterface, ExecuteSourceComman
         return KeyValuePairBuilder::build(
             $this->getSource()->getCachedReader(),
             $this->getOption('key'),
-            $this->getOption('value')
+            $this->getOption('value'),
+            $this->getOption('key_prefix'),
         );
     }
 

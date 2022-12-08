@@ -13,25 +13,28 @@ class ApiReader implements ReaderInterface
     private $client;
     private $page;
     private $endpoint;
-    private $filters;
+    private $context;
+    private $activeEndpoint;
 
     public function __construct(
         ApiClient $client,
         ApiEndpointInterface $endpoint,
-        array $filters = []
+        array $context
     )
     {
         $this->client = $client;
         $this->endpoint = $endpoint;
-        $this->filters = $filters;
+        $this->context = $context;
     }
 
-    private function request(int $pageSize = 100, array $queryParameters = []): array
+    private function request($endpoint = false): array
     {
-        $endpoint = $this->endpoint->getAll();
-        $items = [];
+        if (!$endpoint) {
+            $endpoint = $this->endpoint->getAll();
+        }
 
-        if (!empty($this->filters)) {
+        $items = [];
+        if (isset($context['filters'])) {
             $endpoint = sprintf('%s?search=', $endpoint);
             foreach ($this->filters as $attrCode => $filterValues) {
                 $valueChunks = array_chunk(array_values($filterValues),100);
@@ -71,9 +74,14 @@ class ApiReader implements ReaderInterface
 
     public function read()
     {
+        if (isset($this->context['multiple'])) {
+           return $this->readMultiple();
+        }
+
         if (null === $this->page) {
             $this->page = Paginator::create($this->client, $this->request());
         }
+
         $item = $this->page->getItems()->current();
         if (!$item) {
             $this->page = $this->page->getNextPage();
@@ -87,6 +95,41 @@ class ApiReader implements ReaderInterface
         unset($item['_links']);
 
         return $item;
+    }
+
+    public function readMultiple()
+    {
+        foreach ($this->context['list'] as $key => $endpointItem) {
+            if ($this->activeEndpoint !== $endpointItem || null === $this->page) {
+                $endpoint = sprintf($this->endpoint->getAll(), $endpointItem);
+                $this->page = Paginator::create($this->client, $this->request($endpoint));
+                $this->activeEndpoint = $endpointItem;
+            }
+
+            $item = $this->page->getItems()->current();
+            if (!$item) {
+                $this->page = $this->page->getNextPage();
+                if (!$this->page) {
+                    unset($this->context['list'][$key]);
+
+                    return $this->readMultiple();
+                }
+                $item = $this->page->getItems()->current();
+            }
+
+            $this->page->getItems()->next();
+            if (!$item) {
+                unset($this->context['list'][$key]);
+
+                return $this->readMultiple();
+            }
+
+            unset($item['_links']);
+
+            return $item;
+        }
+
+        return false;
     }
 
     public function getIterator(): \Iterator
