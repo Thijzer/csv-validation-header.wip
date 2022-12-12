@@ -82,9 +82,10 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
         foreach ($itemCollection as $item) {
             $context = $this->header->getContext($item['UID']);
 
-            if (empty($item['VALUE_NL'])) {
+            if (!isset($item['VALUE_NL'])) {
                 continue;
             }
+
             // we deal with prices in file not API
             if ($context['type'] === AkeneoHeaderTypes::PRICE) {
                 continue;
@@ -119,7 +120,7 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
                 continue;
             }
 
-            if (in_array($context['type'], [AkeneoHeaderTypes::METRIC, 'pim_catalog_metric_as400']) && $item['VALUE_NL']) {
+            if (in_array($context['type'], [AkeneoHeaderTypes::METRIC, 'pim_catalog_metric_as400']) && $item['VALUE_NL'] !== '') {
 
                 // metrics need a unit
                 $unit = !empty($item['UOM']) ? $akeneoMapping[$item['UOM']] ?? null : null;

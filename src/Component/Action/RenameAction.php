@@ -25,7 +25,8 @@ class RenameAction implements OptionsInterface
         'to' => null,
         'suffix' => null,
         'exclude_list' => [],
-        'filter_list' => []
+        'filter_list' => [],
+        'fields' => [],
     ];
 
     public function apply(array $item): array
@@ -37,6 +38,11 @@ class RenameAction implements OptionsInterface
                 $this->options['exclude_list'],
                 $this->options['filter_list']
             );
+        }
+
+        $fields = $this->getOption('fields');
+        if ($fields !== []) {
+            return $this->mapper->map($item, $fields);
         }
 
         return $this->mapper->map($item, [$this->options['from'] => $this->options['to']]);
