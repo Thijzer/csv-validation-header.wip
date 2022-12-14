@@ -34,9 +34,9 @@ class ApiReader implements ReaderInterface
         }
 
         $items = [];
-        if (isset($context['filters'])) {
+        if (isset($this->context['filters'])) {
             $endpoint = sprintf('%s?search=', $endpoint);
-            foreach ($this->filters as $attrCode => $filterValues) {
+            foreach ($this->context['filters'] as $attrCode => $filterValues) {
                 $valueChunks = array_chunk(array_values($filterValues),100);
                 foreach ($valueChunks as $filterChunk) {
                     $filter = [$attrCode => [['operator' => 'IN', 'value' => $filterChunk]]];
