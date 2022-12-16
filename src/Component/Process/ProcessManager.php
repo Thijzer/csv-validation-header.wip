@@ -21,7 +21,7 @@ class ProcessManager
 
     public function startProcess()
     {
-        $this->log(sprintf("Running Step %s ", $this->configuration->getContext('transformation_file')));
+        $this->log(sprintf("Running Step :: %s ", basename($this->configuration->getContext('transformation_file'))));
 
         $debug = $this->configuration->getContext('debug');
         $line = $this->configuration->getContext('line') ?? -1;

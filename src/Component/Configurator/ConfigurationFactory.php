@@ -72,7 +72,7 @@ class ConfigurationFactory
                 case $key === 'transformation_steps';
                     $this->config->setAsMultiStep();
                     // @todo move this to a dedicated logger
-                    echo sprintf("Multi Step [%s]", $this->config->getContext('transformation_file')). PHP_EOL;
+                    echo sprintf("Multi Step [%s]", basename($this->config->getContext('transformation_file'))). PHP_EOL;
                     $this->manager->addTransformationSteps($configuration['transformation_steps']);
                     break;
                 case $key === 'pipeline';

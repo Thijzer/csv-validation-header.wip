@@ -98,12 +98,12 @@ class ConfigurationManager
         $this->config->addContext($configuration);
     }
 
-    public function addTransformationSteps(array $configuration): void
+    public function addTransformationSteps(array $transformationSteps): void
     {
         $debug = $this->config->getContext('debug');
         $dirName = pathinfo($this->config->getContext('transformation_file'))['dirname'] ?? null;
         # list of transformations
-        foreach ($configuration as $transformationFile) {
+        foreach ($transformationSteps as $transformationFile) {
             $file = $dirName . DIRECTORY_SEPARATOR . $transformationFile;
             Assertion::file($file);
 

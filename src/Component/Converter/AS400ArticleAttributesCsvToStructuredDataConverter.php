@@ -12,8 +12,6 @@ use Misery\Component\Common\Pipeline\Exception\InvalidItemException;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\ConfigurationAwareInterface;
 use Misery\Component\Configurator\ConfigurationTrait;
-use Misery\Component\Modifier\ReferenceCodeModifier;
-use Misery\Component\Modifier\StringToLowerModifier;
 
 class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInterface, OptionsInterface, RegisteredByNameInterface, ConfigurationAwareInterface
 {
@@ -25,7 +23,8 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
     private $options = [
         'attributes:list' => null,
         'localizable_codes:list' => null,
-        'akeneo-mapping:list' => null,
+        'metric_mapping:list' => null,
+        'metric_family_codes:list' => null,
         'akeneo-types' => [],
         'locales' => [],
     ];
@@ -38,19 +37,14 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
     private $valueCreator;
     /** @var \Misery\Component\Reader\ItemReaderInterface */
     private $cachedReader;
+    /** @var array */
+    private $dexisMeasureMapping;
+    /** @var array */
+    private $metricFamilies;
 
     public function convert(array $itemCollection): array
     {
         if (null === $this->header) {
-
-            // akeneo mapping filter
-            $this->setOption('akeneo-mapping:list', array_map(function($listItem) {
-                $path = pathinfo($listItem);
-                if ($path['extension'] == 'standard') {
-                    return $listItem;
-                }
-                return $path['extension'];
-            }, $this->getOption('akeneo-mapping:list')));
 
             // header Factory
             $this->header = (new AS400ArticleAttributesHeaderContext())->create(
@@ -73,9 +67,10 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
             $this->types = $this->getOption('akeneo-types');
 
             $this->valueCreator = new StandardValueCreator();
-        }
 
-        $akeneoMapping = $this->getOption('akeneo-mapping:list');
+            $this->dexisMeasureMapping = $this->getOption('metric_mapping:list');
+            $this->metricFamilies = $this->getOption('metric_family_codes:list');
+        }
 
         $output = [];
         $invalid_msgs = [];
@@ -123,7 +118,7 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
             if (in_array($context['type'], [AkeneoHeaderTypes::METRIC, 'pim_catalog_metric_as400']) && $item['VALUE_NL'] !== '') {
 
                 // metrics need a unit
-                $unit = !empty($item['UOM']) ? $akeneoMapping[$item['UOM']] ?? null : null;
+                $unit = $this->findCorrectUnit($item['UID'], $item['UOM']);
                 if (empty($unit) && $item['VALUE_NL'] === '-') {
                     $unit = '_';
                 }
@@ -169,6 +164,26 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
         }
 
         return $output;
+    }
+
+    private function findCorrectUnit(string $attributeCode, string $unitOfMeasure = null)
+    {
+        if (null === $unitOfMeasure) {
+            return null;
+        }
+
+        $metricFamily = $this->metricFamilies[$attributeCode] ?? null;
+        if (null === $metricFamily) {
+            return null;
+        }
+
+        foreach ($this->dexisMeasureMapping[$metricFamily]['units'] as $upperCaseUnitName => $unitSymbol) {
+            if ($unitSymbol === $unitOfMeasure) {
+                return $upperCaseUnitName;
+            }
+        }
+
+        return null;
     }
 
     private function numberize(string $value)
