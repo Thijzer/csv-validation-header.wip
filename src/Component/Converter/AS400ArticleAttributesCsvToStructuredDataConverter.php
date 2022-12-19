@@ -122,6 +122,15 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
                 if (empty($unit) && $item['VALUE_NL'] === '-') {
                     $unit = '_';
                 }
+                if (empty($unit) && !empty($item['UOM'])) {
+                    $invalid_msgs[] = sprintf(
+                        'metric code %s has an invalid unit : %s family %s',
+                        $item['UID'],
+                        $item['UOM'],
+                        $this->getMetricFamily($item['UID'])
+                    );
+                    continue;
+                }
                 if (empty($unit)) {
                     // disabled on customer request
                     $unit = '_';
@@ -172,18 +181,23 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
             return null;
         }
 
-        $metricFamily = $this->metricFamilies[$attributeCode] ?? null;
-        if (null === $metricFamily) {
-            return null;
-        }
-
-        foreach ($this->dexisMeasureMapping[$metricFamily]['units'] as $upperCaseUnitName => $unitSymbol) {
+        foreach ($this->dexisMeasureMapping[$this->getMetricFamily($attributeCode)]['units'] ?? [] as $upperCaseUnitName => $unitSymbol) {
             if ($unitSymbol === $unitOfMeasure) {
                 return $upperCaseUnitName;
             }
         }
 
         return null;
+    }
+
+    private function getMetricFamily(string $attributeCode)
+    {
+        $metricFamily = $this->metricFamilies[$attributeCode] ?? null;
+        if (null === $metricFamily) {
+            return null;
+        }
+
+        return $metricFamily;
     }
 
     private function numberize(string $value)
