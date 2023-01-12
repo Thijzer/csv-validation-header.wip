@@ -63,6 +63,16 @@ class ItemParserFactory implements RegisteredByNameInterface
             );
         }
         if ($type === 'csv') {
+            if (isset($configuration['encoding']) && $configuration['encoding'] === 'UTF8-BOM') {
+                return CsvBomParser::create(
+                    $manager->getFile($configuration['filename']),
+                    $configuration['delimiter'] ?? CsvParser::DELIMITER,
+                    $configuration['enclosure'] ?? CsvParser::ENCLOSURE,
+                    $configuration['escape'] ?? CsvParser::ESCAPE,
+                    $configuration['invalid_lines'] ?? CsvParser::INVALID_STOP
+                );
+            }
+
             return CsvParser::create(
                 $manager->getFile($configuration['filename']),
                 $configuration['delimiter'] ?? CsvParser::DELIMITER,
