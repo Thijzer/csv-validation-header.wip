@@ -12,6 +12,9 @@ class StatementBuilder
             case 'IN_LIST':
                 $statement = InListStatement::prepare(new SetValueAction(), $context);
                 break;
+            case 'NOT_IN_LIST':
+                $statement = NotInListStatement::prepare(new SetValueAction(), $context);
+                break;
             case 'IS_NUMERIC':
                 $statement = IsNumericsStatement::prepare(new SetValueAction(), $context);
                 break;
@@ -48,7 +51,7 @@ class StatementBuilder
         $statement = null;
 
         if (is_string($when)) {
-            $statement = static::fromExpression($when);
+            $statement = static::fromExpression($when, $context);
             if ($statement instanceof StatementCollection) {
                 return new CollectionStatement($statement, new SetValueAction(), $context);
             }
@@ -70,14 +73,14 @@ class StatementBuilder
         return $statement;
     }
 
-    private static function fromExpression(string $whenString): StatementInterface
+    private static function fromExpression(string $whenString, array $context): StatementInterface
     {
         $andFields = explode(' AND ', $whenString) ?? [];
         if (count($andFields) > 1) {
             $collection = new StatementCollection();
             foreach ($andFields as $i => $andField) {
                 $fields = explode(' ', $andField);
-                $statement = self::buildFromOperator($fields[1]);
+                $statement = self::buildFromOperator($fields[1], $context);
                 $statement->when($fields[0], $fields[2] ?? null);
                 $collection->add($statement);
             }

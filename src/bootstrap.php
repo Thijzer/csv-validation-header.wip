@@ -13,7 +13,8 @@ use Misery\Component\Converter\AkeneoCsvToStructuredDataConverter;
 $sourceRegistry = new Misery\Component\Common\Registry\Registry('source_command');
 $sourceRegistry->registerAllByName(
     new Misery\Component\Source\Command\SourceFilterCommand(),
-    new Misery\Component\Source\Command\SourceKeyValueCommand()
+    new Misery\Component\Source\Command\SourceKeyValueCommand(),
+    new Misery\Component\Source\Command\HeaderFactoryCommand()
 );
 
 $converterRegistry = new Misery\Component\Common\Registry\Registry('converter');
