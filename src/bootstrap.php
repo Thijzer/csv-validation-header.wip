@@ -88,6 +88,7 @@ $actionRegistry
     ->register(Misery\Component\Action\UnsetAction::NAME, new Misery\Component\Action\UnsetAction())
     ->register(Misery\Component\Action\EmptyAction::NAME, new Misery\Component\Action\EmptyAction())
     ->register(Misery\Component\Action\ConcatAction::NAME, new Misery\Component\Action\ConcatAction())
+    ->register(Misery\Component\Action\HashAction::NAME, new Misery\Component\Action\HashAction())
     ->register(Misery\Component\Action\ListMapperAction::NAME, new Misery\Component\Action\ListMapperAction())
     ->register(Misery\Component\Action\CombineAction::NAME, new Misery\Component\Action\CombineAction())
     ->register(Misery\Component\Action\SkipAction::NAME, new Misery\Component\Action\SkipAction())
