@@ -65,16 +65,17 @@ class TransformationCommand extends Command
             $addSource ? new LocalFileManager($addSource): null
         );
 
+        $transformationFile = Yaml::parseFile($file);
         $configuration = $configurationFactory->parseDirectivesFromConfiguration(
-            array_merge(Yaml::parseFile($file), [
+            array_merge($transformationFile, [
                 'context' => [
                     'transformation_file' => $file,
                     'sources' => $source,
                     'scripts' => __DIR__.'/../../scripts',
                     'workpath' => $workpath,
                     'debug' => $debug,
-                    'try' => $try,
-                    'line' => $line,
+                    'try' => $transformationFile['context']['try'] ?? $try,
+                    'line' => $transformationFile['context']['line'] ?? $line,
                     'show_mappings' => $showMappings,
                 ]
             ])

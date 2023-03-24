@@ -108,9 +108,11 @@ class ConfigurationManager
             Assertion::file($file);
 
             // we need to start a new configuration manager.
+            $transformationFile = Yaml::parseFile($file);
             $configuration = $this->factory->parseDirectivesFromConfiguration(
-                array_merge(Yaml::parseFile($file), [
+                array_merge($transformationFile, [
                     'context' => [
+                        'try' => $transformationFile['context']['try'] ?? null,
                         'debug' => $debug,
                         'dirname' => $dirName,
                         'transformation_file' => $file,
