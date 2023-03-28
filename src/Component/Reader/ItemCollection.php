@@ -77,17 +77,12 @@ class ItemCollection implements CursorInterface
         next($this->items);
     }
 
-    public function origKey()
-    {
-        return $this->keys[$this->position];
-    }
-
     /**
      * {@inheritDoc}
      */
     public function key()
     {
-        return $this->position;
+        return $this->keys[$this->position] ?? $this->position;
     }
 
     /**

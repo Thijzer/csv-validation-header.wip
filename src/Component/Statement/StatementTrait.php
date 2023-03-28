@@ -101,6 +101,7 @@ trait StatementTrait
         if ($this->action instanceof OptionsInterface) {
             $this->action->setOptions([
                     'key' => $field->getField(),
+                    'field' => $field->getField(),
                     'value' => $field->getValue(),
                 ] + $this->context);
 

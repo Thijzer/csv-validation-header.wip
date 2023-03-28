@@ -3,6 +3,8 @@
 namespace Tests\Misery\Component\Reader;
 
 use Misery\Component\Filter\ColumnReducer;
+use Misery\Component\Filter\ItemSortFilter;
+use Misery\Component\Filter\ItemTreeSortFilter;
 use Misery\Component\Reader\ItemCollection;
 use Misery\Component\Reader\ItemReader;
 use PHPUnit\Framework\TestCase;
@@ -34,6 +36,48 @@ class ItemReaderTest extends TestCase
             'first_name' => 'Mieke',
             'last_name' => 'Paepe',
             'phone' => '12345563567',
+        ],
+    ];
+    private $sortableItems = [
+        [
+            'id' => '1',
+            'first_name' => 'Gordie',
+            'last_name' => 'Ramsey',
+            'phone' => '5784467',
+            'parent' => '',
+            'seq' => '0',
+        ],
+        [
+            'id' => "2",
+            'first_name' => 'Frans',
+            'last_name' => 'Merkel',
+            'phone' => '123456',
+            'parent' => '1',
+            'seq' => '2',
+        ],
+        [
+            'id' => "3",
+            'first_name' => 'Mieke',
+            'last_name' => 'Cauter',
+            'phone' => '1234556356',
+            'parent' => '1',
+            'seq' => '1',
+        ],
+        [
+            'id' => "4",
+            'first_name' => 'Mieke',
+            'last_name' => 'Paepe',
+            'phone' => '12345563567',
+            'parent' => '3',
+            'seq' => '1',
+        ],
+        [
+            'id' => '5',
+            'first_name' => 'Jan',
+            'last_name' => 'Rombout',
+            'phone' => '57844367',
+            'parent' => '',
+            'seq' => '1',
         ],
     ];
 
@@ -243,5 +287,26 @@ class ItemReaderTest extends TestCase
         ];
 
         $this->assertSame($result, $reader->getItems());
+    }
+
+    public function test_map_tree_filter(): void
+    {
+        $reader = new ItemReader($items = new ItemCollection($this->sortableItems));
+
+        $sortedReader = ItemTreeSortFilter::sort($reader, [
+            'id_field' => 'id',
+            'parent_field' => 'parent',
+            'parent_value' => '',
+            'sort_children_on' => [
+                'seq' => 'ASC',
+            ],
+        ]);
+        $indexes = [];
+        while ($sortedReader->getCursor()->current()) {
+            $indexes[] = $sortedReader->getCursor()->key();
+            $sortedReader->getCursor()->next();
+        }
+
+        $this->assertSame($indexes, [0,4,2,1,3]);
     }
 }
