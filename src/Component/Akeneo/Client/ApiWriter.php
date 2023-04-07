@@ -61,8 +61,6 @@ class ApiWriter implements ItemWriterInterface
         if (count($this->pack) < 100 && $this->pack !== []) {
             $this->doWrite($this->pack);
         }
-
-        echo PHP_EOL;
     }
 
     private function doWrite(array $data)

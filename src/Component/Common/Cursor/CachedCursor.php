@@ -60,7 +60,7 @@ class CachedCursor implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function current()
+    public function current(): mixed
     {
         $this->prefetch($this->position);
 
@@ -100,7 +100,7 @@ class CachedCursor implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function key()
+    public function key(): mixed
     {
         return $this->position;
     }

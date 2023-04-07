@@ -19,6 +19,10 @@ class CopyAction implements OptionsInterface
 
     public function apply(array $item): array
     {
+        if (!isset($item[$this->options['from']])) {
+            return $item;
+        }
+
         $item[$this->options['to']] = $item[$this->options['from']];
         return $item;
     }

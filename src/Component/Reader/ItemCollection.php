@@ -63,7 +63,7 @@ class ItemCollection implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function current()
+    public function current(): mixed
     {
         return current($this->items) ?? $this->valid();
     }
@@ -80,7 +80,7 @@ class ItemCollection implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function key()
+    public function key(): mixed
     {
         return $this->keys[$this->position] ?? $this->position;
     }

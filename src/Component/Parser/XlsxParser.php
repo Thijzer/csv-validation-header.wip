@@ -37,7 +37,7 @@ class XlsxParser implements CursorInterface
         $this->next();
     }
 
-    public function current()
+    public function current(): mixed
     {
         if ($this->cursor === null) {
         }
@@ -61,7 +61,7 @@ class XlsxParser implements CursorInterface
         $this->cursor->next();
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->cursor->key();
     }

@@ -42,7 +42,7 @@ class FunctionalCursor implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function current()
+    public function current(): mixed
     {
         $function = $this->function;
         $item = $this->cursor->current();
@@ -60,7 +60,7 @@ class FunctionalCursor implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function key()
+    public function key(): mixed
     {
         return $this->cursor->key();
     }

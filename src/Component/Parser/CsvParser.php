@@ -33,7 +33,6 @@ class CsvParser implements CursorInterface
         Assertion::file($file->getRealPath());
 
         $this->file = $file;
-        ini_set('auto_detect_line_endings', '1');
         $this->invalidLines = $invalidLines;
 
         $this->file->setFlags(
@@ -88,7 +87,7 @@ class CsvParser implements CursorInterface
      * @throws Exception\InvalidCsvElementSizeException
      * @return false|array
      */
-    public function current()
+    public function current(): mixed
     {
         $current = $this->file->current();
         if (false === $current || null === $this->headers) {
@@ -128,7 +127,7 @@ class CsvParser implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function key()
+    public function key(): mixed
     {
         return $this->file->key();
     }

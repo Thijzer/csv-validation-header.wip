@@ -55,7 +55,7 @@ class CondensedCursor implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function current()
+    public function current(): mixed
     {
         while ($item = $this->cursor->current()) {
             $identifier = $item[$this->context['on']] ?? null;
@@ -115,7 +115,7 @@ class CondensedCursor implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function key()
+    public function key(): mixed
     {
         return $this->cursor->key();
     }

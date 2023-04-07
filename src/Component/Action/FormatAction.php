@@ -82,6 +82,9 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
                 case 'prefix':
                     $value = $this->getOption('prefix'). ltrim($value, $this->getOption('prefix'));
                     break;
+                case 'substr':
+                    $value = substr($value, $this->getOption('offset'), $this->getOption('length'));
+                    break;
                 default:
                     break;
             }

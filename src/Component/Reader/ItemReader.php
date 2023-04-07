@@ -56,6 +56,19 @@ class ItemReader implements ItemReaderInterface
         // @TODO throw outofboundexception
     }
 
+    public function filterByList(array $constraint): ReaderInterface
+    {
+        $reader = $this;
+        $columnName = $constraint['column'];
+        $list = $constraint['list'];
+
+        $reader = $reader->filter(static function ($row) use ($columnName, $list) {
+            return in_array($row[$columnName], $list);
+        });
+
+        return $reader;
+    }
+
     public function find(array $constraints): ReaderInterface
     {
         $reader = $this;

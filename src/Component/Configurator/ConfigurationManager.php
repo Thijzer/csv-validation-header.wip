@@ -120,6 +120,11 @@ class ConfigurationManager
                 ])
             );
 
+            // only start the process if our transformation file has a pipeline
+            if (!isset($transformationFile['pipeline'])) {
+                continue;
+            }
+
             (new ProcessManager($configuration))->startProcess();
 
             // TODO connect the outputs here
