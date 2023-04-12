@@ -121,7 +121,7 @@ class ConfigurationManager
             );
 
             // only start the process if our transformation file has a pipeline
-            if (!isset($transformationFile['pipeline'])) {
+            if (!isset($transformationFile['pipeline']) && !isset($transformationFile['shell'])) {
                 continue;
             }
 
