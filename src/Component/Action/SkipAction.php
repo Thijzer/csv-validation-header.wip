@@ -30,11 +30,11 @@ class SkipAction implements OptionsInterface
         }
 
         if (empty($value) && $state === 'EMPTY') {
-            throw new SkipPipeLineException();
+            throw new SkipPipeLineException('');
         }
 
         if ($value === $state) {
-            throw new SkipPipeLineException();
+            throw new SkipPipeLineException('');
         }
 
         return $item;

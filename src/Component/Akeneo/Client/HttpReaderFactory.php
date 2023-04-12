@@ -44,9 +44,9 @@ class HttpReaderFactory implements RegisteredByNameInterface
                 ApiProductsEndpoint::NAME => ApiProductsEndpoint::class,
             ];
 
-            if (isset($configuration['attribute_list'])) {
+            if (isset($configuration['identifier_filter_list'])) {
                 $context['multiple'] = true;
-                $context['list'] = $config->getList($configuration['attribute_list']);
+                $context['list'] = $config->getList($configuration['identifier_filter_list']);
             }
 
             $endpoint = $endpointSet[$endpoint] ?? null;
