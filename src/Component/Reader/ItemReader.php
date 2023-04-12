@@ -59,7 +59,7 @@ class ItemReader implements ItemReaderInterface
     public function filterByList(array $constraint): ReaderInterface
     {
         $reader = $this;
-        $columnName = $constraint['column'];
+        $columnName = $constraint['field'];
         $list = $constraint['list'];
 
         $reader = $reader->filter(static function ($row) use ($columnName, $list) {
