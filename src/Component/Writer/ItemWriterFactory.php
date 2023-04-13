@@ -4,6 +4,7 @@ namespace Misery\Component\Writer;
 
 use Assert\Assert;
 use Misery\Component\Common\Collection\ArrayCollection;
+use Misery\Component\Common\FileManager\FileManagerInterface;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Reader\ItemCollection;
 use Symfony\Component\Yaml\Yaml;
@@ -12,14 +13,14 @@ class ItemWriterFactory implements RegisteredByNameInterface
 {
     public function createFromConfiguration(
         array $configuration,
-        string $workingDirectory
+        FileManagerInterface $fileManager
     ) : ItemWriterInterface {
         Assert::that(
             $configuration['type'],
             'type must be filled in.'
         )->notEmpty()->string()->inArray(['xml', 'csv', 'yaml', 'yml', 'xlsx', 'json']);
 
-        $filename = $workingDirectory . DIRECTORY_SEPARATOR . $configuration['filename'];
+        $filename = $fileManager->provisionPath($configuration['filename']);
         if ($configuration['type'] === 'xml') {
             return new XmlWriter(
                 $filename,

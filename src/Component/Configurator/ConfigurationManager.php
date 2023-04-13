@@ -15,6 +15,7 @@ use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\FileManager\FileManagerInterface;
 use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Common\FileManager\InMemoryFileManager;
+use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Pipeline\PipelineFactory;
 use Misery\Component\Converter\ConverterFactory;
 use Misery\Component\Converter\ConverterInterface;
@@ -77,6 +78,16 @@ class ConfigurationManager
         return $this->config;
     }
 
+    public function getWorkFileManager(): LocalFileManager
+    {
+        return $this->workFiles;
+    }
+
+    public function getInMemoryFileManager(): InMemoryFileManager
+    {
+        return $this->inMemoryFileManager;
+    }
+
     public function addSources(array $configuration): void
     {
         /** @var SourceCollectionFactory $factory */
@@ -88,8 +99,6 @@ class ConfigurationManager
             $factory->createFromBluePrint($blueprint, $this->sources);
         }
 
-        $this->inMemoryFileManager->addFiles($configuration);
-
         $this->config->addSources($this->sources);
     }
 
@@ -98,27 +107,30 @@ class ConfigurationManager
         $this->config->addContext($configuration);
     }
 
-    public function addTransformationSteps(array $transformationSteps): void
+    public function addTransformationSteps(array $transformationSteps, array $masterConfiguration): void
     {
         $debug = $this->config->getContext('debug');
         $dirName = pathinfo($this->config->getContext('transformation_file'))['dirname'] ?? null;
+
+        unset($masterConfiguration['transformation_steps']);
+
         # list of transformations
         foreach ($transformationSteps as $transformationFile) {
             $file = $dirName . DIRECTORY_SEPARATOR . $transformationFile;
             Assertion::file($file);
 
             // we need to start a new configuration manager.
-            $transformationFile = Yaml::parseFile($file);
-            $configuration = $this->factory->parseDirectivesFromConfiguration(
-                array_merge($transformationFile, [
-                    'context' => [
-                        'try' => $transformationFile['context']['try'] ?? null,
-                        'debug' => $debug,
-                        'dirname' => $dirName,
-                        'transformation_file' => $file,
-                    ]
-                ])
-            );
+            $transformationFile = ArrayFunctions::array_filter_recursive(Yaml::parseFile($file), function ($value) {
+                return $value !== NULL;
+            });
+            $configuration = array_replace_recursive($masterConfiguration, $transformationFile, [
+                'context' => [
+                    'try' => $transformationFile['context']['try'] ?? null,
+                    'debug' => $debug,
+                    'dirname' => $dirName,
+                    'transformation_file' => $file,
+            ]]);
+            $configuration = $this->factory->parseDirectivesFromConfiguration($configuration);
 
             // only start the process if our transformation file has a pipeline
             if (!isset($transformationFile['pipeline']) && !isset($transformationFile['shell'])) {
@@ -278,7 +290,7 @@ class ConfigurationManager
     {
         /** @var ItemWriterFactory $factory */
         $factory = $this->factory->getFactory('writer');
-        $writer = $factory->createFromConfiguration($configuration, $this->workFiles->getWorkingDirectory());
+        $writer = $factory->createFromConfiguration($configuration, $this->getWorkFileManager());
 
         $this->config->setWriter($writer);
 

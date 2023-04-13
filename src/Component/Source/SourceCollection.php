@@ -2,9 +2,6 @@
 
 namespace Misery\Component\Source;
 
-use Misery\Component\BluePrint\BluePrint;
-use function PHPUnit\Framework\throwException;
-
 class SourceCollection
 {
     /** @var array|Source[] */

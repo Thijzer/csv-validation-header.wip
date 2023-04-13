@@ -41,6 +41,7 @@ class ConfigurationFactory
     {
         // sort the keys
         $order = [
+            'aliases',
             'context',
             'sources',
             'list',
@@ -60,11 +61,21 @@ class ConfigurationFactory
                 case $key === 'context';
                     $this->manager->addContext($configuration['context']);
                     break;
+                case $key === 'aliases';
+                    // ValueFormatter converts %workpath% or other context params
+                    $aliases = ValueFormatter::formatMulti($configuration['aliases'], $this->config->getContext());
+                    $this->manager->getWorkFileManager()->addAliases($aliases);
+                    $this->manager->getInMemoryFileManager()->addFromFileManager($this->manager->getWorkFileManager());
+                    $this->manager->getInMemoryFileManager()->addAliases($aliases);
+                    $this->manager->addSources(
+                        iterator_to_array($this->manager->getInMemoryFileManager()->listFiles())
+                    );
+                    break;
                 case $key === 'sources';
                     // ValueFormatter converts %workpath% or other context params
-                    $this->manager->addSources(
-                        ValueFormatter::formatMulti($configuration['sources'], $this->config->getContext())
-                    );
+                    $sources = ValueFormatter::formatMulti($configuration['sources'], $this->config->getContext());
+                    $this->manager->addSources($sources);
+                    $this->manager->getInMemoryFileManager()->addFiles($sources);
                     break;
                 case $key === 'account';
                     $this->manager->createAccounts($configuration['account']);
@@ -73,7 +84,7 @@ class ConfigurationFactory
                     $this->config->setAsMultiStep();
                     // @todo move this to a dedicated logger
                     echo sprintf("Multi Step [%s]", basename($this->config->getContext('transformation_file'))). PHP_EOL;
-                    $this->manager->addTransformationSteps($configuration['transformation_steps']);
+                    $this->manager->addTransformationSteps($configuration['transformation_steps'], $configuration);
                     break;
                 case $key === 'pipeline';
                     $this->manager->createPipelines($configuration['pipeline']);

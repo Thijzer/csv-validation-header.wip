@@ -31,8 +31,8 @@ class SourceCollectionFactory implements RegisteredByNameInterface
     {
         $sourceCollection = $sourceCollection ?: new SourceCollection('manager');
 
-        foreach ($configuration as $sourcePath) {
-            $this->addSourceFileToCollection($sourceCollection, $sourcePath);
+        foreach ($configuration as $alias => $sourcePath) {
+            $this->addSourceFileToCollection($sourceCollection, $sourcePath, is_string($alias) ? $alias : null);
         }
 
         return $sourceCollection;
@@ -59,24 +59,24 @@ class SourceCollectionFactory implements RegisteredByNameInterface
         }
     }
 
-    private function addSourceFileToCollection(SourceCollection $sourceCollection, string $file): void
+    private function addSourceFileToCollection(SourceCollection $sourceCollection, string $file, ?string $alias = null): void
     {
         Assert::that($file)->file();
 
         $path = pathinfo($file);
         if (strtolower($path['extension']) === 'csv') {
             $sourceCollection->add(
-                Source::createSimple(CsvParser::create($file), $path['basename'])
+                Source::createSimple(CsvParser::create($file), $alias ?? $path['basename'])
             );
         }
         if (strtolower($path['extension']) === 'xml') {
             $sourceCollection->add(
-                Source::createSimple(XmlParser::create($file), $path['basename'])
+                Source::createSimple(XmlParser::create($file), $alias ?? $path['basename'])
             );
         }
         if (in_array(strtolower($path['extension']), ['yaml', 'yml'])) {
             $sourceCollection->add(
-                Source::createSimple(YamlParser::create($file), $path['basename'])
+                Source::createSimple(YamlParser::create($file), $alias ?? $path['basename'])
             );
         }
     }

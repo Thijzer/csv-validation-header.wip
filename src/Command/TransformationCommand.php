@@ -5,6 +5,7 @@ namespace Misery\Command;
 use Ahc\Cli\Input\Command;
 use Assert\Assertion;
 use Misery\Component\Common\FileManager\LocalFileManager;
+use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Process\ProcessManager;
 use Symfony\Component\Yaml\Yaml;
 
@@ -65,9 +66,11 @@ class TransformationCommand extends Command
             $addSource ? new LocalFileManager($addSource): null
         );
 
-        $transformationFile = Yaml::parseFile($file);
+        $transformationFile = ArrayFunctions::array_filter_recursive(Yaml::parseFile($file), function ($value) {
+            return $value !== NULL;
+        });
         $configuration = $configurationFactory->parseDirectivesFromConfiguration(
-            array_merge($transformationFile, [
+            array_replace_recursive($transformationFile, [
                 'context' => [
                     'transformation_file' => $file,
                     'sources' => $source,
