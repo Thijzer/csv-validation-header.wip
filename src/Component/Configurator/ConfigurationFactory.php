@@ -64,7 +64,6 @@ class ConfigurationFactory
                 case $key === 'aliases';
                     // ValueFormatter converts %workpath% or other context params
                     $aliases = ValueFormatter::formatMulti($configuration['aliases'], $this->config->getContext());
-                    $this->manager->getWorkFileManager()->addAliases($aliases);
                     $this->manager->getInMemoryFileManager()->addFromFileManager($this->manager->getWorkFileManager());
                     $this->manager->getInMemoryFileManager()->addAliases($aliases);
                     $this->manager->addSources(
