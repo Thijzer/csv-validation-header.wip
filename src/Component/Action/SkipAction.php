@@ -16,12 +16,14 @@ class SkipAction implements OptionsInterface
     private $options = [
         'field' => null,
         'state' => 'EMPTY',
+        'skip_message' => ''
     ];
 
     public function apply(array $item): array
     {
         $field = $this->getOption('field');
         $state = $this->getOption('state');
+        $message = $this->getOption('skip_message', '');
 
         if (is_array($field) && isset($field['code']) && isset($field['index'])) {
             $value = (isset($item[$field['code']][$field['index']])) ? $item[$field['code']][$field['index']] : null;
@@ -30,12 +32,13 @@ class SkipAction implements OptionsInterface
         }
 
         if (empty($value) && $state === 'EMPTY') {
-            throw new SkipPipeLineException('');
+            throw new SkipPipeLineException($message);
         }
 
         if ($value === $state) {
-            throw new SkipPipeLineException('');
+            throw new SkipPipeLineException($message);
         }
+
 
         return $item;
     }

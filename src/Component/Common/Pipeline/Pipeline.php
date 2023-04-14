@@ -73,6 +73,9 @@ class Pipeline
                     $out->write($item);
                 }
             } catch (SkipPipeLineException $exception) {
+                if (!empty($exception->getMessage())) {
+                    echo sprintf('Skipped: %s', $exception->getMessage()) . PHP_EOL;
+                }
                 continue;
             } catch (InvalidItemException $exception) {
                 $this->invalid->write([

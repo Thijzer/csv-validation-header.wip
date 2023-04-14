@@ -39,6 +39,11 @@ class StatementBuilder
             case 'NOT_EMPTY':
                 $statement = NotEmptyStatement::prepare(new SetValueAction());
                 break;
+            case 'CHARLEN_GT':
+                $context['condition'] = 'greater_than';
+                $statement = CharlenStatement::prepare(new SetValueAction(), $context);
+
+                break;
             default:
                 throw new \Exception('invalid statement operator');
         }

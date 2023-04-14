@@ -4,6 +4,8 @@ namespace Misery\Component\Action;
 
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
+use Misery\Component\Common\Pipeline\Exception\SkipPipeLineException;
+use Misery\Component\Common\Utils\ValueFormatter;
 use Misery\Component\Configurator\ConfigurationAwareInterface;
 use Misery\Component\Configurator\ConfigurationTrait;
 use Misery\Component\Statement\StatementBuilder;
@@ -34,6 +36,14 @@ class StatementAction implements OptionsInterface, ConfigurationAwareInterface
         }
 
         $statement = StatementBuilder::build($when, $context);
+        if (isset($then['action']) && $then['action'] === 'skip') {
+            $message = $then['skip_message'] ?? '';
+            if (!empty($message)) {
+                $message = ValueFormatter::format($message, $item);
+            }
+
+            throw new SkipPipeLineException($message);
+        }
 
         if (isset($then['field'], $then['state'])) {
             $statement->then($then['field'], $then['state'] ?? null);

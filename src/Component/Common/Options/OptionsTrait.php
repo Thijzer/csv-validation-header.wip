@@ -14,9 +14,9 @@ trait OptionsTrait
         $this->options[$key] = $option;
     }
 
-    public function getOption(string $key)
+    public function getOption(string $key, $dValue = null)
     {
-        return $this->options[$key] ?? null;
+        return $this->options[$key] ?? $dValue;
     }
 
     public function getOptions(): array
