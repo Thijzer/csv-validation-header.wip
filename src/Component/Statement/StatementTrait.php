@@ -20,7 +20,9 @@ trait StatementTrait
         'then' => null,
     ];
 
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     public static function prepare(ActionInterface $action, array $context = []): StatementInterface
     {
@@ -42,14 +44,14 @@ trait StatementTrait
 
     public function or(string $field, string $value = null): StatementInterface
     {
-        $this->conditions[$this->key] = $this->conditions[$this->key]+['or' => new Field($field, $value)];
+        $this->conditions[$this->key] = $this->conditions[$this->key] + ['or' => new Field($field, $value)];
 
         return $this;
     }
 
     public function and(string $field, string $value = null): StatementInterface
     {
-        $this->conditions[$this->key] = $this->conditions[$this->key]+['and' => new Field($field, $value)];
+        $this->conditions[$this->key] = $this->conditions[$this->key] + ['and' => new Field($field, $value)];
 
         return $this;
     }
@@ -64,16 +66,18 @@ trait StatementTrait
     public function isApplicable(array $item): bool
     {
         return count($this->conditions) === count(array_filter($this->conditions, function ($condition) use ($item) {
-            $condition = array_merge($this->template, $condition);
-            switch (true) {
-                case !empty($condition['or']) && (true === $this->whenField($condition['when'], $item) || true === $this->whenField($condition['or'], $item)):
-                case !empty($condition['and']) && (true === $this->whenField($condition['when'], $item) && true ===  $this->whenField($condition['and'], $item)):
-                case true === $this->whenField($condition['when'], $item):
-                    return true;
-                default:
-                    return false;
-            }
-        }));
+                $condition = array_merge($this->template, $condition);
+                switch (true) {
+                    case !empty($condition['or']) && (true === $this->whenField($condition['when'],
+                                $item) || true === $this->whenField($condition['or'], $item)):
+                    case !empty($condition['and']) && (true === $this->whenField($condition['when'],
+                                $item) && true === $this->whenField($condition['and'], $item)):
+                    case true === $this->whenField($condition['when'], $item):
+                        return true;
+                    default:
+                        return false;
+                }
+            }));
     }
 
     public function apply(array $item): array
@@ -81,9 +85,12 @@ trait StatementTrait
         foreach ($this->conditions as $condition) {
             $condition = array_merge($this->template, $condition);
             switch (true) {
-                case !empty($condition['or']) && (true === $this->whenField($condition['when'], $item) || true === $this->whenField($condition['or'], $item)):
-                case !empty($condition['and']) && (true === $this->whenField($condition['when'], $item) && true ===  $this->whenField($condition['and'], $item)):
-                case empty($condition['and']) && empty($condition['or']) && true === $this->whenField($condition['when'], $item):
+                case !empty($condition['or']) && (true === $this->whenField($condition['when'],
+                            $item) || true === $this->whenField($condition['or'], $item)):
+                case !empty($condition['and']) && (true === $this->whenField($condition['when'],
+                            $item) && true === $this->whenField($condition['and'], $item)):
+                case empty($condition['and']) && empty($condition['or']) && true === $this->whenField($condition['when'],
+                        $item):
                     foreach ($condition['then'] as $thenCondition) {
                         $item = $this->thenField($thenCondition, $item);
                     }
@@ -109,5 +116,10 @@ trait StatementTrait
         }
 
         return $item;
+    }
+
+    public function setAction(ActionInterface $action): void
+    {
+        $this->action = $action;
     }
 }

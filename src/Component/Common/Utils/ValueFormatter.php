@@ -16,8 +16,14 @@ class ValueFormatter
     public static function format(string $format, array $values)
     {
         $tmp = [];
-        foreach (array_keys($values) as $value) {
-            $tmp[] = "%$value%";
+        foreach ($values as $key => $value) {
+            if (!is_string($value)) {
+                unset($values[$key]);
+
+                continue;
+            }
+
+            $tmp[] = "%$key%";
         }
 
         return str_replace($tmp, array_values($values), $format);

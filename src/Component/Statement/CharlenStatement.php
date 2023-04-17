@@ -10,6 +10,16 @@ class CharlenStatement implements PredeterminedStatementInterface
 
     private function whenField(Field $field, array $item): bool
     {
+        if (is_array($item[$field->getField()])) {
+            if (count(array_filter($item[$field->getField()])) === 0) {
+                return false;
+            }
+
+            return 0 < count(array_filter($item[$field->getField()], function ($itemValue) use ($field) {
+                    return $this->whenField($field, [$field->getField() => $itemValue]);
+                }));
+        }
+
         switch ($this->context['condition']) {
             case 'greater_than':
                 return isset($item[$field->getField()]) && (strlen($item[$field->getField()]) > $this->context['char_len']);
