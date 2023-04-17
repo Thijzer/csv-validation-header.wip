@@ -7,7 +7,7 @@ use Misery\Component\Statement\StatementBuilder;
 class ItemsFactoryIntoItem
 {
     public static function spreadFromConfig(
-        array $rows,
+        ?array $rows,
         array $configuration
     ): array
     {
