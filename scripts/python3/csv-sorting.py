@@ -35,10 +35,14 @@ delimiter = sys.argv[5]
 #         csv.writer(f).writerows(data)
 
 import pandas as pd
+import os
 
+df = pd.DataFrame(list())
+df.to_csv(out_file);
+
+if os.path.getsize(in_file) == 0:
+    quit()
 
 df = pd.read_csv(in_file,sep=delimiter, dtype=str)
-
 sorted_df = df.sort_values(by=[field], ascending=True)
-
 sorted_df.to_csv(out_file, index=False, sep=';')
