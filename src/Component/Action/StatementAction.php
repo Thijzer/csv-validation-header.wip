@@ -37,15 +37,6 @@ class StatementAction implements OptionsInterface, ConfigurationAwareInterface
 
         $statement = StatementBuilder::build($when, $context);
         if (isset($then['action']) && $then['action'] === 'skip') {
-            $message = $then['skip_message'] ?? '';
-            if (!empty($message)) {
-                $message = ValueFormatter::format($message, $item);
-            }
-
-            throw new SkipPipeLineException($message);
-        }
-
-        if (isset($then['action']) && $then['action'] === 'skip') {
             $action = new SkipAction();
             $message = $then['skip_message'] ?? '';
             if (!empty($message)) {
