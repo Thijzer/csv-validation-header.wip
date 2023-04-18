@@ -74,7 +74,6 @@ class CalculateAction implements OptionsInterface
     private function divide(array $numbers): float
     {
         while (sizeof($numbers) > 1) {
-            var_dump(json_encode($numbers));
             $tmp = array_shift($numbers) / array_shift($numbers);
             array_unshift($numbers, $tmp);
         }
