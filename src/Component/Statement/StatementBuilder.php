@@ -26,6 +26,10 @@ class StatementBuilder
             case null:
                 $statement = EqualsStatement::prepare(new SetValueAction());
                 break;
+            case '>=':
+            case 'GREATER_THAN_OR_EQUAL_TO':
+                $statement = GreaterThanOrEqualStatement::prepare(new SetValueAction());
+                break;
             case '!=':
             case 'NOT_EQUAL':
                 $statement = NotEqualStatement::prepare(new SetValueAction());
