@@ -66,6 +66,8 @@ class HttpReaderFactory implements RegisteredByNameInterface
                 }
             }
 
+            $context['limiters'] = $configuration['limiters'] ?? [];
+
             return new ApiReader(
                 $config->getAccount($configuration['account']),
                 new $endpoint,

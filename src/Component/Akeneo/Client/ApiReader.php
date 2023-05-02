@@ -33,6 +33,10 @@ class ApiReader implements ReaderInterface
             $endpoint = $this->endpoint->getAll();
         }
 
+        if(isset($this->context['limiters']['querystring'])) {
+            $endpoint = sprintf($this->context['limiters']['querystring'], $endpoint);
+        }
+
         $items = [];
         if (isset($this->context['filters']) && !empty($this->context['filters'])) {
             $endpoint = sprintf('%s?search=', $endpoint);
