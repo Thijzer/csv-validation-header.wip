@@ -80,7 +80,7 @@ class ItemReader implements ItemReaderInterface
                 $list = [];
                 $reader = $reader->filter(static function ($row) use ($columnName, &$list) {
                     $id = $row[$columnName];
-                    if (in_array($id, $list)) {
+                    if (in_array($id, $list, true)) {
                         return false;
                     }
                     $list[] = $id;
