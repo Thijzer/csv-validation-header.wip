@@ -17,7 +17,7 @@ class ValueFormatter
     {
         $tmp = [];
         foreach ($values as $key => $value) {
-            if (!is_string($value)) {
+            if (is_array($value) || empty($value)) {
                 unset($values[$key]);
 
                 continue;
