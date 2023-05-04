@@ -48,6 +48,8 @@ class CsvWriter implements ItemWriterInterface
         Assert::that($format['delimiter'])->maxLength(1);
         Assert::that($format['mode'])->string();
 
+        $format['delimiter'] = $setup['delimiter'] ?? $format['delimiter'];
+
         $literalModes = [
             'write' => self::WRITE_MODE,
             'append' => self::APPEND_MODE,
