@@ -136,4 +136,28 @@ class ExpandActionTest extends TestCase
             'sku' => '1',
         ], $format->apply($item));
     }
+
+    public function test_it_should_expand_on_null_values(): void
+    {
+        $format = new ExpandAction();
+
+        $item = [
+            'brand' => 'louis',
+            'sku' => '1',
+        ];
+
+        $format->setOptions([
+            'set' => [
+                'brand' => null,
+                'description' => null,
+                'sku' => null,
+            ]
+        ]);
+
+        $this->assertEquals([
+            'brand' => 'louis',
+            'description' => null,
+            'sku' => '1',
+        ], $format->apply($item));
+    }
 }

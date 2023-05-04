@@ -37,11 +37,6 @@ class PipelineFactory implements RegisteredByNameInterface
                     );
                     break;
 
-                case $key === 'encoder';
-                    $encoder = $configurationManager->createEncoder($configuration['encoder']);
-                    $pipeline->line(new EncodingPipe($encoder));
-                    break;
-
                 case $key === 'blueprint';
                     $blueprint = $configurationManager->createBlueprint($configuration['blueprint']);
                     $pipeline->line(new EncodingPipe($blueprint->getEncoder()));
@@ -64,6 +59,10 @@ class PipelineFactory implements RegisteredByNameInterface
                 case $key === 'decoder';
                     $decoder = $configurationManager->createDecoder($configuration['decoder']);
                     $pipeline->line(new DecodingPipe($decoder));
+                    break;
+                case $key === 'encoder';
+                    $encoder = $configurationManager->createEncoder($configuration['encoder']);
+                    $pipeline->line(new EncodingPipe($encoder));
                     break;
             }
         }

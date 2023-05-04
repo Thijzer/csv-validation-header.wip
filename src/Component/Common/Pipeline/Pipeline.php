@@ -89,6 +89,7 @@ class Pipeline
                 break;
             }
         }
+
         // stopping
         foreach ($this->out as $out) {
             try {
