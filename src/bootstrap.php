@@ -79,6 +79,7 @@ $actionRegistry
     ->register(Misery\Component\Action\ReplaceAction::NAME, new Misery\Component\Action\ReplaceAction())
     ->register(Misery\Component\Action\RetainAction::NAME, new Misery\Component\Action\RetainAction())
     ->register(Misery\Component\Action\CalculateAction::NAME, new Misery\Component\Action\CalculateAction())
+    ->register(Misery\Component\Action\GetImageFromBynderAction::NAME, new Misery\Component\Action\GetImageFromBynderAction())
     ->register(Misery\Component\Action\SetValueAction::NAME, $setValueAction = new Misery\Component\Action\SetValueAction())
     ->register(Misery\Component\Action\ReseatAction::NAME, new Misery\Component\Action\ReseatAction())
     ->register(Misery\Component\Action\ModifierAction::NAME, new Misery\Component\Action\ModifierAction($modifierRegistry))
