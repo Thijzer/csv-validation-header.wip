@@ -18,19 +18,23 @@ class UnsetAction implements OptionsInterface, ConfigurationAwareInterface
     private $options = [
         'field' => null,
         'list' => null,
+        'empty_only' => 0
     ];
 
     public function apply(array $item): array
     {
         $field = $this->getOption('field');
-        $list = $this->getOption('list');
 
         // validation
         if ($field && !is_array($item[$field])) {
             return $item;
         }
 
-        foreach($list as $key) {
+        foreach ($this->getOption('list') as $key) {
+            if ((bool)$this->getOption('empty_only') && !empty($item[$field][$key])) {
+                continue;
+            }
+
             unset($item[$field][$key]);
         }
 
