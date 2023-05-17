@@ -39,34 +39,44 @@ class GetImageFromBynderAction implements OptionsInterface
             return $item;
         }
 
-        foreach($fields as $field) {
-            $from = $field['from'];
-            $to = $field['to'];
-            $item = $this->sendRequest($bynder, $item, $from, $to, $array_location);
-        }
+        $item = $this->sendRequest($bynder, $item, $fields, $array_location);
 
         return $item;
     }
 
-    public function sendRequest(array $bynder, array $item, string $from, string $to, array $array_location)
+    public function sendRequest(array $bynder, array $item, array $fields, array $array_location)
     {
-        if(!isset($item[$from])) {
+        if(!isset($fields) || !is_array($fields['from']) || !is_string($fields['to'])) {
             return $item;
         }
 
-        // Trim /download
-        $code = str_replace('/download', '', $item[$from]);
-        // Trim until last /
-        $code = preg_replace('/^.*\//', '', $code);
+        $fullcodeArray = [];
+        foreach($fields['from'] as $field) {
+            if(!isset($item[$field])) {
+                continue;
+            }
+
+            // Trim /download
+            $code = str_replace('/download', '', $item[$field]);
+            // Trim until last /
+            $code = preg_replace('/^.*\//', '', $code);
+
+            if($code === '') {
+                continue;
+            }
+            $fullcodeArray[] = $code;
+
+        }
 
         // Get the code from the item
-        $code = $bynder['url'] . $code;
+        $fullcode = $bynder['url'] . implode(',', $fullcodeArray);
+        $separator = $fields['separator'] ?? ',';
 
         // Initialize cURL session
         $ch = curl_init();
 
         // Set cURL options
-        curl_setopt($ch, CURLOPT_URL, $code); // API endpoint
+        curl_setopt($ch, CURLOPT_URL, $fullcode); // API endpoint
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
         //curl_setopt($ch, CURLOPT_POST, true); // Use HTTP POST method
 
@@ -99,17 +109,20 @@ class GetImageFromBynderAction implements OptionsInterface
             // Get the media item from the response
             if(isset($response_array)) {
 
-                foreach ($array_location as $location) {
-                    $image = null;
-                    if(isset($response_array[$location])) {
-                        $image = $response_array[$location];
-                        $response_array = $response_array[$location];
+                $images = [];
+                foreach($response_array as $response) {
+                    foreach ($array_location as $location) {
+                        $image = null;
+                        if(isset($response[$location])) {
+                            $image = $response[$location];
+                            $response = $response[$location];
+                        }
                     }
+                    $images[] = $image;
                 }
+                $item[$fields['to']] = implode($separator, $images);
 
-                $item[$to] = $image;
             }
-            return $item;
 
         }
 
