@@ -43,6 +43,7 @@ class ConfigurationFactory
         $order = [
             'aliases',
             'context',
+            'account',
             'sources',
             'list',
             'mapping',

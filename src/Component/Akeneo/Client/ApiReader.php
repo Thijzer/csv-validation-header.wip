@@ -5,6 +5,7 @@ namespace Misery\Component\Akeneo\Client;
 use Misery\Component\Common\Client\ApiClient;
 use Misery\Component\Common\Client\ApiEndpointInterface;
 use Misery\Component\Common\Client\Paginator;
+use Misery\Component\Common\Utils\ValueFormatter;
 use Misery\Component\Reader\ItemReader;
 use Misery\Component\Reader\ReaderInterface;
 
@@ -34,7 +35,8 @@ class ApiReader implements ReaderInterface
         }
 
         if(isset($this->context['limiters']['querystring'])) {
-            $endpoint = sprintf($this->context['limiters']['querystring'], $endpoint);
+            $querystring = ValueFormatter::format($this->context['limiters']['querystring'], $this->context);
+            $endpoint = sprintf($querystring, $endpoint);
         }
 
         $items = [];

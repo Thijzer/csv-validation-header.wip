@@ -71,7 +71,7 @@ class HttpReaderFactory implements RegisteredByNameInterface
             return new ApiReader(
                 $config->getAccount($configuration['account']),
                 new $endpoint,
-                $context
+                $context + $config->getContext()
             );
         }
 
