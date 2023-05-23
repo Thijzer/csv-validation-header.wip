@@ -108,22 +108,25 @@ class GetImageFromBynderAction implements OptionsInterface
 
             // Get the media item from the response
             if(isset($response_array)) {
+                $responseArrayWithIdCodes = [];
+                foreach ($response_array as $response) {
+                    $responseArrayWithIdCodes[$response['id']] = $response;
+                }
 
                 $images = [];
-                foreach($response_array as $response) {
+                foreach($fullcodeArray as $fullCode) {
                     foreach ($array_location as $location) {
+                        $response = $responseArrayWithIdCodes[$fullCode] ?? [];
                         $image = null;
                         if(isset($response[$location])) {
                             $image = $response[$location];
-                            $response = $response[$location];
+                            //$response = $response[$location];
                         }
                     }
                     $images[] = $image;
                 }
                 $item[$fields['to']] = implode($separator, $images);
-
             }
-
         }
 
         // Close the cURL session
