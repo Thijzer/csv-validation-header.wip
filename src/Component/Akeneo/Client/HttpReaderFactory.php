@@ -42,6 +42,7 @@ class HttpReaderFactory implements RegisteredByNameInterface
                 ApiOptionsEndpoint::NAME => ApiOptionsEndpoint::class,
                 ApiAttributesEndpoint::NAME => ApiAttributesEndpoint::class,
                 ApiProductsEndpoint::NAME => ApiProductsEndpoint::class,
+                ApiCategoriesEndpoint::NAME => ApiCategoriesEndpoint::class,
             ];
 
             if (isset($configuration['identifier_filter_list'])) {
