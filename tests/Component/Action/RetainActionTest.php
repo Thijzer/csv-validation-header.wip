@@ -10,7 +10,6 @@ class RetainActionTest extends TestCase
     public function test_it_should_retain_action_with_keys(): void
     {
         $format = new RetainAction();
-
         $item = [
             'brand' => 'louis',
             'description' => 'LV',
@@ -30,7 +29,6 @@ class RetainActionTest extends TestCase
     public function test_it_should_not_retain_action_with_keys(): void
     {
         $format = new RetainAction();
-
         $item = [
             'brand' => 'louis',
             'description' => 'LV',
@@ -52,7 +50,6 @@ class RetainActionTest extends TestCase
     public function test_it_should_do_a_retain_action_with_bad_keys(): void
     {
         $format = new RetainAction();
-
         $item = [
             'brand' => 'louis',
             'description' => 'LV',
@@ -68,6 +65,46 @@ class RetainActionTest extends TestCase
             'brand' => 'louis',
             'description' => 'LV',
             0 => [false],
+        ], $format->apply($item));
+    }
+
+    public function test_labels_with_flat_data(): void
+    {
+        $format = new RetainAction();
+        $item = [
+            'sku' => 'sku-thomas',
+            'labels-nl_NL' => 'label NL',
+            'labels-fr_FR' => 'label FR',
+        ];
+
+        $format->setOptions([
+            'keys' => ['sku', 'labels-nl_NL'],
+        ]);
+
+        $this->assertEquals([
+            'sku' => 'sku-thomas',
+            'labels-nl_NL' => 'label NL',
+        ], $format->apply($item));
+    }
+
+    public function test_labels_with_nested_data(): void
+    {
+        $format = new RetainAction();
+        $item = [
+            'sku' => 'sku-thomas',
+            'labels' => [
+                'nl_NL' => 'label NL',
+                'fr_FR' => 'label FR',
+            ]
+        ];
+
+        $format->setOptions([
+            'keys' => ['sku', 'labels-fr_FR'],
+        ]);
+
+        $this->assertEquals([
+            'sku' => 'sku-thomas',
+            'labels-fr_FR' => 'label FR',
         ], $format->apply($item));
     }
 }
