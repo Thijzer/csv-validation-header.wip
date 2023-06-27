@@ -16,13 +16,7 @@ class HttpWriterFactory implements RegisteredByNameInterface
             'type must be filled in.'
         )->notEmpty()->string()->inArray(['rest_api']);
 
-        Assert::that(
-            $configuration['account'],
-            'account must be filled in.'
-        )->notEmpty()->string();
-
         if ($configuration['type'] === 'rest_api') {
-
             Assert::that(
                 $configuration['endpoint'],
                 'endpoint must be filled in.'
@@ -49,8 +43,15 @@ class HttpWriterFactory implements RegisteredByNameInterface
                 'endpoint must be valid.'
             )->notNull();
 
+            $accountCode = (isset($configuration['account'])) ? $configuration['account'] : 'target_resource';
+            $account = $config->getAccount($accountCode);
+
+            if (!$account) {
+                throw new \Exception(sprintf('Account "%s" not found.', $accountCode));
+            }
+
             return new ApiWriter(
-                $config->getAccount($configuration['account']),
+                $account,
                 new $endpoint,
                 $method
             );
