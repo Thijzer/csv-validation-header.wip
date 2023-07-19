@@ -38,8 +38,6 @@ class ApiReader implements ReaderInterface
             $querystring = ValueFormatter::format($this->context['limiters']['querystring'], $this->context);
             $endpoint = sprintf($querystring, $endpoint);
         }
-        dump($endpoint, $querystring);exit;
-
 
         $items = [];
         if (isset($this->context['filters']) && !empty($this->context['filters'])) {
