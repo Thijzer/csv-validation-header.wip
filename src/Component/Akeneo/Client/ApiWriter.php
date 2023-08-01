@@ -58,7 +58,7 @@ class ApiWriter implements ItemWriterInterface
 
     public function close(): void
     {
-        if (count($this->pack) < 100 && $this->pack !== []) {
+        if (count($this->pack) <= 100 && $this->pack !== []) {
             $this->doWrite($this->pack);
         }
     }
