@@ -87,6 +87,26 @@ class RetainActionTest extends TestCase
         ], $format->apply($item));
     }
 
+    public function test_labels_with_flat_data_and_null_values(): void
+    {
+        $format = new RetainAction();
+        $item = [
+            'sku' => 'sku-thomas',
+            'labels-nl_NL' => null,
+            'labels-fr_FR' => null,
+        ];
+
+        $format->setOptions([
+            'keys' => ['sku', 'labels-nl_NL'],
+            'mode' => 'single',
+        ]);
+
+        $this->assertEquals([
+            'sku' => 'sku-thomas',
+            'labels-nl_NL' => null,
+        ], $format->apply($item));
+    }
+
     public function test_labels_with_nested_data(): void
     {
         $format = new RetainAction();

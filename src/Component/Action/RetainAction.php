@@ -14,10 +14,36 @@ class RetainAction implements OptionsInterface
     /** @var array */
     private $options = [
         'keys' => [],
+        'mode' => 'multi',
     ];
 
+    /**
+     * This mode only applies for single dimensional arrays
+     */
+    private function applyForSingleDimensionItem(array $item): array
+    {
+        $keys = array_intersect($this->options['keys'], array_keys($item));
+        if (empty($keys)) {
+            return $item;
+        }
+
+        $tmp = [];
+        foreach ($keys as $key) {
+            $tmp[$key] = $item[$key];
+        }
+
+        return $tmp;
+    }
+
+    /**
+     * The default apply will look into for multi dimensional array
+     */
     public function apply(array $item): array
     {
+        if ($this->getOption('mode') === 'single') {
+            return $this->applyForSingleDimensionItem($item);
+        }
+
         $optionsToKeep = $this->options['keys'];
 
         // we loop all configured option values
