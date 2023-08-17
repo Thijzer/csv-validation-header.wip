@@ -19,9 +19,9 @@ class TarArchiverTest extends TestCase
 
         $archiver->compress('test.tar.gz');
 
-        self::assertCount(1, $manager->listFiles());
+        self::assertCount(1, iterator_to_array($manager->listFiles()));
 
-        self::assertFileNotExists($manager->getAbsolutePath('test.nothing'));
+        self::assertFileDoesNotExist($manager->getAbsolutePath('test.nothing'));
         self::assertFileExists($manager->getAbsolutePath('test.tar.gz'));
 
         $manager->removeFile('test.tar.gz');

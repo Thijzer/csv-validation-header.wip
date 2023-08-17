@@ -3,12 +3,13 @@
 namespace Tests\Misery\Component\Source;
 
 use Misery\Component\Source\Source;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Misery\Component\Source\SourceCollection;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Prophecy\ObjectProphecy;
 
 class SourceCollectionTest extends TestCase
 {
+    use ProphecyTrait;
     public function test_init_source_collection(): void
     {
         /** @var Source|ObjectProphecy $source */
