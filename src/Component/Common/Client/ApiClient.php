@@ -57,6 +57,7 @@ class ApiClient
         $this->setHeaders(['Content-Type' => 'application/json']);
 
         \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
+
         \curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, "GET");
 
         return $this;

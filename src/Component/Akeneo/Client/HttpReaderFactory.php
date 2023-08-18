@@ -33,6 +33,7 @@ class HttpReaderFactory implements RegisteredByNameInterface
             $endpoint = $configuration['endpoint'];
             $method = $configuration['method'];
             $context = ['filters' => []];
+            $configContext = $config->getContext();
             $endpointSet = [
                 ApiOptionsEndpoint::NAME => ApiOptionsEndpoint::class,
                 ApiAttributesEndpoint::NAME => ApiAttributesEndpoint::class,
@@ -63,6 +64,16 @@ class HttpReaderFactory implements RegisteredByNameInterface
             }
 
             $context['limiters'] = $configuration['limiters'] ?? [];
+            if (isset($configuration['akeneo-filter'])) {
+                $akeneoFilter = $configuration['akeneo-filter'];
+                if (!isset($configContext['akeneo_filters'][$akeneoFilter])) {
+                    throw new \Exception(sprintf('The configuration is using an Akeneo filter code (%s) wich is not linked to this job profile.', $configuration['akeneo-filter']));
+                }
+
+                // create query string
+                $context['limiters']['query_array'] = $configContext['akeneo_filters'][$akeneoFilter]['search'];
+            }
+
             $accountCode = (isset($configuration['account'])) ? $configuration['account'] : 'source_resource';
             $account = $config->getAccount($accountCode);
 
@@ -73,7 +84,7 @@ class HttpReaderFactory implements RegisteredByNameInterface
             return new ApiReader(
                 $account,
                 new $endpoint,
-                $context + $config->getContext()
+                $context + $configContext
             );
         }
 

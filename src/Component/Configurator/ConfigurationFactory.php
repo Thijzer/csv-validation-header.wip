@@ -24,15 +24,16 @@ class ConfigurationFactory
         return $this->factoryRegistry->filterByAlias($alias);
     }
 
-    public function init(LocalFileManager $source, LocalFileManager $workpath, LocalFileManager $additionalSources = null)
+    public function init(LocalFileManager $workpath, LocalFileManager $source = null, LocalFileManager $additionalSources = null)
     {
         $this->config = new Configuration();
+        $sources = ($source) ? $this->getFactory('source')->createFromFileManager($source) : null;
         $this->manager = new ConfigurationManager(
             $this->config,
             $this,
-            $this->getFactory('source')->createFromFileManager($source),
-            $source,
             $workpath,
+            $sources,
+            $source,
             $additionalSources
         );
     }

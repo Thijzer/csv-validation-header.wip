@@ -54,9 +54,9 @@ class ConfigurationManager
     public function __construct(
         Configuration        $config,
         ConfigurationFactory $factory,
-        SourceCollection     $sources,
-        LocalFileManager     $sourceFiles,
         LocalFileManager     $workFiles,
+        SourceCollection     $sources = null,
+        LocalFileManager     $sourceFiles = null,
         LocalFileManager     $additionalSources = null
     ) {
         $this->sources = $sources;
@@ -64,7 +64,12 @@ class ConfigurationManager
         $this->config = $config;
         $this->factory = $factory;
         $this->workFiles = $workFiles;
-        $this->inMemoryFileManager = InMemoryFileManager::createFromFileManager($this->sourceFiles);
+
+        $this->inMemoryFileManager = new InMemoryFileManager();
+        if ($this->sourceFiles) {
+            $this->inMemoryFileManager->addFromFileManager($this->sourceFiles);
+        }
+
         if ($additionalSources) {
             $this->inMemoryFileManager->addFromFileManager($additionalSources);
         }
