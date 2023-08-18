@@ -91,6 +91,8 @@ class Pipeline
         }
 
         // stopping
+        $this->in->stop();
+
         foreach ($this->out as $out) {
             try {
                 $out->stop();

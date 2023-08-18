@@ -121,4 +121,9 @@ class XlsxParser implements CursorInterface
             //throw new OutOfBoundsException('Invalid position');
         }
     }
+
+    public function clear(): void
+    {
+        // TODO: Implement clear() method.
+    }
 }

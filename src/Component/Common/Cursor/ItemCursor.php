@@ -91,4 +91,9 @@ class ItemCursor implements CursorInterface
     public function count(): int
     {
     }
+
+    public function clear(): void
+    {
+        $this->itemReader->clear();
+    }
 }

@@ -144,4 +144,10 @@ class SubFunctionalCollectionCursor implements CursorInterface
 
         return $this->count;
     }
+
+    public function clear(): void
+    {
+        $this->count = null;
+        $this->cursor->clear();
+    }
 }

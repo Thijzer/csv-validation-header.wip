@@ -192,4 +192,9 @@ class ApiReader implements ReaderInterface
     {
         return iterator_to_array($this->getIterator());
     }
+
+    public function clear(): void
+    {
+        // TODO: Implement clear() method.
+    }
 }

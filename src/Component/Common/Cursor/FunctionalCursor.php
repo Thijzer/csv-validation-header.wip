@@ -4,8 +4,7 @@ namespace Misery\Component\Common\Cursor;
 
 class FunctionalCursor implements CursorInterface
 {
-    /** @var CursorInterface */
-    private $cursor;
+    private CursorInterface $cursor;
     /** @var callable */
     private $function;
 
@@ -84,9 +83,9 @@ class FunctionalCursor implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function seek($pointer): void
+    public function seek($offset): void
     {
-        $this->cursor->seek($pointer);
+        $this->cursor->seek($offset);
     }
 
     /**
@@ -95,5 +94,10 @@ class FunctionalCursor implements CursorInterface
     public function count(): int
     {
         return $this->cursor->count();
+    }
+
+    public function clear(): void
+    {
+        $this->cursor->clear();
     }
 }

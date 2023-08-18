@@ -21,6 +21,7 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
         'field' => null,
         'functions' => [],
         'decimals' => 4,
+        'index' => null,
         'decimal_sep' => '.',
         'mille_sep' => ',',
     ];
@@ -74,7 +75,9 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
                     $value = explode($this->getOption('separator'), $value);
                     break;
                 case 'select_index':
-                    $value = $value[$this->getOption('index')];
+                    if (null !== $this->getOption('index')) {
+                        $value = $value[$this->getOption('index')] ?? $value;
+                    }
                     break;
                 case 'sprintf':
                     $value = sprintf($this->getOption('format'), $value);

@@ -4,38 +4,51 @@ namespace Misery\Component\Common\Cursor;
 
 class ZoneIndexer
 {
-    private const MEDIUM_CACHE_SIZE = 5000;
+    private const MEDIUM_CACHE_SIZE = 10000;
 
-    /** @var array */
-    private $indexes;
-    private $zones;
-    private $ranges;
+    private array $indexes = [];
+    private array $zones;
 
-    public function __construct(CursorInterface $cursor, string $reference)
+    public function init(CursorInterface $cursor, string $reference): void
     {
-        // prep indexes
-        $cursor->loop(function ($row) use ($cursor, $reference) {
-            $zone = (int) (($cursor->key() -1) / self::MEDIUM_CACHE_SIZE);
-            $reference = $row[$reference];
-            $this->zones[$reference] = $zone;
-            $this->indexes[$reference] = $cursor->key();
-            $this->ranges[$zone][] = $cursor->key();
-        });
-        $cursor->rewind();
+        if ($this->indexes === []) {
+            // prep indexes
+            $cursor->loop(function ($row) use ($cursor, $reference) {
+                $index = (int) $cursor->key();
+                $zone = (int) (($index -1) / self::MEDIUM_CACHE_SIZE);
+                $referenceValue = $row[$reference];
+                $this->indexes[crc32($referenceValue)] = $index;
+                $this->zones[$index] = $zone;
+            });
+            $cursor->rewind();
+        }
+    }
+
+    public function depleteIndex(string $reference, int $index): void
+    {
+        unset($this->zones[$index]);
+        unset($this->indexes[crc32($reference)]);
     }
 
     public function getIndexByReference(string $reference)
     {
-        return $this->indexes[$reference] ?? null;
+        return $this->indexes[crc32($reference)] ?? null;
     }
 
-    public function getZoneByReference($reference)
+    public function getZoneByIndex(int $index)
     {
-        return $this->zones[$reference] ?? null;
+        return $this->zones[$index] ?? null;
     }
 
     public function getRangeFromZone(int $zone): array
     {
-        return $this->ranges[$zone] ?? [];
+        $keys = [];
+        foreach ($this->zones as $key => $linkedZone) {
+            if ($linkedZone === $zone) {
+                $keys[] = $key;
+            }
+        }
+
+        return $keys;
     }
 }

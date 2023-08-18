@@ -146,6 +146,13 @@ class ItemReader implements ItemReaderInterface
         return $this->cursor;
     }
 
+    public function clear(): void
+    {
+        if ($this->cursor instanceof CursorInterface) {
+            $this->cursor->clear();
+        }
+    }
+
     public function getItems(): array
     {
         return iterator_to_array($this->cursor);

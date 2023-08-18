@@ -56,6 +56,8 @@ class ConfigurationFactory
         });
         $configuration = array_merge(array_flip($order), $configuration);
 
+        $this->manager->getConfig()->clear();
+
         // level 0 directives only
         foreach ($configuration as $key => $valueConfiguration) {
             switch ($key) {

@@ -262,4 +262,23 @@ class Configuration
             return $encoder->getName() === $name;
         })->first();
     }
+
+    public function clear(): void
+    {
+        $this->actions = null;
+
+        if ($this->reader instanceof ItemReaderInterface) {
+            $this->reader->clear();
+            $this->reader = null;
+        }
+
+        $this->writer = null;
+        $this->pipeline = null;
+        $this->shellCommands = null;
+        $this->converters = new ArrayCollection();
+        $this->feeds = new ArrayCollection();
+        $this->encoders = new ArrayCollection();
+        $this->decoders = new ArrayCollection();
+        $this->blueprints = new ArrayCollection();
+    }
 }

@@ -82,4 +82,9 @@ class YamlParser implements CursorInterface
     {
         $this->cursor->seek($offset);
     }
+
+    public function clear(): void
+    {
+        // TODO: Implement clear() method.
+    }
 }

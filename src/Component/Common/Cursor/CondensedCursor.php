@@ -159,4 +159,13 @@ class CondensedCursor implements CursorInterface
 
         return $this->count;
     }
+
+    public function clear(): void
+    {
+        $this->count = null;
+        $this->collection = null;
+        $this->currentId = null;
+
+        $this->cursor->clear();
+    }
 }

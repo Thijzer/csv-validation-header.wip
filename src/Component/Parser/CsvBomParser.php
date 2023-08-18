@@ -51,4 +51,9 @@ class CsvBomParser extends CsvParser
         $this->file->rewind();
         $this->rewindBom();
     }
+
+    public function clear(): void
+    {
+        // TODO: Implement clear() method.
+    }
 }

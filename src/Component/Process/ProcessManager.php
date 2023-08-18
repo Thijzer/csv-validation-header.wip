@@ -7,20 +7,22 @@ use Misery\Component\Configurator\Configuration;
 
 class ProcessManager
 {
-    /** @var Configuration */
-    private $configuration;
+    private Configuration $configuration;
+    private ?int $startTimeStamp = null;
 
     public function __construct(Configuration $configuration)
     {
         $this->configuration = $configuration;
     }
+
     private function log(string $message)
     {
         echo $message . PHP_EOL;
     }
 
-    public function startProcess()
+    public function startProcess(): void
     {
+        $this->startTimeStamp = microtime(true);
         $this->log(sprintf("Running Step :: %s ", basename($this->configuration->getContext('transformation_file'))));
 
         $debug = $this->configuration->getContext('debug');
@@ -45,10 +47,31 @@ class ProcessManager
 
             if (is_int($amount)) {
                 $pipeline->run($amount);
-                exit;
+                $this->stopProcess();
+                return;
             }
 
             $pipeline->run();
         }
+
+        $this->stopProcess();
+    }
+
+    public function stopProcess(): void
+    {
+        $memoryUsageMB = round(memory_get_usage() / 1024 / 1024, 2);
+        $peakMemoryUsageMB = round(memory_get_peak_usage() / 1024 / 1024);
+        $usage = "Memory Usage: $memoryUsageMB/$peakMemoryUsageMB MB";
+
+        $stopTimeStamp = microtime(true);
+        $executionTime = round($stopTimeStamp - $this->startTimeStamp, 1);
+        $executionTime = "Execution Time: {$executionTime}s";
+
+        $this->log(sprintf(
+            "Finished Step :: %s (%s, %s)",
+            basename($this->configuration->getContext('transformation_file')),
+            $usage,
+            $executionTime
+        ));
     }
 }
