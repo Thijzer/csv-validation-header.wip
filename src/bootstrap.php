@@ -28,6 +28,7 @@ $converterRegistry->registerAllByName(
     new Misery\Component\Converter\AkeneoCsvToStructuredDataConverter(
         new Misery\Component\Converter\AkeneoCsvHeaderContext()
     ),
+    new Misery\Component\Converter\AkeneoProductApiConverter(),
     new Misery\Component\Converter\Akeneo\Api\Attribute(
         new Misery\Component\Converter\AkeneoCsvHeaderContext()
     ),
@@ -100,7 +101,9 @@ $actionRegistry
     ->register(Misery\Component\Action\FilterAction::NAME, new Misery\Component\Action\FilterAction())
     ->register(Misery\Component\Action\PopAction::NAME, new Misery\Component\Action\PopAction())
     ->register(Misery\Component\Action\ColumnValueMapperAction::NAME, new Misery\Component\Action\ColumnValueMapperAction())
-
+    ->register(\Misery\Component\Action\AkeneoValueFormatterAction::NAME, new Misery\Component\Action\AkeneoValueFormatterAction())
+    ->register(\Misery\Component\Action\ConvergenceAction::NAME, new Misery\Component\Action\ConvergenceAction())
+    ->register(\Misery\Component\Action\ConverterAction::NAME, new Misery\Component\Action\ConverterAction())
 ;
 
 #$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');

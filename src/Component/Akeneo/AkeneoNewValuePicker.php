@@ -38,11 +38,11 @@ class AkeneoNewValuePicker implements ValuePickerInterface
         'scope' => null,
     ];
 
-    public static function pick(array $item, string $key, array $context = [])
+    public static function pick(array $item, string $field, array $context = [])
     {
         $context = array_merge(self::$default, $context);
 
-        $itemValue = $item[$key] ?? null;
+        $itemValue = $item[$field] ?? null;
 
         if ($itemValue) {
             if (null === $context['scope'] && null === $context['locale']) {

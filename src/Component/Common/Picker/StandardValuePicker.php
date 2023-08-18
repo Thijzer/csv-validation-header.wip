@@ -9,12 +9,12 @@ class StandardValuePicker implements ValuePickerInterface
         'scope' => null,
     ];
 
-    public static function pick(array $item, string $key, array $context = [])
+    public static function pick(array $item, string $field, array $context = [])
     {
         $context = array_merge(self::$default, $context);
 
         $result = [];
-        foreach ($item['values'][$key] ?? [] as $index => $itemValue) {
+        foreach ($item['values'][$field] ?? [] as $index => $itemValue) {
             switch (true) {
                 case (null === $context['scope'] && null === $context['locale'] && $itemValue['scope'] === null && $itemValue['locale'] === null):
                 case ($itemValue['locale'] === $context['locale'] && $itemValue['scope'] === $context['scope']):

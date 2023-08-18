@@ -48,6 +48,11 @@
     },
     "scripts": {
         "test": [
+            "php vendor/bin/phpunit",
+            "vendor/bin/phpstan analyse --no-progress --ansi -l 5 src",
+            "vendor/bin/phpstan analyse --no-progress --ansi -l 5 tests"
+        ],
+        "github-test": [
             "php vendor/bin/phpunit --exclude-group performance"
         ],
         "unit-test": [

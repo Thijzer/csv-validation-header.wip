@@ -26,15 +26,19 @@ class YamlParser implements CursorInterface
         return new self(new \SplFileObject($filename));
     }
 
-    public function current()
+    public function getCursor(): ItemCollection
     {
         if ($this->cursor->count() === 0) {
             $this->cursor->add(
                 Yaml::parseFile($this->file->getRealPath())
             );
         }
+         return $this->cursor;
+    }
 
-        return $this->cursor->current();
+    public function current()
+    {
+        return $this->getCursor()->current();
     }
 
     public function next()
@@ -49,7 +53,7 @@ class YamlParser implements CursorInterface
 
     public function valid(): bool
     {
-        return $this->cursor->valid();
+        return $this->getCursor()->valid();
     }
 
     public function rewind(): void
@@ -59,7 +63,7 @@ class YamlParser implements CursorInterface
 
     public function count(): int
     {
-        return $this->cursor->count();
+        return $this->getCursor()->count();
     }
 
     public function loop(callable $callable): void
@@ -80,7 +84,7 @@ class YamlParser implements CursorInterface
 
     public function seek($offset): void
     {
-        $this->cursor->seek($offset);
+        $this->getCursor()->seek($offset);
     }
 
     public function clear(): void

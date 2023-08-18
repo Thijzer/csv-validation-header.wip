@@ -27,7 +27,7 @@ class ItemParserFactory implements RegisteredByNameInterface
         Assert::that(
             $type,
             'type must be filled in.'
-        )->notEmpty()->string()->inArray(['xml', 'csv', 'xlsx', 'list', 'feed']);
+        )->notEmpty()->string()->inArray(['xml', 'csv', 'xlsx', 'list', 'feed', 'yaml', 'buffer', 'json']);
 
         if (isset($configuration['join'])) {
             $joins = $configuration['join'];
@@ -57,6 +57,12 @@ class ItemParserFactory implements RegisteredByNameInterface
             return $mainParser;
         }
 
+        if ($type === 'json' || $type === 'buffer') {
+            return JsonFileParser::create(
+                $manager->getFile($configuration['filename'])
+            );
+        }
+
         if ($type === 'xml') {
             return XmlParser::create(
                 $manager->getFile($configuration['filename']),
@@ -80,6 +86,11 @@ class ItemParserFactory implements RegisteredByNameInterface
                 $configuration['enclosure'] ?? CsvParser::ENCLOSURE,
                 $configuration['escape'] ?? CsvParser::ESCAPE,
                 $configuration['invalid_lines'] ?? CsvParser::INVALID_STOP
+            );
+        }
+        if ($type === 'yaml') {
+            return YamlParser::create(
+                $manager->getFile($configuration['filename']),
             );
         }
         if ($type === 'xlsx') {
