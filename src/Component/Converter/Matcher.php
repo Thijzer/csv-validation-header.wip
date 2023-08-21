@@ -46,4 +46,15 @@ class Matcher
     {
         return in_array($match, $this->matches);
     }
+
+    public function duplicateWithNewKey(string $newPrimaryKey): self
+    {
+        $matcher = new self();
+        $matcher->scopable = $this->scopable;
+        $matcher->localizable = $this->localizable;
+        $matcher->matches = $this->matches;
+        $matcher->matches[1] = $newPrimaryKey;
+
+        return $matcher;
+    }
 }
