@@ -61,9 +61,9 @@ class TransformationCommand extends Command
 
         $configurationFactory = initConfigurationFactory();
         $configurationFactory->init(
-            new LocalFileManager($workingPath),
-            $sourcePath ? new LocalFileManager($sourcePath): null,
-            $additionalSourcePath ? new LocalFileManager($additionalSourcePath): null
+            new LocalFileManager($workpath),
+            $source ? new LocalFileManager($source): null,
+            $addSource ? new LocalFileManager($addSource): null
         );
 
         $transformationFile = ArrayFunctions::array_filter_recursive(Yaml::parseFile($file), function ($value) {
