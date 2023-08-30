@@ -11,22 +11,29 @@ class ValueFormatter
      * @param array $values
      * @param string $format
      *
-     * @return string|string[]
+     * @return string
      */
-    public static function format(string $format, array $values)
+    public static function format(string $format, array $values): string
     {
-        $tmp = [];
+        $replacements = [];
         foreach ($values as $key => $value) {
-            if (is_array($value) || empty($value)) {
-                unset($values[$key]);
-
-                continue;
+            if (!is_array($value) && $value !== null && str_contains($format, "%$key%")) {
+                $replacements["%$key%"] = $value;
             }
-
-            $tmp[] = "%$key%";
         }
 
-        return str_replace($tmp, array_values($values), $format);
+        return strtr($format, $replacements);
+    }
+
+    public static function recursiveFormat(string $format, array $values): string
+    {
+        foreach ($values as $value) {
+            if (is_array($value)) {
+                $format = self::recursiveFormat($format, $value);
+            }
+        }
+
+        return self::format($format, $values);
     }
 
     public static function formatMulti(array $formats, array $values): array

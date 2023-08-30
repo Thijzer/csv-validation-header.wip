@@ -29,7 +29,7 @@ class KeyMapperAction implements OptionsInterface
     public function apply(array $item): array
     {
         if ($key = $this->getOption('key')) {
-            $item[$key] = $this->mapper->map($item[$key], $this->getOption('list'));
+            $item[$key] = $this->map($item[$key], $this->getOption('list'));
             return $item;
         }
 
@@ -43,10 +43,19 @@ class KeyMapperAction implements OptionsInterface
         }
 
         if (count($newList) > 0) {
-            return $this->mapper->map($item, $newList);
+            return $this->map($item, $newList);
         }
 
-        return $this->mapper->map($item, $list);
+        return $this->map($item, $list);
+    }
+
+    private function map(array $item, array $list)
+    {
+        try {
+            return $this->mapper->map($item, $list);
+        } catch (\InvalidArgumentException) {
+            return $item;
+        }
     }
 
     private function findMatchedValueData(array $item, string $field): int|string|null
