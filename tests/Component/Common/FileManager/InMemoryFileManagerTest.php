@@ -42,4 +42,20 @@ class InMemoryFileManagerTest extends TestCase
         $this->assertEquals(__DIR__ .'/../../../examples/dummies/file1.txt', $fileManager->getFile('alias2'));
         $this->assertEquals(__DIR__ .'/../../../examples/dummies/file1.txt', $fileManager->getFile('file1.txt'));
     }
+
+    public function testGetFileNotFound()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("File non_existent.txt not found");
+
+        $fileManager = new InMemoryFileManager();
+        $files = [
+            'file1.txt' => __DIR__ . '/../../../examples/dummies/file1.txt',
+            'file2.txt' => __DIR__ . '/../../../examples/dummies/file2.txt',
+        ];
+
+        $fileManager->addFiles($files);
+
+        $fileManager->getFile('non_existent.txt');
+    }
 }
