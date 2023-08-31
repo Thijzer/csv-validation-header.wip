@@ -6,8 +6,8 @@ use Assert\Assert;
 
 class InMemoryFileManager implements FileManagerInterface
 {
-    private $files;
-    private $aliases = [];
+    private array $files = [];
+    private array $aliases = [];
 
     public static function createFromFileManager(FileManagerInterface $fileManager): self
     {
