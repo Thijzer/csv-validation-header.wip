@@ -15,7 +15,7 @@ class EmptyStatement implements PredeterminedStatementInterface
         }
 
         return
-            isset($item[$field->getField()]) &&
+            array_key_exists($field->getField(), $item) &&
             empty($item[$field->getField()])
         ;
     }

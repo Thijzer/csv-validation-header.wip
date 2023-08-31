@@ -4,7 +4,7 @@ namespace Misery\Component\Common\Client;
 
 use Misery\Component\Common\Generator\UrlGenerator;
 
-class ApiClient
+class ApiClient implements ApiClientInterface
 {
     private $handle;
     /** @var UrlGenerator */

@@ -7,8 +7,23 @@ use Misery\Component\Common\Registry\RegisteredByNameInterface;
 
 class ApiClientFactory implements RegisteredByNameInterface
 {
-    public function createFromConfiguration(array $account): ApiClient
+    public function createFromConfiguration(array $account): ApiClientInterface
     {
+        $type = $account['type'] ?? null;
+        if ($type === 'basic_auth') {
+            try {
+                // no need to authorize a basic auth
+
+                return new BasicAuthApiClient(
+                    $account['domain'],
+                    $account['username'],
+                    $account['password']
+                );
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        }
+
         try {
             $client = new ApiClient($account['domain']);
 

@@ -14,11 +14,13 @@ class ZoneIndexer
         if ($this->indexes === []) {
             // prep indexes
             $cursor->loop(function ($row) use ($cursor, $reference) {
-                $index = (int) $cursor->key();
-                $zone = (int) (($index -1) / self::MEDIUM_CACHE_SIZE);
-                $referenceValue = $row[$reference];
-                $this->indexes[crc32($referenceValue)] = $index;
-                $this->zones[$index] = $zone;
+                if ($row) {
+                    $index = (int) $cursor->key();
+                    $zone = (int) (($index -1) / self::MEDIUM_CACHE_SIZE);
+                    $referenceValue = $row[$reference];
+                    $this->indexes[crc32($referenceValue)] = $index;
+                    $this->zones[$index] = $zone;
+                }
             });
             $cursor->rewind();
         }

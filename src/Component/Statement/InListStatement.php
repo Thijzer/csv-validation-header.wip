@@ -11,11 +11,14 @@ class InListStatement implements PredeterminedStatementInterface
     private function whenField(Field $field, array $item): bool
     {
         return
-            isset($item[$field->getField()]) &&
+            array_key_exists($field->getField(), $item) &&
             is_string($item[$field->getField()]) &&
             isset($this->context['list']) &&
             is_array($this->context['list']) &&
-            in_array($item[$field->getField()], $this->context['list'])
+            (
+                in_array($item[$field->getField()], $this->context['list']) ||
+                array_key_exists($item[$field->getField()], $this->context['list'])
+            )
         ;
     }
 }

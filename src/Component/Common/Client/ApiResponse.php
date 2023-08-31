@@ -37,7 +37,8 @@ class ApiResponse
         return new self(
             $data['status_code'] ?? $code,
             $data['message'] ?? null,
-            $data);
+            $data
+        );
     }
 
     public function getCode(): ?int

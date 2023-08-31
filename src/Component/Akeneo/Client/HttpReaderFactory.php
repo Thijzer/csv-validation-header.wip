@@ -3,6 +3,7 @@
 namespace Misery\Component\Akeneo\Client;
 
 use Assert\Assert;
+use Misery\Component\Common\Client\Endpoint\BasicApiEndpoint;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\Configuration;
 use Misery\Component\Reader\ReaderInterface;
@@ -33,6 +34,7 @@ class HttpReaderFactory implements RegisteredByNameInterface
             $endpoint = $configuration['endpoint'];
             $method = $configuration['method'];
             $context = ['filters' => []];
+            $context['container'] = $configuration['container'] ?? null;
             $configContext = $config->getContext();
             $endpointSet = [
                 ApiOptionsEndpoint::NAME => ApiOptionsEndpoint::class,
@@ -46,11 +48,14 @@ class HttpReaderFactory implements RegisteredByNameInterface
                 $context['list'] = $config->getList($configuration['identifier_filter_list']);
             }
 
-            $endpoint = $endpointSet[$endpoint] ?? null;
+            $endpoint = $endpointSet[$endpoint] ?? new BasicApiEndpoint($endpoint);
             Assert::that(
                 $endpoint,
                 'endpoint must be valid.'
             )->notNull();
+            if (is_string($endpoint)) {
+                $endpoint = new $endpoint();
+            }
 
             if (isset($configuration['filters'])) {
                 $filters = $configuration['filters'];
@@ -83,7 +88,7 @@ class HttpReaderFactory implements RegisteredByNameInterface
 
             return new ApiReader(
                 $account,
-                new $endpoint,
+                $endpoint,
                 $context + $configContext
             );
         }

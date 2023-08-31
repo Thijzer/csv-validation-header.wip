@@ -4,8 +4,8 @@ namespace Misery\Component\Connections\Google\Client;
 
 use Assert\Assert;
 use \Firebase\JWT\JWT;
-use Misery\Component\Common\Client\ApiClient;
 use Misery\Component\Common\Client\ApiClientAccountInterface;
+use Misery\Component\Common\Client\ApiClientInterface;
 use Misery\Component\Common\Client\AuthenticatedAccount;
 
 class GoogleApiClientServiceAccount implements ApiClientAccountInterface
@@ -40,7 +40,7 @@ class GoogleApiClientServiceAccount implements ApiClientAccountInterface
         $this->quotaProject = $quotaProject;
     }
 
-    public function authorize(ApiClient $client): AuthenticatedAccount
+    public function authorize(ApiClientInterface $client): AuthenticatedAccount
     {
         Assert::that($this->redirectUri, 'A valid Redirect URI needs to be set.')->notEmpty()->url();
         # scope https://www.googleapis.com/auth/spreadsheets
@@ -100,5 +100,10 @@ class GoogleApiClientServiceAccount implements ApiClientAccountInterface
     public function setRedirectUri(string $redirectUri)
     {
         $this->redirectUri = $redirectUri;
+    }
+
+    public function refresh(ApiClientInterface $client, AuthenticatedAccount $account): AuthenticatedAccount
+    {
+        // TODO: Implement refresh() method.
     }
 }

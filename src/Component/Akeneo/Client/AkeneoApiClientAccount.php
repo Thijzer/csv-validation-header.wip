@@ -4,6 +4,7 @@ namespace Misery\Component\Akeneo\Client;
 
 use Misery\Component\Common\Client\ApiClient;
 use Misery\Component\Common\Client\ApiClientAccountInterface;
+use Misery\Component\Common\Client\ApiClientInterface;
 use Misery\Component\Common\Client\AuthenticatedAccount;
 
 class AkeneoApiClientAccount implements ApiClientAccountInterface
@@ -29,7 +30,7 @@ class AkeneoApiClientAccount implements ApiClientAccountInterface
         $this->secret = $secret;
     }
 
-    public function authorize(ApiClient $client): AuthenticatedAccount
+    public function authorize(ApiClientInterface $client): AuthenticatedAccount
     {
         $authorization = \base64_encode($this->clientId.':'.$this->secret);
 
@@ -62,7 +63,7 @@ class AkeneoApiClientAccount implements ApiClientAccountInterface
         );
     }
 
-    public function refresh(ApiClient $client, AuthenticatedAccount $account): AuthenticatedAccount
+    public function refresh(ApiClientInterface $client, AuthenticatedAccount $account): AuthenticatedAccount
     {
         $account->invalidate();
         $authorization = \base64_encode($this->clientId.':'.$this->secret);

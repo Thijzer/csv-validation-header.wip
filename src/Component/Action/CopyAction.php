@@ -6,7 +6,7 @@ use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Converter\Matcher;
 
-class CopyAction implements OptionsInterface
+class CopyAction implements ActionInterface, OptionsInterface
 {
     use OptionsTrait;
 

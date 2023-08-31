@@ -50,7 +50,7 @@ class AuthenticatedAccount
         $this->expiresIn = null;
     }
 
-    public function useToken(ApiClient $client): void
+    public function useToken(ApiClientInterface $client): void
     {
         if ($this->accessToken) {
             $client->setHeaders([

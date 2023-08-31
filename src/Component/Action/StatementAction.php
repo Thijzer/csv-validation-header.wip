@@ -4,7 +4,6 @@ namespace Misery\Component\Action;
 
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
-use Misery\Component\Common\Pipeline\Exception\SkipPipeLineException;
 use Misery\Component\Common\Utils\ValueFormatter;
 use Misery\Component\Configurator\ConfigurationAwareInterface;
 use Misery\Component\Configurator\ConfigurationTrait;
@@ -32,18 +31,29 @@ class StatementAction implements OptionsInterface, ConfigurationAwareInterface
 
         $context = [];
         if (isset($when['context']['list'])) {
-            $context['list'] = $this->configuration->getList($when['context']['list']);
+            if (is_string($when['context']['list'])) {
+                $context['list'] = $this->configuration->getList($when['context']['list']);
+            }
+            if (is_array($when['context']['list'])) {
+                $context['list'] = $when['context']['list'];
+            }
         }
 
         $statement = StatementBuilder::build($when, $context);
-        if (isset($then['action']) && $then['action'] === 'skip') {
-            $action = new SkipAction();
-            $message = $then['skip_message'] ?? '';
-            if (!empty($message)) {
-                $message = ValueFormatter::format($message, $item);
+        if (isset($then['action'])) {
+            if ($then['action'] === 'skip') {
+                $action = new SkipAction();
+                $message = $then['skip_message'] ?? '';
+                if (!empty($message)) {
+                    $message = ValueFormatter::format($message, $item);
+                }
+                $action->setOptions(['skip_message' => $message, 'force_skip' => true]);
+            }
+            if ($then['action'] === 'copy') {
+                $action = new CopyAction();
+                $action->setOptions($then);
             }
 
-            $action->setOptions(['skip_message' => $message, 'force_skip' => true]);
             $statement->setAction($action);
         }
 

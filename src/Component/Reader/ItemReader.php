@@ -73,34 +73,37 @@ class ItemReader implements ItemReaderInterface
     {
         $reader = $this;
         foreach ($constraints as $columnName => $rowValue) {
-            if (is_string($rowValue)) {
-                $rowValue = [$rowValue];
-            }
-            if ($rowValue === ['UNIQUE']) {
-                $list = [];
-                $reader = $reader->filter(static function ($row) use ($columnName, &$list) {
-                    $id = $row[$columnName];
-                    if (in_array($id, $list, true)) {
-                        return false;
-                    }
-                    $list[] = $id;
-                    return true;
-                });
-            } elseif ($rowValue === ['IS_NOT_NUMERIC']) {
-                $reader = $reader->filter(static function ($row) use ($columnName) {
-                    return !is_numeric($row[$columnName]);
-                });
-            } elseif ($rowValue === ['NOT_EMPTY']) {
-                $reader = $reader->filter(static function ($row) use ($columnName) {
-                    return !empty($row[$columnName]);
-                });
-            } elseif ($rowValue === ['NOT_NULL']) {
-                $reader = $reader->filter(static function ($row) use ($columnName) {
-                    return false === in_array($row[$columnName], [NULL]);
-                });
-            } else {
+            if (is_array($rowValue)) {
                 $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
                     return in_array($row[$columnName], $rowValue);
+                });
+            } elseif (is_string($rowValue) && in_array($rowValue, ['UNIQUE', 'IS_NOT_NUMERIC', 'NOT_EMPTY', 'NOT_NULL'])) {
+                if ($rowValue === 'UNIQUE') {
+                    $list = [];
+                    $reader = $reader->filter(static function ($row) use ($columnName, &$list) {
+                        $id = $row[$columnName];
+                        if (in_array($id, $list, true)) {
+                            return false;
+                        }
+                        $list[] = $id;
+                        return true;
+                    });
+                } elseif ($rowValue === 'IS_NOT_NUMERIC') {
+                    $reader = $reader->filter(static function ($row) use ($columnName) {
+                        return !is_numeric($row[$columnName]);
+                    });
+                } elseif ($rowValue === 'NOT_EMPTY') {
+                    $reader = $reader->filter(static function ($row) use ($columnName) {
+                        return !empty($row[$columnName]);
+                    });
+                } elseif ($rowValue === 'NOT_NULL') {
+                    $reader = $reader->filter(static function ($row) use ($columnName) {
+                        return false === ($row[$columnName] === NULL);
+                    });
+                }
+            } else {
+                $reader = $reader->filter(static function ($row) use ($rowValue, $columnName) {
+                    return $row[$columnName] === $rowValue;
                 });
             }
         }

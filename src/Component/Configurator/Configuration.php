@@ -5,6 +5,7 @@ namespace Misery\Component\Configurator;
 use Misery\Component\Action\ItemActionProcessor;
 use Misery\Component\BluePrint\BluePrint;
 use Misery\Component\Common\Client\ApiClient;
+use Misery\Component\Common\Client\ApiClientInterface;
 use Misery\Component\Common\Collection\ArrayCollection;
 use Misery\Component\Common\Pipeline\Pipeline;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
@@ -78,12 +79,12 @@ class Configuration
         return $this->sources;
     }
 
-    public function addAccount(string $name, ApiClient $apiClient)
+    public function addAccount(string $name, ApiClientInterface $apiClient)
     {
         $this->accounts[$name] = $apiClient;
     }
 
-    public function getAccount(string $name): ?ApiClient
+    public function getAccount(string $name): ?ApiClientInterface
     {
         return $this->accounts[$name] ?? null;
     }
