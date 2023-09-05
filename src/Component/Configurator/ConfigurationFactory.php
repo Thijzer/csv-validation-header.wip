@@ -55,7 +55,7 @@ class ConfigurationFactory
         $context = $configuration['context'];
         $configuration = ContextFormatter::format($context, $configuration);
         // we want to keep the original context data, it's the only part that should be excluded.
-        $configuration['context'] = $context;
+        $configuration['context'] = array_merge($context, $configuration['context']);
 
         // remove unused keys
         $order = array_filter($order, function ($orderItem) use ($configuration) {
