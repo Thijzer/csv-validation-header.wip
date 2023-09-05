@@ -25,6 +25,8 @@ class BasicAuthApiClient implements ApiClientInterface
 
     public function sendRequest($method, $endpoint, $data = null, $headers = []): void
     {
+        $endpoint = str_replace(' ', '%20', $endpoint); // TODO tmp fix replace spaces with url encoded value, fix for Coeck delta filter
+
         $curl = curl_init($endpoint);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
