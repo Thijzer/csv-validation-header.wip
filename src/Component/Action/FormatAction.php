@@ -64,12 +64,14 @@ class FormatAction implements OptionsInterface, ItemReaderAwareInterface
                     $value = str_replace($this->getOption('search'), $this->getOption('replace'), $value);
                     break;
                 case 'number':
-                    $value = number_format(
-                        $value,
-                        $this->getOption('decimals'),
-                        $this->getOption('decimal_sep'),
-                        $this->getOption('mille_sep')
-                    );
+                    if (is_numeric($value)) {
+                        $value = number_format(
+                            $value,
+                            $this->getOption('decimals'),
+                            $this->getOption('decimal_sep'),
+                            $this->getOption('mille_sep')
+                        );
+                    }
                     break;
                 case 'explode':
                     $value = explode($this->getOption('separator'), $value);

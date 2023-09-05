@@ -38,7 +38,38 @@ class FormatActionTest extends TestCase
         ]);
 
         $result = $action->apply($item);
-
         $this->assertEquals(['field' => '12.345,68'], $result);
+
+        $item = ['field' => '12345.6789'];
+
+        $result = $action->apply($item);
+        $this->assertEquals(['field' => '12.345,68'], $result);
+
+        $action->setOptions([
+            'decimals' => 4,
+            'decimal_sep' => ',',
+            'mille_sep' => ''
+        ]);
+
+        $result = $action->apply($item);
+        $this->assertEquals(['field' => '12345,6789'], $result);
+    }
+
+    public function testApplyEmptyNumberFunction()
+    {
+        $item = ['field' => ''];
+
+        $action = new FormatAction();
+        $action->setOptions([
+            'field' => 'field',
+            'functions' => ['number'],
+            'decimals' => 2,
+            'decimal_sep' => ',',
+            'mille_sep' => '.'
+        ]);
+
+        $result = $action->apply($item);
+
+        $this->assertEquals(['field' => ''], $result);
     }
 }
