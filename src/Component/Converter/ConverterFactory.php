@@ -22,7 +22,7 @@ class ConverterFactory implements RegisteredByNameInterface
     public function createFromConfiguration(array $configuration, Configuration $config): ConverterInterface
     {
         /** @var ConverterInterface $converter */
-        $converter = $this->registryCollection['converter']->filterByAlias($configuration['name']);
+        $converter = clone $this->registryCollection['converter']->filterByAlias($configuration['name']);
 
         if ($converter instanceof OptionsInterface && isset($configuration['options'])) {
             $options = $configuration['options'];
