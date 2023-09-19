@@ -18,6 +18,7 @@ class CompareCommand extends Command
     private $master;
     private $branch;
     private $reference;
+    private $delimiter;
     private $excluded;
 
     public function __construct()
@@ -28,6 +29,7 @@ class CompareCommand extends Command
             ->option('-m --master', 'The master file')
             ->option('-b --branch', 'The branch file')
             ->option('-r --reference', 'The identities to align (comma sep)')
+            ->option('-d --delimiter', 'The delimiter (;)', null, ';')
             ->option('-e --excluded', 'exclude keys you don\'t want to compare (comma sep)')
             ->usage(
                 '<bold>  compare</end> <comment>--master /path/to/master --branch /path/to/branch --reference code</end> ## detailed<eol/>'.
@@ -36,7 +38,7 @@ class CompareCommand extends Command
         ;
     }
 
-    public function execute(string $master, string $branch, string $reference, string $excluded = null)
+    public function execute(string $master, string $branch, string $reference, string $delimiter, string $excluded = null)
     {
         $io = $this->app()->io();
 
@@ -44,8 +46,8 @@ class CompareCommand extends Command
         Assertion::file($branch);
 
         $compare = new ItemCompare(
-            CsvParser::create($master, ';'),
-            CsvParser::create($branch, ';'),
+            CsvParser::create($master, $delimiter),
+            CsvParser::create($branch, $delimiter),
             array_filter(explode(',', $excluded))
         );
 
