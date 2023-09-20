@@ -10,7 +10,7 @@ use Misery\Component\AttributeFormatter\MultiValuePresenterFormatter;
 use Misery\Component\AttributeFormatter\NumberAttributeFormatter;
 use Misery\Component\AttributeFormatter\PriceCollectionFormatter;
 use Misery\Component\AttributeFormatter\PropertyFormatterRegistry;
-use Misery\Component\AttributeFormatter\SimpleSelectAttributeFormatter;
+use Misery\Component\AttributeFormatter\SelectAttributeFormatter;
 use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
@@ -45,33 +45,44 @@ class AkeneoValueFormatterAction implements OptionsInterface, ConfigurationAware
 
         if ($this->attributeValueFormatter === null) {
             $registry = new PropertyFormatterRegistry();
+
+            // Single source allowed ATM, else giant refactor
+            if (
+                isset($context['pim_catalog_select']['source']) ||
+                isset($context['pim_catalog_simpleselect']['source']) ||
+                isset($context['pim_catalog_multiselect']['source'])
+            ) {
+                $sourceAlias = $context['pim_catalog_select']['source'] ?? $context['pim_catalog_simpleselect']['source'] ?? $context['pim_catalog_multiselect']['source'];
+                $registry->addAll(
+                    new SelectAttributeFormatter($this->getConfiguration()->getSources()->get($sourceAlias))
+                );
+            }
+
             $registry->addAll(
                 new NumberAttributeFormatter(),
                 new BooleanLabelsAttributeFormatter(),
                 new BooleanAttributeFormatter(),
                 new MetricAttributeFormatter(),
-                new MultiValuePresenterFormatter(),
                 new PriceCollectionFormatter(),
+                new MultiValuePresenterFormatter(),
             );
-
-            // Single source allowed ATM, else giant refactor
-            if (isset($context['pim_catalog_simpleselect']['source'])) {
-                $sourceAlias = $context['pim_catalog_simpleselect']['source'];
-                $registry->addAll(
-                    new SimpleSelectAttributeFormatter($this->getConfiguration()->getSources()->get($sourceAlias))
-                );
-            }
 
             $this->attributeValueFormatter = new AttributeValueFormatter($registry);
             $this->attributeValueFormatter->setAttributeTypesAndCodes($this->getOption('filter_list'));
         }
-
 
         // key represents the references that could match item keys
         foreach ($fields as $field) {
             // converted data
             $key = $this->findMatchedValueData($item, $field);
             if ($key && $this->attributeValueFormatter->needsFormatting($field)) {
+                if ($field === 'fabric_cushion_cover') {
+                    dd(
+                        $item[$key],
+                        $key,
+                        $field
+                    );
+                }
                 $item[$key]['data'] = $this->attributeValueFormatter->format($field, $item[$key]['data'], $context);
                 continue;
             }

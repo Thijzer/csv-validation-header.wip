@@ -4,7 +4,7 @@ namespace Misery\Component\AttributeFormatter;
 
 use Misery\Component\Source\Source;
 
-class SimpleSelectAttributeFormatter implements PropertyFormatterInterface, RequiresContextInterface
+class SelectAttributeFormatter implements PropertyFormatterInterface, RequiresContextInterface
 {
     private Source $source;
 
@@ -22,6 +22,14 @@ class SimpleSelectAttributeFormatter implements PropertyFormatterInterface, Requ
      */
     public function format($value, array $context = [])
     {
+        if (is_array($value)) {
+            $tmp = [];
+            foreach ($value as $valueItem) {
+                $tmp[] = $this->format($valueItem, $context);
+            }
+            return $tmp;
+        }
+
         $separator = $context['separator'] ?? '-';
 
         $this->recursiveReplace($context, '{value}', $value);
@@ -65,7 +73,11 @@ class SimpleSelectAttributeFormatter implements PropertyFormatterInterface, Requ
      */
     public function supports(string $type): bool
     {
-        return $type === 'pim_catalog_simpleselect';
+        return
+            $type === 'pim_catalog_simpleselect' ||
+            $type === 'pim_catalog_multiselect'  ||
+            $type === 'pim_catalog_select'
+        ;
     }
 
     public function requires(array $context): bool

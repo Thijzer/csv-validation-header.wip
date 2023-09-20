@@ -19,6 +19,10 @@ class MultiValuePresenterFormatter implements PropertyFormatterInterface, Requir
             return '';
         }
 
+        if ($context['current-attribute-type'] === 'pim_catalog_multiselect' && is_array($value)) {
+            return implode(',', $value);
+        }
+
         if (empty($value)) {
             return $value;
         }
