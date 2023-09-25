@@ -4,13 +4,27 @@ namespace Misery\Component\AttributeFormatter;
 
 use Misery\Component\Source\Source;
 
-class SimpleSelectAttributeFormatter implements PropertyFormatterInterface, RequiresContextInterface
+/**
+ * This formatter allows attribute code replacement
+ */
+class ReplaceAttributeCodeFormatter implements PropertyFormatterInterface, RequiresContextInterface
 {
     private Source $source;
+    private array $supportedTypes = [
+        'pim_reference_data' =>  [
+            'pim_reference_data_simpleselect',
+            'pim_reference_data_multiselect',
+        ],
+        'pim_catalog' => [
+            'pim_catalog_simpleselect',
+            'pim_catalog_multiselect',
+        ],
+    ];
 
-    public function __construct(Source $source)
+    public function __construct(Source $source, string $supportedType = 'pim_catalog')
     {
         $this->source = $source;
+        $this->supportedTypes = $this->supportedTypes[$supportedType];
     }
 
     /**
@@ -22,6 +36,14 @@ class SimpleSelectAttributeFormatter implements PropertyFormatterInterface, Requ
      */
     public function format($value, array $context = [])
     {
+        if (is_array($value)) {
+            $tmp = [];
+            foreach ($value as $valueItem) {
+                $tmp[] = $this->format($valueItem, $context);
+            }
+            return $tmp;
+        }
+
         $separator = $context['separator'] ?? '-';
 
         $this->recursiveReplace($context, '{value}', $value);
@@ -65,7 +87,7 @@ class SimpleSelectAttributeFormatter implements PropertyFormatterInterface, Requ
      */
     public function supports(string $type): bool
     {
-        return $type === 'pim_catalog_simpleselect';
+        return in_array($type, $this->supportedTypes);
     }
 
     public function requires(array $context): bool

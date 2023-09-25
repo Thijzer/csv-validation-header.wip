@@ -2,6 +2,9 @@
 
 namespace Misery\Component\AttributeFormatter;
 
+/**
+ * rename or move to Akeneo Namespace
+ */
 class AttributeValueFormatter
 {
     private array $attributeTypesAndCodes = [];
