@@ -2,9 +2,10 @@
 
 namespace Misery\Component\Action;
 
+use Misery\Component\Common\Cache\CacheSettings;
+use Misery\Component\Common\Cache\Local\LocalFilesystemCache;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
-use function _PHPStan_76800bfb5\regex;
 
 class GetImageFromBynderAction implements OptionsInterface
 {
@@ -19,29 +20,46 @@ class GetImageFromBynderAction implements OptionsInterface
         'bynder_cookieid' => 'xxxxxxxx-xxxx-xxxx-xxxxxxxxxxxxxxxx',
         'array_location' => [ 'original' ],
     ];
+    private ?LocalFilesystemCache $cachePool = null;
+
+    public function init(): void
+    {
+        if (null === $this->cachePool) {
+            $cachePath = $_ENV['CACHE_PATH'] ?? sys_get_temp_dir();
+
+            $this->cachePool = new LocalFilesystemCache(
+                $cachePath .
+                DIRECTORY_SEPARATOR .
+                'bynder_cache' .
+                DIRECTORY_SEPARATOR .
+                md5($this->getOption('bynder_url'))
+            );
+        }
+    }
 
     public function apply(array $item): array
     {
-        $fields = $this->options['fields'];
-        $bynder_url = $this->options['bynder_url'];
-        $bynder_token = $this->options['bynder_token'];
-        $bynder_cookieid = $this->options['bynder_cookieid'];
-        $array_location = $this->options['array_location'];
+        $this->init();
 
-        $bynder = [
-            'url' => $bynder_url,
-            'token' => $bynder_token,
-            'cookieid' => $bynder_cookieid,
-        ];
+        // Generate a unique cache key based on your data
+        $cacheKey = md5(json_encode($item)); // You can modify this based on your data structure
 
-        // validation
-        if (!isset($fields) || $fields === []) {
-            return $item;
-        }
+        return $this->cachePool->retrieve($cacheKey, function (CacheSettings $settings) use ($item) {
+            $settings->setTtl(3600 * 24 * 7); # 1 week
+            $fields = $this->options['fields'];
+            $bynder_url = $this->options['bynder_url'];
+            $bynder_token = $this->options['bynder_token'];
+            $bynder_cookieid = $this->options['bynder_cookieid'];
+            $array_location = $this->options['array_location'];
 
-        $item = $this->sendRequest($bynder, $item, $fields, $array_location);
+            $bynder = [
+                'url' => $bynder_url,
+                'token' => $bynder_token,
+                'cookieid' => $bynder_cookieid,
+            ];
 
-        return $item;
+            return $this->sendRequest($bynder, $item, $fields, $array_location);
+        });
     }
 
     public function sendRequest(array $bynder, array $item, array $fields, array $array_location)

@@ -10,6 +10,24 @@ use Misery\Component\Converter\Akeneo\Api\Attribute;
 use Misery\Component\Converter\AkeneoCsvHeaderContext;
 use Misery\Component\Converter\AkeneoCsvToStructuredDataConverter;
 
+// Path to your .env file (assuming it's in the project root)
+$envFilePath = __DIR__ . '/../.env';
+
+if (file_exists($envFilePath)) {
+    $lines = file($envFilePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+    foreach ($lines as $line) {
+        // Skip comments and lines that don't contain an equals sign
+        if (str_starts_with(trim($line), '#') === 0 || strpos($line, '=') === false) {
+            continue;
+        }
+
+        list($key, $value) = explode('=', $line, 2);
+        $_ENV[trim($key)] = trim($value);
+        $_SERVER[trim($key)] = trim($value);
+    }
+}
+
 $sourceRegistry = new Misery\Component\Common\Registry\Registry('source_command');
 $sourceRegistry->registerAllByName(
     new Misery\Component\Source\Command\SourceFilterCommand(),
