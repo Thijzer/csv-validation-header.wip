@@ -2,7 +2,7 @@
 
 namespace Misery\Component\Common\Cursor;
 
-class ZoneIndexer
+class ZoneFileIndexer
 {
     private const MEDIUM_CACHE_SIZE = 10000;
 
@@ -15,8 +15,8 @@ class ZoneIndexer
             // prep indexes
             $cursor->loop(function ($row) use ($cursor, $reference) {
                 if ($row) {
-                    $index = (int) $cursor->key();
-                    $zone = (int) (($index -1) / self::MEDIUM_CACHE_SIZE);
+                    $index = (int) $cursor->key(); # line number
+                    $zone = (int) (($index -1) / self::MEDIUM_CACHE_SIZE); # grouping number
                     $referenceValue = $row[$reference];
                     $this->indexes[crc32($referenceValue)] = $index;
                     $this->zones[$index] = $zone;
@@ -26,18 +26,18 @@ class ZoneIndexer
         }
     }
 
-    public function depleteIndex(string $reference, int $index): void
+    public function removeFileIndex(string $reference, int $index): void
     {
         unset($this->zones[$index]);
         unset($this->indexes[crc32($reference)]);
     }
 
-    public function getIndexByReference(string $reference)
+    public function getFileIndexByReference(string $reference)
     {
         return $this->indexes[crc32($reference)] ?? null;
     }
 
-    public function getZoneByIndex(int $index)
+    public function getZoneByFileIndex(int $index)
     {
         return $this->zones[$index] ?? null;
     }

@@ -10,7 +10,7 @@ class OldCachedZoneFetcher
 
     /** @var array */
     private $ranges = [];
-    /** @var ZoneIndexer */
+    /** @var ZoneFileIndexer */
     private $indexes;
 
     public function __construct(CursorInterface $cursor, string $reference)
@@ -44,7 +44,7 @@ class OldCachedZoneFetcher
             }
         }
 
-        $i = $this->indexes->getIndexByReference($reference);
+        $i = $this->indexes->getFileIndexByReference($reference);
 
         return $this->ranges[$zone][$i] ?? false;
     }

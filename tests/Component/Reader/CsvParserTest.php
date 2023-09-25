@@ -10,7 +10,7 @@ class CsvParserTest extends TestCase
     public function test_parse_csv_file(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../examples/users.csv');
-        $reader = new CsvParser($file, ',');
+        $reader = new CsvParser($file, ';');
 
         $this->assertTrue($file->isFile());
         $this->assertSame($reader->count(), 300);
@@ -27,7 +27,7 @@ class CsvParserTest extends TestCase
     public function test_parse_csv_with_iterator(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../examples/users.csv');
-        $reader = new CsvParser($file, ',');
+        $reader = new CsvParser($file, ';');
 
         $this->assertTrue($file->isFile());
         $this->assertSame($reader->count(), 300);
@@ -43,7 +43,7 @@ class CsvParserTest extends TestCase
     public function test_parse_csv_with_loop(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../examples/users.csv');
-        $reader = new CsvParser($file, ',');
+        $reader = new CsvParser($file, ';');
 
         $this->assertTrue($file->isFile());
         $this->assertSame($reader->count(), 300);

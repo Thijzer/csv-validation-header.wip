@@ -68,7 +68,7 @@ class ArrayFunctionsTest extends TestCase
     public function test_flatten_performance(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../examples/users.csv');
-        $reader = new ItemReader(new CachedCursor(new FunctionalCursor(new CsvParser($file, ','), function($item)  {
+        $reader = new ItemReader(new CachedCursor(new FunctionalCursor(new CsvParser($file, ';'), function($item)  {
             return ArrayFunctions::unflatten($item);
         })));
 
@@ -88,7 +88,7 @@ class ArrayFunctionsTest extends TestCase
     public function test_unflatten_performance(): void
     {
         $file = new \SplFileObject(__DIR__ . '/../../examples/users.csv');
-        $reader = new ItemReader(new CachedCursor(new CsvParser($file, ',')));
+        $reader = new ItemReader(new CachedCursor(new CsvParser($file, ';')));
 
         // approx 300.000 lines test
         $tracker = new TimeTracker();

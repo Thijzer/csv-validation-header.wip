@@ -7,26 +7,28 @@ class ContinuousBufferFetcher
     private string $indexReference;
     private array $buffer = [];
     private CursorInterface $cursor;
-    private ZoneIndexer $indexer;
+    private ZoneFileIndexer $indexer;
+    private bool $allowFileIndexRemoval;
 
-    public function __construct(CursorInterface $cursor, string $indexReference)
+    public function __construct(CursorInterface $cursor, string $indexReference, bool $allowFileIndexRemoval = false)
     {
-        $this->indexer = new ZoneIndexer();
+        $this->indexer = new ZoneFileIndexer();
         $this->cursor = $cursor;
         $this->indexReference = $indexReference;
+        $this->allowFileIndexRemoval = $allowFileIndexRemoval;
     }
 
     public function get(string $reference)
     {
         $this->indexer->init($this->cursor, $this->indexReference);
 
-        $index = $this->indexer->getIndexByReference($reference);
-        if (null === $index) {
+        $fileIndex = $this->indexer->getFileIndexByReference($reference);
+        if (null === $fileIndex) {
             return false;
         }
 
-        $zone = $this->indexer->getZoneByIndex($index);
-        if (false === $this->itemInBuffer($index, $zone)) {
+        $zone = $this->indexer->getZoneByFileIndex($fileIndex);
+        if (false === $this->itemInBuffer($fileIndex, $zone)) {
             // new item to load in
             $this->loadBufferFromZone($zone);
 
@@ -38,9 +40,11 @@ class ContinuousBufferFetcher
         }
 
         // clear memory
-        $item = $this->buffer[$zone][$index] ?? false;
-        unset($this->buffer[$zone][$index]);
-        $this->indexer->depleteIndex($reference, $index);
+        $item = $this->buffer[$zone][$fileIndex] ?? false;
+        if ($this->allowFileIndexRemoval) {
+            unset($this->buffer[$zone][$fileIndex]);
+            $this->indexer->removeFileIndex($reference, $fileIndex);
+        }
 
         return $item;
     }
@@ -54,7 +58,7 @@ class ContinuousBufferFetcher
     {
         $range = $this->indexer->getRangeFromZone($zone);
 
-        $this->cursor->seek(current($range));
+        $this->cursor->seek(current($range)); # reset line number
         while ($row = $this->cursor->current()) {
             $this->buffer[$zone][$this->cursor->key()] = $row;
             if (\count($this->buffer[$zone]) === \count($range)) {
