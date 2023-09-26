@@ -7,7 +7,7 @@ use Misery\Component\Common\Cache\SimpleCacheInterface;
 
 class LocalFilesystemCache implements SimpleCacheInterface
 {
-    private $cacheDirectory;
+    private string $cacheDirectory;
 
     public function __construct(string $cacheDirectory)
     {
@@ -27,7 +27,9 @@ class LocalFilesystemCache implements SimpleCacheInterface
         $item = $process($setting = new CacheSettings());
 
         // Cache the API response
-        $this->set($key, $item, $setting->getTtl());
+        if (!empty($item)) {
+            $this->set($key, $item, $setting->getTtl());
+        }
 
         return $item;
     }

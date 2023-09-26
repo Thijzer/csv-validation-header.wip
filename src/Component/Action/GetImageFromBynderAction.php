@@ -40,12 +40,15 @@ class GetImageFromBynderAction implements OptionsInterface
     public function apply(array $item): array
     {
         $this->init();
+        $fields = $this->options['fields'];
+        $separator = $fields['separator'] ?? ',';
 
         // Generate a unique cache key based on your data
         $cacheKey = md5(json_encode($item)); // You can modify this based on your data structure
 
-        return $this->cachePool->retrieve($cacheKey, function (CacheSettings $settings) use ($item) {
-            $settings->setTtl(3600 * 24 * 7); # 1 week
+        // fetch the images and cache them if not empty
+        $images = $this->cachePool->retrieve($cacheKey, function (CacheSettings $settings) use ($item) {
+            $settings->setTtl(3600 * 24 * 2); # 2 days
             $fields = $this->options['fields'];
             $bynder_url = $this->options['bynder_url'];
             $bynder_token = $this->options['bynder_token'];
@@ -60,12 +63,18 @@ class GetImageFromBynderAction implements OptionsInterface
 
             return $this->sendRequest($bynder, $item, $fields, $array_location);
         });
+
+        $item[$fields['to']] = implode($separator, $images);
+
+        return $item;
     }
 
     public function sendRequest(array $bynder, array $item, array $fields, array $array_location)
     {
+        $images = null;
+
         if(!isset($fields) || !is_array($fields['from']) || !is_string($fields['to'])) {
-            return $item;
+            return null;
         }
 
         $fullcodeArray = [];
@@ -88,7 +97,6 @@ class GetImageFromBynderAction implements OptionsInterface
 
         // Get the code from the item
         $fullcode = $bynder['url'] . implode(',', $fullcodeArray);
-        $separator = $fields['separator'] ?? ',';
 
         // Initialize cURL session
         $ch = curl_init();
@@ -121,7 +129,7 @@ class GetImageFromBynderAction implements OptionsInterface
             if(isset($response_array['statuscode']) && $response_array['statuscode'] == '400') {
                 // Close the cURL session
                 curl_close($ch);
-                return $item;
+                return null;
             }
 
             // Get the media item from the response
@@ -143,12 +151,11 @@ class GetImageFromBynderAction implements OptionsInterface
                     }
                     $images[] = $image;
                 }
-                $item[$fields['to']] = implode($separator, $images);
             }
         }
 
         // Close the cURL session
         curl_close($ch);
-        return $item;
+        return $images;
     }
 }
