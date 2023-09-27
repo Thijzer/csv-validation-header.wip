@@ -64,7 +64,9 @@ class GetImageFromBynderAction implements OptionsInterface
             return $this->sendRequest($bynder, $item, $fields, $array_location);
         });
 
-        $item[$fields['to']] = implode($separator, $images);
+        if (is_array($images)) {
+            $item[$fields['to']] = implode($separator, $images);
+        }
 
         return $item;
     }
