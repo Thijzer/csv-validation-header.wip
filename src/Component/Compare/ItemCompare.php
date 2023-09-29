@@ -86,11 +86,18 @@ class ItemCompare
             $branch = ColumnReducer::reduceItem($branch, ...$comparableHeaders);
 
             if ($branch != $master) {
-                $br = Arr::multiCompare($master, $branch);
+                $mb = Arr::multiCompare($master, $branch);
+                $br = Arr::multiCompare($branch, $master);
                 $changeFilter = [];
-                foreach ( Arr::multiCompare($branch, $master) as $column => $columnValue) {
+                foreach ($br as $column => $columnValue) {
                     $changeFilter[$column][self::BEFORE] = $columnValue;
-                    $changeFilter[$column][self::AFTER] = $br[$column];
+                    $changeFilter[$column][self::AFTER] = $mb[$column] ?? null;
+                }
+                if ($changeFilter === []) {
+                    foreach ($mb as $column => $columnValue) {
+                        $changeFilter[$column][self::BEFORE] = $br[$column] ?? null;
+                        $changeFilter[$column][self::AFTER] = $columnValue;
+                    }
                 }
 
                 if ($changeFilter !== []) {

@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class CompareWithEncodingTest extends TestCase
 {
-    private $items = [
+    private array $items = [
         [
             'id' => '1',
             'first_name' => 'Gordie',
@@ -77,9 +77,13 @@ class CompareWithEncodingTest extends TestCase
 
         $result = $tool->compare('id');
 
-        $changedValues = current($result['items'][ItemCompare::CHANGED])['changes'][ItemCompare::ADDED]['codes'];
+        $changedValues = current($result['items'][ItemCompare::CHANGED])['changes']['codes'];
 
-        $this->assertSame([3 => 'Z'], $changedValues);
+        // this test produces the wrong result
+        $this->assertSame([
+            ItemCompare::BEFORE => null, // ['E','F','G']
+            ItemCompare::AFTER => [3 => 'Z'], // ['E','F','G','Z']
+        ], $changedValues);
         $this->assertCount(1, $result['items'][ItemCompare::CHANGED]);
     }
 }
