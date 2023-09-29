@@ -14,6 +14,8 @@ class ItemCompare
     public const ADDED = 'ADDED';
     public const REMOVED = 'REMOVED';
     public const CHANGED = 'CHANGED';
+    public const BEFORE = 'BEFORE';
+    public const AFTER = 'AFTER';
 
     /** @var CursorInterface */
     private $master;
@@ -84,19 +86,30 @@ class ItemCompare
             $branch = ColumnReducer::reduceItem($branch, ...$comparableHeaders);
 
             if ($branch != $master) {
-                $changeFilter = array_filter([
-                    self::REMOVED => Arr::multiCompare($branch, $master),
-                    self::ADDED => Arr::multiCompare($master, $branch),
-                ]);
+                $br = Arr::multiCompare($master, $branch);
+                $changeFilter = [];
+                foreach ( Arr::multiCompare($branch, $master) as $column => $columnValue) {
+                    $changeFilter[$column][self::BEFORE] = $columnValue;
+                    $changeFilter[$column][self::AFTER] = $br[$column];
+                }
+
                 if ($changeFilter !== []) {
-                    $changes['items'][self::CHANGED][$id] = [
-                        $reference => $id,
+                    $changes['items'][self::CHANGED][$lineNumber] = [
+                        'reference' => $id,
                         'line_number' => $lineNumber,
                         'changes' => $changeFilter,
                     ];
                 }
             }
         }
+        $changes['stats'] = [
+            'headers_alignment_count' => count($changes['headers']['out_of_alignment'][self::ADDED]) + count($changes['headers']['out_of_alignment'][self::REMOVED]),
+            'removed_count' => count($changes['items'][self::REMOVED]),
+            'added_count' => count($changes['items'][self::ADDED]),
+            'changes_count' => count($changes['items'][self::CHANGED]),
+            'item_master_count' => $this->master->count(),
+            'item_branch_count' => $this->branch->count(),
+        ];
 
         return $changes;
     }
