@@ -75,7 +75,7 @@ class ItemReaderFactory implements RegisteredByNameInterface
         }
 
         if (isset($configuration['sort'])) {
-            $reader = ItemSortFilter::sort($reader, $configuration['sort']);
+            $reader = ItemSortFilter::sort($reader, $configuration['sort'], $configuration);
         }
 
         return $reader;

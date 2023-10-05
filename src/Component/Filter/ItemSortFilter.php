@@ -12,14 +12,15 @@ class ItemSortFilter
      * PLEASE don't use the sort on very large data sets
      * array_multisort can only sort on the whole data_set in memory
      */
-    public static function sort(ItemReader $reader, array $criteria): ReaderInterface
+    public static function sort(ItemReader $reader, array $criteria, array $context): ReaderInterface
     {
         $flags = ['ASC' => SORT_ASC, 'DSC' => SORT_DESC, 'DESC' => SORT_DESC];
+        $sortTypes = ['string' => SORT_STRING, 'numeric' => SORT_NUMERIC];
         $setup = [];
         foreach ($criteria as $keyName => $sortDirection) {
             $setup[] = $index = ReferenceBuilder::buildValues($reader, $keyName);
             $setup[] = $flags[strtoupper($sortDirection)];
-            $setup[] = SORT_NUMERIC;
+            $setup[] = $sortTypes[$context['sort_type'] ?? 'numeric'];
             $setup[] = array_keys($index);
         }
 
