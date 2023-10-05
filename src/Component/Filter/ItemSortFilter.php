@@ -12,7 +12,7 @@ class ItemSortFilter
      * PLEASE don't use the sort on very large data sets
      * array_multisort can only sort on the whole data_set in memory
      */
-    public static function sort(ItemReader $reader, array $criteria, array $context): ReaderInterface
+    public static function sort(ItemReader $reader, array $criteria, array $context = []): ReaderInterface
     {
         $flags = ['ASC' => SORT_ASC, 'DSC' => SORT_DESC, 'DESC' => SORT_DESC];
         $sortTypes = ['string' => SORT_STRING, 'numeric' => SORT_NUMERIC];

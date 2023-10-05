@@ -49,7 +49,7 @@ class ItemTreeSortFilter
         $items = new ItemCollection($sub->getItems());
 
         if ($items->count() > 0) {
-            $sortedReader = ItemSortFilter::sort(new ItemReader($items), $sortChildrenOn);
+            $sortedReader = ItemSortFilter::sort(new ItemReader($items), $sortChildrenOn, $configuration);
             $items = $sortedReader->getItems();
             static::$indexes[$level] = array_merge(static::$indexes[$level] ?? [], array_keys($items));
             $sortedItems = new ItemCollection($items);
