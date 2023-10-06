@@ -11,7 +11,7 @@ use Misery\Component\Feed\FeedInterface;
 
 class FeedFactory implements RegisteredByNameInterface
 {
-    private $registryCollection;
+    private array $registryCollection;
 
     public function addRegistry(RegistryInterface $registry): self
     {

@@ -8,6 +8,9 @@ use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\ConfigurationAwareInterface;
 use Misery\Component\Configurator\ConfigurationTrait;
 
+/**
+ * @deprecated
+ */
 class CategoryFeed implements FeedInterface, OptionsInterface, RegisteredByNameInterface, ConfigurationAwareInterface
 {
     use OptionsTrait;
