@@ -33,8 +33,11 @@ class ItemTreeSortFilter
 
         static::recursiveFind($main, $configuration);
 
+        $indexes = static::$indexes;
+        static::$indexes = []; # reset the indexes
+
         return $main->index(
-            array_merge(...static::$indexes)
+            array_merge(...$indexes)
         );
     }
 

@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class ItemReaderTest extends TestCase
 {
-    private $items = [
+    private array $items = [
         [
             'id' => '1',
             'first_name' => 'Gordie',
@@ -38,7 +38,7 @@ class ItemReaderTest extends TestCase
             'phone' => '12345563567',
         ],
     ];
-    private $sortableItems = [
+    private array $sortableItems = [
         [
             'id' => '1',
             'first_name' => 'Gordie',
@@ -83,7 +83,7 @@ class ItemReaderTest extends TestCase
 
     public function test_parse_a_column(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader(new ItemCollection($this->items));
 
         $filteredReader = ColumnReducer::reduce($reader, 'first_name');
 
@@ -107,7 +107,7 @@ class ItemReaderTest extends TestCase
 
     public function test_parse_columns(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader(new ItemCollection($this->items));
 
         $filteredReader = ColumnReducer::reduce($reader, 'first_name', 'last_name');
 
@@ -118,7 +118,7 @@ class ItemReaderTest extends TestCase
 
     public function test_parse_a_row(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader(new ItemCollection($this->items));
 
         $filteredReader = $reader->index([1]);
 
@@ -135,7 +135,7 @@ class ItemReaderTest extends TestCase
 
     public function test_parse_rows(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader(new ItemCollection($this->items));
 
         $filteredReader = $reader->index([1, 2]);
 
@@ -144,7 +144,7 @@ class ItemReaderTest extends TestCase
 
     public function test_mix_parse_rows_and_columns(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader(new ItemCollection($this->items));
 
         $reader = $reader
             ->index([0, 1])
@@ -167,7 +167,7 @@ class ItemReaderTest extends TestCase
 
     public function test_find_items(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader(new ItemCollection($this->items));
 
         $reader = $reader
             ->find(['first_name' => 'Frans'])
@@ -186,7 +186,7 @@ class ItemReaderTest extends TestCase
 
     public function test_filter_items(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader(new ItemCollection($this->items));
 
         $reader = $reader
             ->filter(function ($row) {
@@ -208,7 +208,7 @@ class ItemReaderTest extends TestCase
 
     public function test_double_filter_items(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader(new ItemCollection($this->items));
 
         $reader = $reader
             ->filter(function ($row) {
@@ -242,7 +242,7 @@ class ItemReaderTest extends TestCase
 
     public function test_find_multiple_items(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->items));
+        $reader = new ItemReader(new ItemCollection($this->items));
 
         $reader = $reader
             ->find(['first_name' => ['Frans', 'Mieke']])
@@ -269,7 +269,7 @@ class ItemReaderTest extends TestCase
 
     public function test_map_items(): void
     {
-        $reader = new ItemReader($items = new ItemCollection([$this->items[0]]));
+        $reader = new ItemReader(new ItemCollection([$this->items[0]]));
 
         $reader = $reader
             ->map(function ($row) {
@@ -291,7 +291,7 @@ class ItemReaderTest extends TestCase
 
     public function test_map_tree_filter(): void
     {
-        $reader = new ItemReader($items = new ItemCollection($this->sortableItems));
+        $reader = new ItemReader(new ItemCollection($this->sortableItems));
 
         $sortedReader = ItemTreeSortFilter::sort($reader, [
             'id_field' => 'id',
@@ -302,9 +302,10 @@ class ItemReaderTest extends TestCase
             ],
         ]);
         $indexes = [];
-        while ($sortedReader->getCursor()->current()) {
-            $indexes[] = $sortedReader->getCursor()->key();
-            $sortedReader->getCursor()->next();
+        $cursor = $sortedReader->getCursor();
+        while ($cursor->valid()) {
+            $indexes[] = $cursor->key();
+            $cursor->next();
         }
 
         $this->assertSame($indexes, [0,4,2,1,3]);
