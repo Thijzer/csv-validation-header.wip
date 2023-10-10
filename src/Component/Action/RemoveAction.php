@@ -14,12 +14,14 @@ class RemoveAction implements OptionsInterface
     /** @var array */
     private $options = [
         'keys' => [],
+        'fields' => [],
     ];
 
     public function apply(array $item): array
     {
-        foreach ($this->options['keys'] as $key) {
-            unset($item[$key]);
+        $fields = $this->getOption('keys', $this->getOption('fields'));
+        foreach ($fields as $field) {
+            unset($item[$field]);
         }
 
         return $item;

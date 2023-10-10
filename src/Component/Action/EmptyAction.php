@@ -7,6 +7,10 @@ use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Configurator\ConfigurationAwareInterface;
 use Misery\Component\Configurator\ConfigurationTrait;
 
+/**
+ * @deprecated
+ * This action needs improvement, it's hardcoded to akeneo data
+ */
 class EmptyAction implements OptionsInterface, ConfigurationAwareInterface
 {
     use OptionsTrait;

@@ -11,7 +11,7 @@ class KeyMapperAction implements OptionsInterface
 {
     use OptionsTrait;
 
-    private $mapper;
+    private ColumnMapper $mapper;
 
     public const NAME = 'key_mapping';
 

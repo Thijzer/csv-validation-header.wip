@@ -19,19 +19,21 @@ class RepositionKeysAction implements OptionsInterface
 
     public function apply(array $item): array
     {
+        $fields = $this->getOption('from', $this->getOption('list'));
+
         $tmp = [];
-        if ($this->options['from'] === 'all') {
+        if ($fields === 'all') {
             $tmp[$this->options['to']] = $item;
 
             return $tmp;
         }
 
-        $keys = array_intersect($this->options['from'], array_keys($item));
-        if (empty($keys)) {
+        $fields = array_intersect($fields, array_keys($item));
+        if (empty($fields)) {
             return $item;
         }
 
-        foreach ($keys as $key) {
+        foreach ($fields as $key) {
             $item[$this->options['to']][$key] = $item[$key];
             unset($item[$key]);
         }

@@ -2,7 +2,6 @@
 
 namespace Misery\Component\Action;
 
-use Misery\Component\Akeneo\AkeneoValuePicker;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 
@@ -13,13 +12,15 @@ class HashAction implements OptionsInterface
     public const NAME = 'hash';
 
     private $options = [
-        'key' => null
+        'key' => null,
+        'field' => null,
     ];
 
     public function apply(array $item): array
     {
-        if (array_key_exists($this->options['key'], $item)) {
-            $item[$this->getOption('key')] = (string) crc32($item[$this->getOption('key')]);
+        $field = $this->getOption('field', $this->getOption('key')); # legacy key
+        if (array_key_exists($field, $item)) {
+            $item[$field] = (string) crc32($item[$field]);
         }
 
         return $item;

@@ -5,6 +5,10 @@ namespace Misery\Component\Action;
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 
+/**
+ * @deprecated
+ * A pop action on 3 elements should pop the last element not pop all elements but the last element
+ */
 class PopAction implements OptionsInterface
 {
     use OptionsTrait;
@@ -19,13 +23,13 @@ class PopAction implements OptionsInterface
 
     public function apply(array $item): array
     {
-        $value = $item[$this->options['field']] ?? null;
-        if (null === $value) {
+        $field = $this->getOption('field');
+        if (false === array_key_exists($field, $item)) {
             return $item;
         }
 
-        $value = explode($this->options['separator'], $value);
-        $item[$this->options['field']] = array_pop($value);
+        $value = explode($this->options['separator'], $item[$field]);
+        $item[$field] = array_pop($value);
 
         return $item;
     }

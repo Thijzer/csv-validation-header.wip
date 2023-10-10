@@ -128,4 +128,56 @@ class FilterActionTest extends TestCase
             $format->apply($item)
         );
     }
+
+    public function test_it_should_filter_equals_case_insensitive(): void
+    {
+        $format = new FilterAction();
+
+        $item = [
+            'categories' => ['A-a', 'A-b', 'a-A', 'a-B', 'c-d'],
+            'description' => 'LV',
+            'sku' => '1',
+        ];
+
+        $format->setOptions([
+            'key' => 'categories',
+            'case-sensitive' => false, # default false
+            'equals' => 'A-a',
+        ]);
+
+        $this->assertSame(
+            [
+                'categories' =>  [1 => 'A-b', 3 => 'a-B', 4 => 'c-d'],
+                'description' => 'LV',
+                'sku' => '1',
+            ],
+            $format->apply($item)
+        );
+    }
+
+    public function test_it_should_filter_equals_case_sensitive(): void
+    {
+        $format = new FilterAction();
+
+        $item = [
+            'categories' => ['A-a', 'A-b', 'a-A', 'a-B', 'c-d'],
+            'description' => 'LV',
+            'sku' => '1',
+        ];
+
+        $format->setOptions([
+            'key' => 'categories',
+            'case-sensitive' => true, # default false
+            'equals' => 'A-a',
+        ]);
+
+        $this->assertSame(
+            [
+                'categories' =>  [1 => 'A-b', 2 => 'a-A', 3 => 'a-B', 4 => 'c-d'],
+                'description' => 'LV',
+                'sku' => '1',
+            ],
+            $format->apply($item)
+        );
+    }
 }

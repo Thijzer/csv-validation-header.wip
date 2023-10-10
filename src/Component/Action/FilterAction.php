@@ -16,38 +16,40 @@ class FilterAction implements OptionsInterface
         'match' => null,
         'equals' => null,
         'key' => null,
+        'field' => null,
         'case-sensitive' => false,
     ];
 
     public function apply($item)
     {
-        if (false === isset($item[$this->options['key']])) {
+        $field = $this->getOption('key', $this->getOption('field')); # legacy support
+        $listItem = $item[$field] ?? null;
+        if (empty($listItem) || empty($field)) {
             return $item;
         }
-        $listItem = $item[$this->options['key']];
 
         if ($this->getOption('match')) {
             if (is_array($listItem)) {
-                $item[$this->options['key']] = array_filter($listItem,function ($itemValue) {
+                $item[$field] = array_filter($listItem, function ($itemValue) {
                     return $this->hasMatch($itemValue) !== true;
                 });
             }
 
             if (is_string($listItem) && $this->hasMatch($listItem)) {
-                $item[$this->options['key']] = null;
+                $item[$field] = null;
                 return $item;
             }
         }
 
         if ($this->getOption('equals')) {
             if (is_array($listItem)) {
-                $item[$this->options['key']] = array_filter($listItem,function ($itemValue) {
+                $item[$field] = array_filter($listItem, function ($itemValue) {
                     return $this->equals($itemValue) !== true;
                 });
             }
 
             if (is_string($listItem) && $this->equals($listItem)) {
-                $item[$this->options['key']] = null;
+                $item[$field] = null;
                 return $item;
             }
         }
