@@ -5,6 +5,7 @@ namespace Misery\Component\Parser;
 use Assert\Assertion;
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Functions\ArrayFunctions;
+use Misery\Component\Filter\ColumnReducer;
 
 class CsvParser implements CursorInterface
 {
@@ -94,8 +95,7 @@ class CsvParser implements CursorInterface
             return $current;
         }
 
-        $row = @array_combine($this->headers, $current);
-        if (!is_array($row)) {
+        if (count($current) !== count($this->headers)) {
             if ($this->invalidLines === self::INVALID_SKIP_ON_LARGER && count($current) < count($this->headers)) {
                 return ArrayFunctions::arrayCombine($this->headers, $current);
             }
@@ -104,16 +104,17 @@ class CsvParser implements CursorInterface
                 return $this->current();
             }
             if ($this->invalidLines === self::INVALID_STOP) {
+                $distinctHeaderIndex = ArrayFunctions::arrayDiff(array_flip($this->headers), array_keys($current));
                 throw new Exception\InvalidCsvElementSizeException(
                     $this->file->getFilename(),
                     $this->key(),
-                    $current,
-                    $this->headers
+                    ColumnReducer::reduceItem($this->headers, ...$distinctHeaderIndex),
+                    ColumnReducer::reduceItem($current, ...$distinctHeaderIndex),
                 );
             }
         }
 
-        return $row;
+        return array_combine($this->headers, $current);
     }
 
     /**

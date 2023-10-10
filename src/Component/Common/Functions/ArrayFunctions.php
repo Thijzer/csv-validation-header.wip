@@ -116,6 +116,13 @@ class ArrayFunctions
         );
     }
 
+    public static function arrayDiff(array $a, array $b): array
+    {
+        $intersect = array_intersect($a, $b);
+
+        return array_merge(array_diff($a, $intersect), array_diff($b, $intersect));
+    }
+
     /**
      * this array_combine version will also combine
      * when the elements form array $b are less then the values of array $a
