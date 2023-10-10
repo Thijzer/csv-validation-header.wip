@@ -24,8 +24,8 @@ class ConvergenceAction implements OptionsInterface
         'store_field' => null,
         'fields' => [],
         'list' => null,
-        'item_sep' => ',',
-        'key_value_sep' => ':',
+        'item_sep' => ', ',
+        'key_value_sep' => ': ',
         'encapsulate' => false,
         'encapsulation_char' => '"',
     ];
@@ -39,13 +39,10 @@ class ConvergenceAction implements OptionsInterface
 
         $fields = $this->getOption('list', $this->getOption('fields'));
 
-        $keyValueSeparator = trim($this->getOption('key_value_sep'));
-        $elementSeparator = trim($this->getOption('item_sep'));
+        $keyValueSeparator = $this->getOption('key_value_sep');
+        $elementSeparator = $this->getOption('item_sep');
         $encapsulate = $this->getOption('encapsulate');
         $encapsulationChar = $this->getOption('encapsulation_char');
-
-        $elementSeparator .= ' ';
-        $keyValueSeparator .= ' ';
 
         $result = [];
         foreach ($fields as $fieldKey) {
