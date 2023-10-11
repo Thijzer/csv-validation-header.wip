@@ -72,4 +72,85 @@ class FormatActionTest extends TestCase
 
         $this->assertEquals(['field' => ''], $result);
     }
+
+    public function testApplyPrefixFunction()
+    {
+        $item = ['field' => '12345'];
+
+        $action = new FormatAction();
+        $action->setOptions([
+            'field' => 'field',
+            'functions' => ['prefix'],
+            'prefix' => 'test|',
+        ]);
+
+        $result = $action->apply($item);
+
+        $this->assertEquals(['field' => 'test|12345'], $result);
+    }
+
+    public function testApplySuffixFunction()
+    {
+        $item = ['field' => '12345'];
+
+        $action = new FormatAction();
+        $action->setOptions([
+            'field' => 'field',
+            'functions' => ['suffix'],
+            'suffix' => '|test',
+        ]);
+
+        $result = $action->apply($item);
+
+        $this->assertEquals(['field' => '12345|test'], $result);
+    }
+
+    public function testApplySprintfFunction()
+    {
+        $item = ['field' => '12345'];
+
+        $action = new FormatAction();
+        $action->setOptions([
+            'field' => 'field',
+            'functions' => ['sprintf'],
+            'format' => '%s|test',
+        ]);
+
+        $result = $action->apply($item);
+
+        $this->assertEquals(['field' => '12345|test'], $result);
+    }
+
+    public function testApplyExplodeFunction()
+    {
+        $item = ['field' => '1,2,3,4,5'];
+
+        $action = new FormatAction();
+        $action->setOptions([
+            'field' => 'field',
+            'functions' => ['explode'],
+            'separator' => ',',
+        ]);
+
+        $result = $action->apply($item);
+
+        $this->assertEquals(['field' => [1,2,3,4,5]], $result);
+    }
+
+    public function testApplySelectIndexFunction()
+    {
+        $item = ['field' => 'A,B'];
+
+        $action = new FormatAction();
+        $action->setOptions([
+            'field' => 'field',
+            'functions' => ['explode', 'select_index'],
+            'index' => 0,
+            'separator' => ',',
+        ]);
+
+        $result = $action->apply($item);
+
+        $this->assertEquals(['field' => 'A'], $result);
+    }
 }
