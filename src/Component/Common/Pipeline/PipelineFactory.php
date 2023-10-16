@@ -2,8 +2,11 @@
 
 namespace Misery\Component\Common\Pipeline;
 
+use Misery\Component\Common\Cursor\SubItemCursor;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\ConfigurationManager;
+use Misery\Component\Converter\ItemCollectionLoaderInterface;
+use Misery\Component\Reader\ItemReader;
 use Misery\Component\Writer\ItemWriterInterface;
 
 class PipelineFactory implements RegisteredByNameInterface
@@ -28,7 +31,7 @@ class PipelineFactory implements RegisteredByNameInterface
                     );
                     break;
 
-                case isset($configuration[$key]['writer']);
+                case $key === 'output' && isset($configuration['output']['writer']):
                     $writer = $configurationManager->createWriter($configuration['output']['writer']);
                     $pipeline->output(new PipeWriter($writer));
 
@@ -49,7 +52,7 @@ class PipelineFactory implements RegisteredByNameInterface
                     // what about decode and revert
                     break;
                 case $key === 'converter':
-                    $converter = $configurationManager->getConfig()->getConverter($configuration['converter']);
+                    $converter = $configurationManager->createConverter($configuration['converter']);
                     $pipeline->line(new ConverterPipe($converter));
                     break;
                 case $key === 'actions';
@@ -84,9 +87,20 @@ class PipelineFactory implements RegisteredByNameInterface
         array $configuration
     ): Pipeline
     {
+        $configuration = $configuration['input'];
         $pipeline = new Pipeline();
 
-        $reader = (isset($configuration['input']['http'])) ? $configurationManager->createHTTPReader($configuration['input']['http']) : $configurationManager->createReader($configuration['input']['reader']);
+        $reader = (isset($configuration['http'])) ?
+            $configurationManager->createHTTPReader($configuration['http']) :
+            $configurationManager->createReader($configuration['reader'])
+        ;
+        if (isset($configuration['reader']['converter'])) {
+            $converter = $configurationManager->createConverter($configuration['reader']['converter']);
+            if ($converter instanceof ItemCollectionLoaderInterface) {
+                $reader = new ItemReader(new SubItemCursor($reader->getCursor(), $converter));
+            }
+        }
+
         $pipeline->input(new PipeReader($reader));
 
         return $pipeline;

@@ -3,10 +3,10 @@
 namespace Misery\Component\Decoder;
 
 use Misery\Component\Common\Format\ArrayFormat;
+use Misery\Component\Common\Format\FlexibleFormat;
 use Misery\Component\Common\Format\StringFormat;
 use Misery\Component\Common\Modifier\RowModifier;
 use Misery\Component\Common\Options\OptionsInterface;
-use Misery\Component\Converter\ConverterInterface;
 
 class ItemDecoder
 {
@@ -38,13 +38,14 @@ class ItemDecoder
 
     private function processMatch(array &$item, string $property, array $match): void
     {
-        $class = $match['class'];
+        $class = $match['class'] ?? null;
 
         if ($class instanceof OptionsInterface && !empty($match['options'])) {
             $class->setOptions($match['options']);
         }
 
         switch (true) {
+            case $class instanceof FlexibleFormat:
             case $class instanceof StringFormat:
                 $item[$property] = $class->reverseFormat($item[$property]);
                 break;

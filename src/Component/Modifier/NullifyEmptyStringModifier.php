@@ -10,7 +10,7 @@ class NullifyEmptyStringModifier implements RowModifier
 
     public function modify($value)
     {
-        if(\is_array($value)) {
+        if (\is_array($value)) {
             return array_map(function ($row) {
                 return $this->modify($row);
             }, $value);
@@ -20,8 +20,14 @@ class NullifyEmptyStringModifier implements RowModifier
     }
 
     /** @inheritDoc */
-    public function reverseModify(array $item): array
+    public function reverseModify($value)
     {
-        return $item;
+        if (\is_array($value)) {
+            return array_map(function ($row) {
+                return $this->reverseModify($row);
+            }, $value);
+        }
+
+        return is_null($value) ? '' : $value;
     }
 }

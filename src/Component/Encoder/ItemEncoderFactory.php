@@ -52,7 +52,7 @@ class ItemEncoderFactory implements RegisteredByNameInterface
 
         foreach ($configuration['parse'] ?? [] as $modifierName => $modifierOptions) {
             if ($class = $this->getModifierClass($modifierName)) {
-                $rules['item'][$modifierName][] = [
+                $rules['item'][$modifierName] = [
                     'class' => $class,
                     'options' => $modifierOptions,
                 ];
@@ -60,11 +60,6 @@ class ItemEncoderFactory implements RegisteredByNameInterface
         }
 
         return $rules;
-    }
-
-    private function getConverterClass(string $formatName)
-    {
-        return $this->registryCollection['converter']->filterByAlias($formatName);
     }
 
     private function getModifierClass(string $formatName)

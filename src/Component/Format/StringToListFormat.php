@@ -20,6 +20,10 @@ class StringToListFormat implements StringFormat, OptionsInterface
 
     public function format(string $value): array
     {
+        if (empty($value)) {
+            return [];
+        }
+
 //        if (\is_array($value) && !empty($this->options['array_target'])) {
 //            $value = ArrayFunctions::flatten($value);
 //            foreach ($this->options['array_target'] as $target) {

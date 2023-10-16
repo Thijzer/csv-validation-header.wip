@@ -19,10 +19,26 @@ class ConverterFactory implements RegisteredByNameInterface
         return $this;
     }
 
+    public function getConverterFromRegistry(string $converterName): ConverterInterface
+    {
+        return $this->registryCollection['converter']->filterByAlias($converterName);
+    }
+
+    public function createMultipleConfigurations(array $configuration, Configuration $config): void
+    {
+        foreach ($configuration as $configurationItem) {
+            $this->createFromConfiguration($configurationItem, $config);
+        }
+    }
+
     public function createFromConfiguration(array $configuration, Configuration $config): ConverterInterface
     {
+        if (false === isset($configuration['name'])) {
+            throw new \Exception('Converter must have a name');
+        }
+
         /** @var ConverterInterface $converter */
-        $converter = clone $this->registryCollection['converter']->filterByAlias($configuration['name']);
+        $converter = $this->registryCollection['converter']->filterByAlias($configuration['name']);
 
         if ($converter instanceof OptionsInterface && isset($configuration['options'])) {
             $options = $configuration['options'];

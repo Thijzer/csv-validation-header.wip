@@ -40,7 +40,7 @@ class ItemDecoderFactory implements RegisteredByNameInterface
     public function parseDirectivesFromConfiguration(array $configuration): array
     {
         $rules = [];
-        foreach ($configuration['encode'] ?? [] as $property => $formatters) {
+        foreach ($configuration['encode'] ?? $configuration['decode'] ?? [] as $property => $formatters) {
             foreach ($formatters as $formatName => $formatOptions) {
                 if ($class = $this->getFormatClass($formatName)) {
                     $rules['property'][$property][$formatName] = [
