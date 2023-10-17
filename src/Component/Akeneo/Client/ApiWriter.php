@@ -99,7 +99,7 @@ class ApiWriter implements ItemWriterInterface
             case 'PATCH':
             case 'patch':
                 return $this->client
-                    ->patch($this->client->getUrlGenerator()->generate($this->endpoint->getSingleEndPoint(), $data['identifier']), $data)
+                    ->patch($this->client->getUrlGenerator()->format($this->endpoint->getSingleEndPoint(), $data), $data)
                     ->getResponse()
                 ;
             case 'MULTI_PATCH':

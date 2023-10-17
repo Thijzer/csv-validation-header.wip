@@ -2,9 +2,11 @@
 
 namespace Misery\Component\Common\Pipeline;
 
+use Misery\Component\Common\Cursor\FunctionalCursor;
 use Misery\Component\Common\Cursor\SubItemCursor;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\ConfigurationManager;
+use Misery\Component\Converter\ConverterInterface;
 use Misery\Component\Converter\ItemCollectionLoaderInterface;
 use Misery\Component\Reader\ItemReader;
 use Misery\Component\Writer\ItemWriterInterface;
@@ -24,6 +26,12 @@ class PipelineFactory implements RegisteredByNameInterface
             switch (true) {
                 case $key === 'output' && isset($configuration['output']['http']):
                     $writer = $configurationManager->createHTTPWriter($configuration['output']['http']);
+
+                    if (isset($configuration['output']['http']['converter'])) {
+                        $converter = $configurationManager->createConverter($configuration['output']['http']['converter']);
+                        $pipeline->line(new RevertPipe($converter));
+                    }
+
                     $pipeline->output(new PipeWriter($writer));
 
                     $pipeline->invalid(
@@ -98,6 +106,10 @@ class PipelineFactory implements RegisteredByNameInterface
             $converter = $configurationManager->createConverter($configuration['reader']['converter']);
             if ($converter instanceof ItemCollectionLoaderInterface) {
                 $reader = new ItemReader(new SubItemCursor($reader->getCursor(), $converter));
+            } else {
+                $reader = new ItemReader(new FunctionalCursor($reader->getCursor(), function ($item) use ($converter)  {
+                    return $converter->convert($item);
+                }));
             }
         }
 

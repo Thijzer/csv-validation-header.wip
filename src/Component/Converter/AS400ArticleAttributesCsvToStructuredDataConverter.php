@@ -4,6 +4,7 @@ namespace Misery\Component\Converter;
 
 use Misery\Component\Akeneo\Header\AkeneoHeader;
 use Misery\Component\Akeneo\Header\AkeneoHeaderTypes;
+use Misery\Component\Akeneo\Header\AkeneoHeaderFactory;
 use Misery\Component\Akeneo\StandardValueCreator;
 use Misery\Component\Common\Cursor\CachedCursor;
 use Misery\Component\Common\Options\OptionsInterface;
@@ -47,10 +48,13 @@ class AS400ArticleAttributesCsvToStructuredDataConverter implements ConverterInt
         if (null === $this->header) {
 
             // header Factory
-            $this->header = (new AS400ArticleAttributesHeaderContext())->create(
+            $this->header = (new AkeneoHeaderFactory())->create(
                 $this->getOption('attributes:list'),
                 $this->getOption('localizable_codes:list'),
-                $this->getOption('locales')
+                [],
+                $this->getOption('locales'),
+                [],
+                ['EUR']
             );
 
             $this->cachedReader = $this

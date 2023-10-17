@@ -34,6 +34,7 @@ class HttpWriterFactory implements RegisteredByNameInterface
 
             $endpointSet = [
                 ApiAttributesEndpoint::NAME => ApiAttributesEndpoint::class,
+                ApiOptionsEndpoint::NAME => ApiOptionsEndpoint::class,
                 ApiProductsEndpoint::NAME => ApiProductsEndpoint::class,
                 ApiCategoriesEndpoint::NAME => ApiCategoriesEndpoint::class,
             ];

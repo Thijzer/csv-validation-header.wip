@@ -13,6 +13,7 @@ class AkeneoProductApiConverter implements ConverterInterface, RegisteredByNameI
     private $options = [
         'structure' => 'matcher', # matcher OR flat
         'container' => 'values',
+        'allow_empty_string_values' => false,
     ];
 
     public function convert(array $item): array
@@ -43,9 +44,21 @@ class AkeneoProductApiConverter implements ConverterInterface, RegisteredByNameI
     public function revert(array $item): array
     {
         $container = $this->getOption('container');
+        $allowEmptyStringValues = $this->getOption('allow_empty_string_values');
+
+        if (isset($item['sku'])) {
+            $item['identifier'] = $item['sku'];
+            unset($item['sku']);
+        }
 
         foreach ($item ?? [] as $key => $itemValue) {
             $matcher = $itemValue['matcher'] ?? null;
+            $value = $itemValue['data']['amount'] ?? $itemValue['data'] ?? null;
+            if ($matcher && false === $allowEmptyStringValues && $value === '') {
+                unset($item[$key]);
+                continue;
+            }
+
             if ($matcher && $matcher->matches($container)) {
                 unset($itemValue['matcher']);
                 unset($item[$key]);

@@ -43,9 +43,9 @@ $converterRegistry->registerAllByName(
     new Misery\Component\Converter\AS400ArticleAttributesCsvToStructuredDataConverter(),
     new Misery\Component\Converter\RelatedProductsCsvToStructuredDataConverter(),
     new Misery\Component\Converter\OldAS400ArticleAttributesCsvToStructuredDataConverter(),
-    new Misery\Component\Converter\AkeneoCsvToStructuredDataConverter(
-        new Misery\Component\Converter\AkeneoCsvHeaderContext()
-    ),
+//    new Misery\Component\Converter\AkeneoCsvToStructuredDataConverter(
+//        new Misery\Component\Converter\AkeneoCsvHeaderContext()
+//    ),
     new Misery\Component\Converter\AkeneoProductApiConverter(),
     new Misery\Component\Converter\Akeneo\Api\Attribute(
         new Misery\Component\Converter\AkeneoCsvHeaderContext()
@@ -55,6 +55,11 @@ $converterRegistry->registerAllByName(
     ),
     new Misery\Component\Converter\AkeneoFlatProductToCsvConverter(),
     new Misery\Component\Converter\AkeneoFlatAttributeOptionsToCsv(),
+
+    new Misery\Component\Converter\Akeneo\Csv\Product(
+        new Misery\Component\Converter\AkeneoCsvHeaderContext()
+    ),
+    new Misery\Component\Converter\Akeneo\Csv\AttributeOption()
 );
 
 $feedRegistry = new Misery\Component\Common\Registry\Registry('feed');

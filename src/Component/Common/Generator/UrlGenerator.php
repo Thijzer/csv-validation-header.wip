@@ -2,6 +2,8 @@
 
 namespace Misery\Component\Common\Generator;
 
+use Misery\Component\Common\Utils\ValueFormatter;
+
 class UrlGenerator implements GeneratorInterface
 {
     private $url;
@@ -16,6 +18,13 @@ class UrlGenerator implements GeneratorInterface
     public function append(string $endpoint): void
     {
         $this->url = $this->domain . DIRECTORY_SEPARATOR.\ltrim($endpoint, DIRECTORY_SEPARATOR);
+    }
+
+    public function format(string $endPoint, ...$data): string
+    {
+        $endPoint = DIRECTORY_SEPARATOR.\ltrim($endPoint, DIRECTORY_SEPARATOR);
+
+        return $this->url . ValueFormatter::recursiveFormat($endPoint, $data);
     }
 
     public function generate(string $endPoint, ...$data): string
