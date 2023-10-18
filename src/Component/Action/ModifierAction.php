@@ -26,7 +26,7 @@ class ModifierAction implements OptionsInterface
     /** @var array */
     private $options = [
         'modifier' => null,
-        'format' => null,
+        'formatter' => null,
         'keys' => null,
     ];
 
@@ -55,7 +55,7 @@ class ModifierAction implements OptionsInterface
                 }
                 $item[$key] = $modifier->modify($listItem);
             }
-            if (null !== $listItem && $this->options['format'] && $formatter = $this->getFormatter($this->options['format'])) {
+            if (null !== $listItem && $this->options['formatter'] && $formatter = $this->getFormatter($this->options['formatter'])) {
                 if (is_array($listItem)) {
                     $item[$key] = array_map(function ($itemValue) use ($formatter) {
                         return is_string($itemValue) ? $formatter->format($itemValue) : $formatter->reverseFormat($itemValue);

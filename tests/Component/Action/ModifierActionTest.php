@@ -162,7 +162,7 @@ class ModifierActionTest extends TestCase
 
         $action->setOptions(
             [
-                'format' => 'boolean',
+                'formatter' => 'boolean',
                 'keys' => 'active',
                 'true' => 'TRUE',
                 'false' => 'FALSE',
