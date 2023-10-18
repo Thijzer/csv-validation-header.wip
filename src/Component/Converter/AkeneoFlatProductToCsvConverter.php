@@ -41,24 +41,51 @@ class AkeneoFlatProductToCsvConverter implements ConverterInterface, ReaderAware
         $tmp = [];
         $container = $this->getOption('container');
         // first we need to convert the values
-        foreach ($item[$container] ?? $this->getProductValues($item) ?? [] as $key => $value) {
-            $value = $this->getAkeneoDataStructure($key, $value);
-            $matcher = Matcher::create($container.'|'.$key, $value['locale'], $value['scope']);
-            $tmp[$key = $matcher->getMainKey()] = $value;
-            $tmp[$key]['matcher'] = $matcher;
-            unset($item[$key]);
+        foreach ($item[$container] ?? $item as $key => $value) {
+
+            list($masterKey, $context) = $this->createScopes($key);
+            if (in_array($masterKey, ['sku', 'family', 'parent'])) {
+                continue;
+            }
+
+            $value = $this->getAkeneoDataStructure($masterKey, $value, $context);
+            if (isset($value['data'])) {
+                $matcher = Matcher::create($container.'|'.$masterKey, $value['locale'], $value['scope']);
+                $tmp[$k = $matcher->getMainKey()] = $value;
+                $tmp[$k]['matcher'] = $matcher;
+                unset($item[$key]);
+            }
         }
         unset($item[$container]);
 
         return $item+$tmp;
     }
 
-    public function getAkeneoDataStructure(string $attributeCode, $value): array
+    /**
+     * short_description-en_US-print
+     *
+     * becomes
+     * masterKey short_description
+     * context [
+     *   locale => en_US,
+     *   scope => print,
+     */
+    private function createScopes(string $key, $separator = '-'): array
+    {
+        $explodedKeys = explode($separator, $key);
+
+        return [$explodedKeys[0], [
+            'locale' => $explodedKeys[1] ?? null,
+            'scope' => $explodedKeys[2] ?? null,
+        ]];
+    }
+    public function getAkeneoDataStructure(string $attributeCode, $value, array $context)
     {
         $type = $this->getOption('attribute_types:list')[$attributeCode] ?? null;
         if (null === $type) {
             return $value;
         }
+
         if (is_array($value)) {
             if (
                 array_key_exists('locale', $value) &&
@@ -121,14 +148,17 @@ class AkeneoFlatProductToCsvConverter implements ConverterInterface, ReaderAware
         }
 
         return [
-            'locale' => $localizable ? $this->getOption('default_locale') : null,
-            'scope' => $scopable ? $this->getOption('default_scope') : null,
+            'locale' => $localizable ? $context['locale'] ?? $this->getOption('default_locale') : null,
+            'scope' => $scopable ? $context['scope'] ?? $this->getOption('default_scope') : null,
             'data' => $value,
         ];
     }
 
     private function numberize($value)
     {
+        if (is_float($value)) {
+            return $value;
+        }
         if (is_integer($value)) {
             return $value;
         }
@@ -196,7 +226,7 @@ class AkeneoFlatProductToCsvConverter implements ConverterInterface, ReaderAware
                     $output[$matcher->getRowKey()] = implode(',', $itemValue['data']);
                     continue;
                 }
-                if (is_string($itemValue['data'])) {
+                if (isset($itemValue['data'])) {
                     $output[$matcher->getRowKey()] = $itemValue['data'];
                 }
             }
