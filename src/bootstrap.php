@@ -108,7 +108,7 @@ $actionRegistry
     ->register(Misery\Component\Action\GetImageFromBynderAction::NAME, new Misery\Component\Action\GetImageFromBynderAction())
     ->register(Misery\Component\Action\SetValueAction::NAME, $setValueAction = new Misery\Component\Action\SetValueAction())
     ->register(Misery\Component\Action\RepositionKeysAction::NAME, new Misery\Component\Action\RepositionKeysAction())
-    ->register(Misery\Component\Action\ModifierAction::NAME, new Misery\Component\Action\ModifierAction($modifierRegistry))
+    ->register(Misery\Component\Action\ModifierAction::NAME, new Misery\Component\Action\ModifierAction($modifierRegistry, $formatRegistry))
     ->register(Misery\Component\Action\BindAction::NAME, new Misery\Component\Action\BindAction())
     ->register(Misery\Component\Action\KeyMapperAction::NAME, new Misery\Component\Action\KeyMapperAction())
     ->register(Misery\Component\Action\ExpandAction::NAME, new Misery\Component\Action\ExpandAction())

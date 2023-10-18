@@ -2,6 +2,7 @@
 
 namespace Misery\Component\Action;
 
+use Misery\Component\Common\Format\Format;
 use Misery\Component\Common\Modifier\CellModifier;
 use Misery\Component\Common\Modifier\RowModifier;
 use Misery\Component\Common\Options\OptionsInterface;
@@ -16,18 +17,23 @@ class ModifierAction implements OptionsInterface
 
     /** @var RowModifier|CellModifier */
     private $modifier;
+    /** @var Format */
+    private $formatter;
 
-    private $registry;
+    private Registry $modifierRegistry;
+    private Registry $formatRegistry;
 
     /** @var array */
     private $options = [
         'modifier' => null,
+        'format' => null,
         'keys' => null,
     ];
 
-    public function __construct(Registry $registry)
+    public function __construct(Registry $modifierRegistry, Registry $formatRegistry)
     {
-        $this->registry = $registry;
+        $this->modifierRegistry = $modifierRegistry;
+        $this->formatRegistry = $formatRegistry;
     }
 
     public function apply($item)
@@ -35,30 +41,39 @@ class ModifierAction implements OptionsInterface
         // this should be part of the prepare state
         // when we set the options
         // so don't need to check on every action::apply
-        $keys = explode(',',$this->options['keys']);
+        $keys = explode(',', $this->options['keys']);
 
         foreach ($keys as $key) {
             $listItem = $item[$key] ?? null;
             /** @var RowModifier|CellModifier $modifier */
-            if ($listItem && $modifier = $this->getModifier()) {
+            if (null !== $listItem && $this->options['modifier'] && $modifier = $this->getModifier($this->options['modifier'])) {
                 if (is_array($listItem)) {
                     $item[$key] = array_map(function ($itemValue) use ($modifier) {
                         return is_string($itemValue) ? $modifier->modify($itemValue) : null;
                     }, $listItem);
+                    continue;
                 }
-                if (is_string($listItem)) {
-                    $item[$key] = $modifier->modify($listItem);
+                $item[$key] = $modifier->modify($listItem);
+            }
+            if (null !== $listItem && $this->options['format'] && $formatter = $this->getFormatter($this->options['format'])) {
+                if (is_array($listItem)) {
+                    $item[$key] = array_map(function ($itemValue) use ($formatter) {
+                        return is_string($itemValue) ? $formatter->format($itemValue) : $formatter->reverseFormat($itemValue);
+                    }, $listItem);
+                    continue;
                 }
+
+                $item[$key] = is_string($listItem) ? $formatter->format($listItem) : $formatter->reverseFormat($listItem);
             }
         }
 
         return $item;
     }
 
-    private function getModifier()
+    private function getModifier(string $modifierName)
     {
         if (null === $this->modifier) {
-            if ($this->modifier = $this->registry->filterByAlias($this->options['modifier'])) {
+            if ($this->modifier = $this->modifierRegistry->filterByAlias($modifierName)) {
                 if ($this->modifier instanceof OptionsInterface) {
                     $this->modifier->setOptions($this->options);
                 }
@@ -66,5 +81,18 @@ class ModifierAction implements OptionsInterface
         }
 
         return $this->modifier;
+    }
+
+    private function getFormatter(string $formatName)
+    {
+        if (null === $this->formatter) {
+            if ($this->formatter = $this->formatRegistry->filterByAlias($formatName)) {
+                if ($this->formatter instanceof OptionsInterface) {
+                    $this->formatter->setOptions($this->options);
+                }
+            }
+        }
+
+        return $this->formatter;
     }
 }

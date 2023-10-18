@@ -4,6 +4,7 @@ namespace Tests\Misery\Component\Action;
 
 use Misery\Component\Action\ModifierAction;
 use Misery\Component\Common\Registry\Registry;
+use Misery\Component\Format\StringToBooleanFormat;
 use Misery\Component\Modifier\ReplaceCharacterModifier;
 use PHPUnit\Framework\TestCase;
 
@@ -12,9 +13,11 @@ class ModifierActionTest extends TestCase
     public function test_it_should_modify_multi_key_values_action(): void
     {
         $registry = new Registry('modifier');
+        $formatRegistry = new Registry('format');
+
         $modifier = new ReplaceCharacterModifier();
         $registry->register($modifier::NAME, $modifier);
-        $format = new ModifierAction($registry);
+        $format = new ModifierAction($registry, $formatRegistry);
 
         $format->setOptions(
             [
@@ -62,9 +65,11 @@ class ModifierActionTest extends TestCase
     public function test_it_should_modify_single_key_values_action(): void
     {
         $registry = new Registry('modifier');
+        $formatRegistry = new Registry('format');
+
         $modifier = new ReplaceCharacterModifier();
         $registry->register($modifier::NAME, $modifier);
-        $format = new ModifierAction($registry);
+        $format = new ModifierAction($registry, $formatRegistry);
 
         $format->setOptions(
             [
@@ -112,9 +117,11 @@ class ModifierActionTest extends TestCase
     public function test_it_should_modify_single_key_with_empty_values_action(): void
     {
         $registry = new Registry('modifier');
+        $formatRegistry = new Registry('format');
+
         $modifier = new ReplaceCharacterModifier();
         $registry->register($modifier::NAME, $modifier);
-        $format = new ModifierAction($registry);
+        $format = new ModifierAction($registry, $formatRegistry);
 
         $format->setOptions(
             [
@@ -141,5 +148,49 @@ class ModifierActionTest extends TestCase
         ];
 
         $this->assertEquals($expected, $format->apply($item));
+    }
+
+    public function test_it_should_format_a_boolean_action(): void
+    {
+        $registry = new Registry('modifier');
+        $formatRegistry = new Registry('format');
+        $formatter = new StringToBooleanFormat();
+        $formatRegistry->register($formatter::NAME, $formatter);
+        $modifier = new ReplaceCharacterModifier();
+        $registry->register($modifier::NAME, $modifier);
+        $action = new ModifierAction($registry, $formatRegistry);
+
+        $action->setOptions(
+            [
+                'format' => 'boolean',
+                'keys' => 'active',
+                'true' => 'TRUE',
+                'false' => 'FALSE',
+            ]
+        );
+
+        $item = [
+            'active' => true,
+            'sku' => '1',
+        ];
+
+        $expected = [
+            'active' => 'TRUE',
+            'sku' => '1',
+        ];
+
+        $this->assertEquals($expected, $action->apply($item));
+
+        $item = [
+            'active' => false,
+            'sku' => '1',
+        ];
+
+        $expected = [
+            'active' => 'FALSE',
+            'sku' => '1',
+        ];
+
+        $this->assertEquals($expected, $action->apply($item));
     }
 }
