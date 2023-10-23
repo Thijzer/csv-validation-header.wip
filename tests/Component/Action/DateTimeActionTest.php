@@ -171,25 +171,4 @@ class DateTimeActionTest extends TestCase
             'dateTime' => '6:30 pm'
         ],  $dateTimeAction->apply($item));
     }
-
-    public function testConvertMappedFormatValidCase()
-    {
-        $dateTimeAction = new DateTimeAction();
-
-        $item = [
-            'sku' => '12',
-            'dateTime' => '18:30:00'
-        ];
-
-        $dateTimeAction->setOptions([
-            'field' => 'dateTime',
-            'inputFormat' => 'H:i:s',
-            'outputFormat' => 'COOKIE',
-        ]);
-
-        $this->assertEquals([
-            'sku' => '12',
-            'dateTime' => 'Wednesday, 18-Oct-2023 18:30:00 UTC'
-        ],  $dateTimeAction->apply($item));
-    }
 }

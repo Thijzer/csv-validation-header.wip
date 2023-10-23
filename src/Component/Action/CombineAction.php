@@ -7,7 +7,7 @@ use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Common\Pipeline\Exception\InvalidItemException;
 
-class CombineAction implements OptionsInterface
+class CombineAction implements ActionInterface, OptionsInterface
 {
     use OptionsTrait;
 

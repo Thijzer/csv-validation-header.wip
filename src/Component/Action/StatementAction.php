@@ -54,6 +54,11 @@ class StatementAction implements OptionsInterface, ConfigurationAwareInterface
                 $action->setOptions($then);
             }
 
+            if ($then['action'] === 'combine') {
+                $action = new CombineAction();
+                $action->setOptions($then);
+            }
+
             $statement->setAction($action);
         }
 
@@ -61,6 +66,11 @@ class StatementAction implements OptionsInterface, ConfigurationAwareInterface
             $statement->then($then['field'], $then['state'] ?? null);
         } else {
             foreach ($then as $thenField => $thenState) {
+                // tmp fix for combine action because its an array
+                if ($thenField === 'keys') {
+                    return $statement->apply($item);
+                }
+
                 $statement->then($thenField, $thenState ?? null);
             }
         }
