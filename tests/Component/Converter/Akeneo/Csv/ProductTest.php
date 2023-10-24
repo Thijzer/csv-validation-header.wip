@@ -77,19 +77,13 @@ class ProductTest extends TestCase
         $this->assertEquals($this->getNormalizedData(), $converter->convert($this->inputData));
     }
 
-//    public function testRevert()
-//    {
-//        $csvHeaderContext = new AkeneoCsvHeaderContext();
-//        $converter = new Product($csvHeaderContext);
-//        $converter->setOptions([
-//            'attribute_types:list' => [
-//                'attribute1' => 'pim_catalog_text',
-//                'attribute2' => 'pim_catalog_text',
-//            ],
-//        ]);
-//
-//        $this->assertEquals($this->inputData, $converter->revert($this->getNormalizedData()));
-//    }
+    public function testRevert()
+    {
+        $csvHeaderContext = new AkeneoCsvHeaderContext();
+        $converter = new Product($csvHeaderContext);
+
+        $this->assertEquals($this->inputData, $converter->revert($this->getNormalizedData()));
+    }
 
     public function testName()
     {

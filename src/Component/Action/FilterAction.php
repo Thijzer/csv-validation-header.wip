@@ -4,6 +4,7 @@ namespace Misery\Component\Action;
 
 use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
+use Misery\Component\Converter\Matcher;
 
 class FilterAction implements OptionsInterface
 {
@@ -26,7 +27,7 @@ class FilterAction implements OptionsInterface
     {
         $field = $this->getOption('key', $this->getOption('field')); # legacy support
         $listItem = $item[$field] ?? null;
-        if (empty($listItem) || empty($field)) {
+        if (null === $listItem || null === $field) {
             return $item;
         }
 

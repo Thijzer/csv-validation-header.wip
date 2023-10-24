@@ -20,20 +20,23 @@ class CopyAction implements ActionInterface, OptionsInterface
 
     public function apply(array $item): array
     {
-        $matched = $this->findMatchedValueData($item, $this->options['from']);
+        $to = $this->getOption('to');
+        $from = $this->getOption('from');
+
+        $matched = $this->findMatchedValueData($item, $from);
         if ($matched) {
-            $matcher = $item[$matched]['matcher']->duplicateWithNewKey($this->options['to']);
+            $matcher = $item[$matched]['matcher']->duplicateWithNewKey($to);
             $item[$matcher->getMainKey()] = $item[$matched];
             $item[$matcher->getMainKey()]['matcher'] = $matcher;
 
             return $item;
         }
 
-        if (!isset($item[$this->options['from']])) {
+        if (!isset($item[$from])) {
             return $item;
         }
 
-        $item[$this->options['to']] = $item[$this->options['from']];
+        $item[$to] = $item[$from];
 
         return $item;
     }

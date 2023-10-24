@@ -41,6 +41,12 @@ class PipelineFactory implements RegisteredByNameInterface
 
                 case $key === 'output' && isset($configuration['output']['writer']):
                     $writer = $configurationManager->createWriter($configuration['output']['writer']);
+
+                    if (isset($configuration['output']['writer']['converter'])) {
+                        $converter = $configurationManager->createConverter($configuration['output']['writer']['converter']);
+                        $pipeline->line(new RevertPipe($converter));
+                    }
+
                     $pipeline->output(new PipeWriter($writer));
 
                     $pipeline->invalid(

@@ -36,4 +36,26 @@ class UnsetActionTest extends TestCase
 
         $this->assertEquals(['field' => 'value'], $result);
     }
+
+    public function testApplyUnsetEmptyKeys()
+    {
+        $item = ['field' => ['key1' => 'value1', 'key2' => 'value2', 'key3' => null]];
+
+        $action = new UnsetAction();
+        $action->setOptions([
+            'field' => 'field',
+            'empty_only' => true,
+            'list' => ['key1', 'key2', 'key3']
+        ]);
+
+        $this->assertEquals(['field' => ['key1' => 'value1', 'key2' => 'value2']], $action->apply($item));
+
+        $action->setOptions([
+            'field' => 'field',
+            'empty_only' => 1,
+            'list' => ['key1', 'key2', 'key3']
+        ]);
+
+        $this->assertEquals(['field' => ['key1' => 'value1', 'key2' => 'value2']], $action->apply($item));
+    }
 }

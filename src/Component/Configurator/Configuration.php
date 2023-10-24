@@ -40,6 +40,8 @@ class Configuration
     private $accounts;
     private $isMultiStep = false;
 
+    private array $extensions = [];
+
     public function __construct()
     {
         $this->converters = new ArrayCollection();
@@ -47,6 +49,21 @@ class Configuration
         $this->encoders = new ArrayCollection();
         $this->decoders = new ArrayCollection();
         $this->blueprints = new ArrayCollection();
+    }
+
+    /**
+     * @return \SplFileInfo[]
+     */
+    public function getExtensions(): array
+    {
+        return $this->extensions;
+    }
+
+    public function setExtensions(\Traversable $files): void
+    {
+        foreach ($files as $file) {
+            $this->extensions[basename($file)] = $file;
+        }
     }
 
     public function isMultiStep(): bool

@@ -17,9 +17,11 @@ class ZoneFileIndexer
                 if ($row) {
                     $index = (int) $cursor->key(); # line number
                     $zone = (int) (($index -1) / self::MEDIUM_CACHE_SIZE); # grouping number
-                    $referenceValue = $row[$reference];
-                    $this->indexes[crc32($referenceValue)] = $index;
-                    $this->zones[$index] = $zone;
+                    $referenceValue = $row[$reference] ?? null;
+                    if ($referenceValue) {
+                        $this->indexes[crc32($referenceValue)] = $index;
+                        $this->zones[$index] = $zone;
+                    }
                 }
             });
             $cursor->rewind();

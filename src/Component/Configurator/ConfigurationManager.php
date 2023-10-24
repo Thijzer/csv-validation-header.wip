@@ -73,6 +73,11 @@ class ConfigurationManager
         if ($additionalSources) {
             $this->inMemoryFileManager->addFromFileManager($additionalSources);
         }
+
+        $extensionsCursor = $additionalSources->find('Extensions/*');
+        if ($extensionsCursor->current()) {
+            $this->config->setExtensions($extensionsCursor);
+        }
     }
 
     /**

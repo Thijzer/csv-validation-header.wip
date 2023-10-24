@@ -9,6 +9,8 @@ use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Converter\AkeneoCsvHeaderContext;
 use Misery\Component\Converter\ConverterInterface;
 use Misery\Component\Converter\Matcher;
+use Misery\Component\Decoder\ItemDecoder;
+use Misery\Component\Decoder\ItemDecoderFactory;
 use Misery\Component\Encoder\ItemEncoder;
 use Misery\Component\Encoder\ItemEncoderFactory;
 use Misery\Component\Format\StringToBooleanFormat;
@@ -20,9 +22,11 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
 
     private AkeneoCsvHeaderContext $csvHeaderContext;
     private ItemEncoder $encoder;
+    private ItemDecoder $decoder;
 
     private $options = [
-        'attribute_types:list' => null,
+        'container' => 'values',
+        'attribute_types:list' => null, # this key value list is optional, improves type matching for options, metrics, prices
         'properties' => [
             'sku' => [
                 'text' => null,
@@ -46,15 +50,21 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
     public function __construct(AkeneoCsvHeaderContext $csvHeaderContext)
     {
         $this->csvHeaderContext = $csvHeaderContext;
-        $this->encoder = $this->ItemEncoderFactory()->createItemEncoder([
+        list($encoder, $decoder) = $this->ItemEncoderDecoderFactory();
+        $this->encoder = $encoder->createItemEncoder([
             'encode' => $this->getOption('properties'),
+            'parse' => $this->getOption('parse'),
+        ]);
+        $this->decoder = $decoder->createItemDecoder([
+            'decode' => $this->getOption('properties'),
             'parse' => $this->getOption('parse'),
         ]);
     }
 
-    private function ItemEncoderFactory(): ItemEncoderFactory
+    private function ItemEncoderDecoderFactory(): array
     {
         $encoderFactory = new ItemEncoderFactory();
+        $decoderFactory = new ItemDecoderFactory();
 
         $formatRegistry = new Registry('format');
         $formatRegistry
@@ -63,8 +73,9 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
         ;
 
         $encoderFactory->addRegistry($formatRegistry);
+        $decoderFactory->addRegistry($formatRegistry);
 
-        return $encoderFactory;
+        return [$encoderFactory, $decoderFactory];
     }
 
     public function convert(array $item): array
@@ -97,16 +108,18 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
             $prep = $this->csvHeaderContext->create($item)[$key];
             $prep['data'] = $value;
 
-            # metrics
-            if ($codes[$masterKey] === 'pim_catalog_metric') {
-                $prep['data'] = [
-                    'amount' => $value,
-                    'unit' => $item[str_replace($masterKey, $masterKey.'-unit', $key)] ?? null,
-                ];
-            }
-            # multiselect
-            if ($codes[$masterKey] === 'pim_catalog_multiselect') {
-                $prep['data'] = array_filter(explode(',', $prep['data']));
+            if (is_array($codes)) {
+                # metrics
+                if ($codes[$masterKey] === 'pim_catalog_metric') {
+                    $prep['data'] = [
+                        'amount' => $value,
+                        'unit' => $item[str_replace($masterKey, $masterKey.'-unit', $key)] ?? null,
+                    ];
+                }
+                # multiselect
+                if ($codes[$masterKey] === 'pim_catalog_multiselect') {
+                    $prep['data'] = array_filter(explode(',', $prep['data']));
+                }
             }
 
             $matcher = Matcher::create('values|'.$masterKey, $prep['locale'], $prep['scope']);
@@ -122,7 +135,38 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
 
     public function revert(array $item): array
     {
-        return $item;
+        $container = $this->getOption('container');
+
+        $output = [];
+        $output['sku'] = $item['sku'] ?? $item['identifier'] ?? null;
+        $output['enabled'] = $item['enabled'];
+        $output['family'] = $item['family'];
+        $output['categories'] = $item['categories'];
+        $output['parent'] = $item['parent'];
+        $output = $this->decoder->decode($output);
+
+        foreach ($item as $key => $itemValue) {
+            $matcher = $itemValue['matcher'] ?? null;
+            /** @var $matcher Matcher */
+            if ($matcher && $matcher->matches($container)) {
+                unset($itemValue['matcher']);
+                unset($item[$key]);
+                if (is_array($itemValue['data']) && array_key_exists('unit', $itemValue['data'])) {
+                    $output[$matcher->getRowKey()] = $itemValue['data']['amount'];
+                    $output[$matcher->getRowKey().'-unit'] = $itemValue['data']['unit'];
+                    continue;
+                }
+                if (is_array($itemValue['data'])) {
+                    $output[$matcher->getRowKey()] = implode(',', $itemValue['data']);
+                    continue;
+                }
+                if (isset($itemValue['data'])) {
+                    $output[$matcher->getRowKey()] = $itemValue['data'];
+                }
+            }
+        }
+
+        return $output;
     }
 
     public function getName(): string

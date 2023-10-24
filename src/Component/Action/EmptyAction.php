@@ -10,6 +10,10 @@ use Misery\Component\Configurator\ConfigurationTrait;
 /**
  * @deprecated
  * This action needs improvement, it's hardcoded to akeneo data
+ * EmptyAction clears values
+ * ATM it's action limited to akeneo data
+ * - It should support flat data fields
+ * - It should support Matched fields instead direct Akeneo API data
  */
 class EmptyAction implements OptionsInterface, ConfigurationAwareInterface
 {
@@ -22,6 +26,7 @@ class EmptyAction implements OptionsInterface, ConfigurationAwareInterface
     private $options = [
         'field' => null,
         'list' => null,
+        'prefix' => null,
     ];
 
     public function apply(array $item): array

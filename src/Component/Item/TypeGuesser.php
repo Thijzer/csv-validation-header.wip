@@ -2,12 +2,21 @@
 
 namespace Misery\Component\Item;
 
+use Misery\Component\Converter\Matcher;
+
 class TypeGuesser
 {
     public static function guess(array $item): array
     {
         $set = [];
         foreach ($item as $key => $value) {
+            /** @var $matcher Matcher */
+            if (is_array($value) && array_key_exists('matcher', $value)) {
+                $matcher = $value['matcher'];
+                $set[$matcher->getMainKey()] = $value['data'];
+                continue;
+            }
+
             $filtered = is_array($value) ? array_diff($value, ['', '-']) : null;
             switch (true) {
                 case is_numeric($value):
