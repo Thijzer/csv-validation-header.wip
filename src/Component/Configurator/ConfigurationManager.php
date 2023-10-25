@@ -75,7 +75,7 @@ class ConfigurationManager
         }
 
         $extensionsCursor = $additionalSources->find('Extensions/*');
-        if ($extensionsCursor->current()) {
+        if ($extensionsCursor->valid()) {
             $this->config->setExtensions($extensionsCursor);
         }
     }
