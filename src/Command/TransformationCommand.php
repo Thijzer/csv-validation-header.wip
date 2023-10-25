@@ -18,6 +18,7 @@ class TransformationCommand extends Command
     private $file;
     private $source;
     private $addSource;
+    private $extensions;
     private $debug;
     private $showMappings;
     private $try;
@@ -31,6 +32,7 @@ class TransformationCommand extends Command
             ->option('-f --file', 'The transformation file location')
             ->option('-s --source', 'The sources location')
             ->option('-s --addSource', 'Add additional sources location', null)
+            ->option('-s --extensions', 'Add extensions', null)
             ->option('-d --debug', 'enable debugging', 'boolval', false)
             ->option('-m --showMappings', 'show lists or mappings', 'boolval', false)
             ->option('-t --try', 'tryout a set for larger files')
@@ -44,7 +46,7 @@ class TransformationCommand extends Command
         ;
     }
 
-    public function execute(string $file, string $source, string $workpath, bool $debug, string $addSource = null, int $line = null, int $try = null, bool $showMappings = null)
+    public function execute(string $file, string $source, string $workpath, bool $debug, string $addSource = null, string $extensions = null, int $line = null, int $try = null, bool $showMappings = null)
     {
         $io = $this->app()->io();
 
@@ -52,6 +54,9 @@ class TransformationCommand extends Command
 
         if (null !== $addSource) {
             Assertion::directory($addSource);
+        }
+        if (null !== $extensions) {
+            Assertion::directory($extensions);
         }
 
         Assertion::directory($source);
@@ -63,7 +68,8 @@ class TransformationCommand extends Command
         $configurationFactory->init(
             new LocalFileManager($workpath),
             $source ? new LocalFileManager($source): null,
-            $addSource ? new LocalFileManager($addSource): null
+            $addSource ? new LocalFileManager($addSource): null,
+            $extensions ? new LocalFileManager($extensions): null,
         );
 
         $transformationFile = ArrayFunctions::array_filter_recursive(Yaml::parseFile($file), function ($value) {

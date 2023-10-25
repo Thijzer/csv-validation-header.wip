@@ -57,7 +57,8 @@ class ConfigurationManager
         LocalFileManager     $workFiles,
         SourceCollection     $sources = null,
         LocalFileManager     $sourceFiles = null,
-        LocalFileManager     $additionalSources = null
+        LocalFileManager     $additionalSources = null,
+        LocalFileManager     $extensions = null,
     ) {
         $this->sources = $sources;
         $this->sourceFiles = $sourceFiles;
@@ -72,11 +73,10 @@ class ConfigurationManager
 
         if ($additionalSources) {
             $this->inMemoryFileManager->addFromFileManager($additionalSources);
+        }
 
-            $extensionsCursor = $additionalSources->find('Extensions/*');
-            if ($extensionsCursor->valid()) {
-                $this->config->setExtensions($extensionsCursor);
-            }
+        if ($extensions) {
+            $this->config->setExtensions($extensions);
         }
     }
 

@@ -7,6 +7,7 @@ use Misery\Component\BluePrint\BluePrint;
 use Misery\Component\Common\Client\ApiClient;
 use Misery\Component\Common\Client\ApiClientInterface;
 use Misery\Component\Common\Collection\ArrayCollection;
+use Misery\Component\Common\FileManager\LocalFileManager;
 use Misery\Component\Common\Pipeline\Pipeline;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Converter\ConverterInterface;
@@ -59,10 +60,10 @@ class Configuration
         return $this->extensions;
     }
 
-    public function setExtensions(\Traversable $files): void
+    public function setExtensions(LocalFileManager $files): void
     {
-        foreach ($files as $file) {
-            $this->extensions[basename($file)] = $file;
+        foreach ($files->listFiles() as $file) {
+            $this->extensions[basename($file)] = new \SplFileInfo($file);
         }
     }
 
