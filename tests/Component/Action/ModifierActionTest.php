@@ -193,4 +193,46 @@ class ModifierActionTest extends TestCase
 
         $this->assertEquals($expected, $action->apply($item));
     }
+
+    public function test_it_should_format_a_boolean_action_no_options(): void
+    {
+        $registry = new Registry('modifier');
+        $formatRegistry = new Registry('format');
+        $formatter = new StringToBooleanFormat();
+        $formatRegistry->register($formatter::NAME, $formatter);
+        $modifier = new ReplaceCharacterModifier();
+        $registry->register($modifier::NAME, $modifier);
+        $action = new ModifierAction($registry, $formatRegistry);
+
+        $action->setOptions(
+            [
+                'formatter' => 'boolean',
+                'keys' => 'active',
+            ]
+        );
+
+        $item = [
+            'active' => true,
+            'sku' => '1',
+        ];
+
+        $expected = [
+            'active' => '1',
+            'sku' => '1',
+        ];
+
+        $this->assertEquals($expected, $action->apply($item));
+
+        $item = [
+            'active' => false,
+            'sku' => '1',
+        ];
+
+        $expected = [
+            'active' => '0',
+            'sku' => '1',
+        ];
+
+        $this->assertEquals($expected, $action->apply($item));
+    }
 }
