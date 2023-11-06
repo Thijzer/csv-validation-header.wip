@@ -6,6 +6,7 @@ use Assert\Assert;
 use Misery\Component\Common\Cursor\ContinuousBufferFetcher;
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Cursor\FunctionalCursor;
+use Misery\Component\Common\Cursor\OldCachedZoneFetcher;
 use Misery\Component\Common\FileManager\InMemoryFileManager;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Filter\ColumnReducer;
@@ -29,7 +30,8 @@ class ItemParserFactory implements RegisteredByNameInterface
             $mainParser = $this->createFromConfiguration($configuration, $manager);
 
             foreach ($joins as $join) {
-                $fetcher = clone new ContinuousBufferFetcher($this->createFromConfiguration($join, $manager), $join['link_join'], $join['allow_fileindex_removal'] ?? false);
+                $fetcher = clone new OldCachedZoneFetcher($this->createFromConfiguration($join, $manager), $join['link_join'], $join['allow_fileindex_removal'] ?? false);
+                ##$fetcher = clone new ContinuousBufferFetcher($this->createFromConfiguration($join, $manager), $join['link_join'], $join['allow_fileindex_removal'] ?? false);
                 $mainParser = new FunctionalCursor($mainParser, function ($row) use ($fetcher, $join) {
                     $masterID = $row[$join['link']];
                     $item = $fetcher->get($masterID) ?? [];
