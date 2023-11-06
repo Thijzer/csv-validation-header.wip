@@ -25,7 +25,7 @@ class OldZoneIndexer
         $cursor->rewind();
     }
 
-    public function getIndexByReference(string $reference)
+    public function getFileIndexByReference(string $reference)
     {
         return $this->indexes[$reference] ?? null;
     }

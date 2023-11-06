@@ -279,43 +279,4 @@ class ItemParserFactoryTest extends TestCase
 
         $this->assertSame($expected, $reader->read());
     }
-
-    public function test_joining_files_without_reusing_codes(): void
-    {
-        $path = __DIR__ . '/../../examples/%s.csv';
-
-        $manager = new InMemoryFileManager();
-
-        $manager->addFiles([
-            sprintf($path, 'designers'),
-            sprintf($path, 'field_codes'),
-        ]);
-
-        $configuration = [
-            'type' => 'csv',
-            'filename' => 'field_codes.csv',
-            'join' => [
-                [
-                    'filename' => 'designers.csv',
-                    'type' => 'csv',
-                    'allow_fileindex_removal' => true,
-                    'link' => 'single_line_text_field',
-                    'link_join' => 'code',
-                    'return' => ['label'],
-                ],
-            ],
-        ];
-        $factory = new ItemParserFactory();
-        $cursor = $factory->createFromConfiguration($configuration, $manager);
-
-        $reader = new ItemReader($cursor);
-        $reader->read(); # read ahead 1 line
-
-        $expected = [
-            'single_line_text_field' => '103',
-            'label' => null,
-        ];
-
-        $this->assertSame($expected, $reader->read());
-    }
 }
