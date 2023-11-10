@@ -139,10 +139,18 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
 
         $output = [];
         $output['sku'] = $item['sku'] ?? $item['identifier'] ?? null;
-        $output['enabled'] = $item['enabled'] ?? null;
-        $output['family'] = $item['family'] ?? null;
-        $output['categories'] = $item['categories'] ?? null;
-        $output['parent'] = $item['parent'] ?? null;
+        if (isset($item['enabled'])) {
+            $output['enabled'] = $item['enabled'];
+        }
+        if (array_key_exists($item['family'])) {
+            $output['family'] = $item['family'];
+        }
+        if (array_key_exists($item['categories'])) {
+            $output['categories'] = $item['categories'];
+        }
+        if (array_key_exists($item['parent'])) {
+            $output['parent'] = $item['parent'];
+        }
         $output = $this->decoder->decode($output);
 
         foreach ($item as $key => $itemValue) {
