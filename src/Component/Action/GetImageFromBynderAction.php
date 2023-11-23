@@ -158,6 +158,7 @@ class GetImageFromBynderAction implements OptionsInterface
 
         // Close the cURL session
         curl_close($ch);
-        return $images;
+
+        return is_array($images) ? array_filter($images): $images;
     }
 }
