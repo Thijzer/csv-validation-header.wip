@@ -24,14 +24,19 @@ class ItemParserFactory implements RegisteredByNameInterface
             'type must be filled in.'
         )->notEmpty()->string()->inArray(['xml', 'csv', 'xlsx', 'list', 'feed', 'yaml', 'buffer', 'json']);
 
+        $fetchers = [
+            'continuous' => ContinuousBufferFetcher::class,
+            'zone' => OldCachedZoneFetcher::class
+        ];
+        $classFetcher = $fetchers[strtolower($configuration['fetcher'] ?? 'zone')];
+
         if (isset($configuration['join'])) {
             $joins = $configuration['join'];
             unset($configuration['join']);
             $mainParser = $this->createFromConfiguration($configuration, $manager);
 
             foreach ($joins as $join) {
-                $fetcher = clone new OldCachedZoneFetcher($this->createFromConfiguration($join, $manager), $join['link_join'], $join['allow_fileindex_removal'] ?? false);
-                ##$fetcher = clone new ContinuousBufferFetcher($this->createFromConfiguration($join, $manager), $join['link_join'], $join['allow_fileindex_removal'] ?? false);
+                $fetcher = clone new $classFetcher($this->createFromConfiguration($join, $manager), $join['link_join'], $join['allow_fileindex_removal'] ?? false);
                 $mainParser = new FunctionalCursor($mainParser, function ($row) use ($fetcher, $join) {
                     $masterID = $row[$join['link']];
                     $item = $fetcher->get($masterID) ?? [];

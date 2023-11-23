@@ -15,7 +15,7 @@ class ItemsFactoryIntoItem
             return [];
         }
 
-        $result = array_fill_keys($configuration['list'], '');
+        $result = !empty($configuration['list']) ? array_fill_keys($configuration['list'], '') : [];
         $spreadConfiguration = $configuration['spread'];
         $attributesToKeep = [];
 

@@ -22,7 +22,7 @@ class CharlenStatement implements PredeterminedStatementInterface
 
         switch ($this->context['condition']) {
             case 'greater_than':
-                return isset($item[$field->getField()]) && (strlen($item[$field->getField()]) > $this->context['char_len']);
+                return isset($item[$field->getField()]) && (mb_strlen($item[$field->getField()]) > $this->context['char_len']);
                 break;
         }
 

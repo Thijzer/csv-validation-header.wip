@@ -21,7 +21,7 @@
         "beberlei/assert": "^3.3",
         "adhocore/cli": "^0.9.0",
         "firebase/php-jwt": "^v6.8",
-        "aspera/xlsx-reader": "^0.9.0"
+        "aspera/xlsx-reader": "^1.1.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",

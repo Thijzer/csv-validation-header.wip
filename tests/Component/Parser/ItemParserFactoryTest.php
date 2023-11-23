@@ -23,6 +23,7 @@ class ItemParserFactoryTest extends TestCase
         $configuration = [
                 'type' => 'csv',
                 'filename' => 'data_file_1.csv',
+                'fetcher' => 'continuous',
                 'join' => [
                     [
                         'filename' => 'data_file_2.csv',

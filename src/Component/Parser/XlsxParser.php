@@ -39,7 +39,8 @@ class XlsxParser implements CursorInterface
 
     public function current(): mixed
     {
-        if ($this->cursor === null) {
+        if (false === $this->cursor->valid()) {
+            return false;
         }
 
         $current = $this->cursor->current();
