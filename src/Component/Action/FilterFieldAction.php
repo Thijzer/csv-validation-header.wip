@@ -41,6 +41,7 @@ class FilterFieldAction implements OptionsInterface
                     }
                 }
             }
+            $this->setOptions(['fields' => []]); # reset fields array for next action
             return $item;
         }
 
