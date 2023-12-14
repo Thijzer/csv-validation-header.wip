@@ -39,11 +39,9 @@ class ApiReader implements ReaderInterface
         // todo - create function for this. Check how filtering must be applied.
         if(isset($this->context['limiters']['query_array'])) {
             $endpoint = $this->client->getUrlGenerator()->generate($endpoint);
-            $endpoint = sprintf('%s?search=%s', $endpoint, json_encode($this->context['limiters']['query_array']));
-            $endpoint = str_replace('"', '%22', $endpoint);
 
             $items = $this->client
-                ->get($endpoint, [])
+                ->search($endpoint, ['search' => json_encode($this->context['limiters']['query_array'])])
                 ->getResponse()
                 ->getContent();
 

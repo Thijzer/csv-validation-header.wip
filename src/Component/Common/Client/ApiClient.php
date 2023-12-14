@@ -43,6 +43,7 @@ class ApiClient implements ApiClientInterface
         $this->setAuthenticationHeaders();
         $this->setHeaders(['Content-Type' => 'application/json']);
 
+        \curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, "GET");
         \curl_setopt($this->handle, CURLOPT_URL, $endpoint . $this->urlGenerator->createParams($params));
 
         return $this;
