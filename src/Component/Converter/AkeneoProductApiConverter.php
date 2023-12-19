@@ -13,7 +13,7 @@ class AkeneoProductApiConverter implements ConverterInterface, RegisteredByNameI
     private $options = [
         'structure' => 'matcher', # matcher OR flat
         'container' => 'values',
-        'allow_empty_string_values' => false,
+        'allow_empty_string_values' => true,
     ];
 
     public function convert(array $item): array

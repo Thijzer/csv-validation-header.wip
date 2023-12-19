@@ -118,6 +118,10 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
                         'unit' => $item[str_replace($masterKey, $masterKey.'-unit', $key)] ?? null,
                     ];
                 }
+                # reference_data_multiselect
+                if ($codes[$masterKey] === 'pim_reference_data_multiselect') {
+                    $prep['data'] = array_filter(explode(',', $prep['data']));
+                }
                 # multiselect
                 if ($codes[$masterKey] === 'pim_catalog_multiselect') {
                     $prep['data'] = array_filter(explode(',', $prep['data']));
@@ -172,6 +176,12 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
                 if (is_array($itemValue['data']) && array_key_exists('unit', $itemValue['data'])) {
                     $output[$matcher->getRowKey()] = $itemValue['data']['amount'];
                     $output[$matcher->getRowKey().'-unit'] = $itemValue['data']['unit'];
+                    continue;
+                }
+                if (is_array($itemValue['data']) && isset($itemValue['data'][0]['amount'])) {
+                    // CSV can accept 2 column types, price and price-EUR
+                    // for safety we should restore the old key here
+                    $output[$matcher->getRowKey()] = $itemValue['data'][0]['amount'];
                     continue;
                 }
                 if (is_array($itemValue['data'])) {
