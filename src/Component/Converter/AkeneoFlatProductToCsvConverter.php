@@ -210,7 +210,10 @@ class AkeneoFlatProductToCsvConverter implements ConverterInterface, ReaderAware
 
         $output = [];
         $output['sku'] = $item['sku'];
-        $output['family'] = $item['family'];
+        if (array_key_exists('family', $item)) {
+            $output['family'] = $item['family'];
+        }
+
         foreach ($item as $key => $itemValue) {
             $matcher = $itemValue['matcher'] ?? null;
             /** @var $matcher Matcher */

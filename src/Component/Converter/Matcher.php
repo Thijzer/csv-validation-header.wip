@@ -6,25 +6,45 @@ class Matcher
 {
     private string $separator = '|';
     private array $matches = [];
-    private bool $scopable = false;
-    private bool $localizable = false;
+    private ?string $scope = null;
+    private ?string $locale = null;
 
     public static function create(string $mainMatch, ?string $locale = null, ?string $scope = null): self
     {
         $main = new self();
-        $main->localizable = is_string($locale);
-        $main->scopable = is_string($scope);
+        $main->locale = $locale;
+        $main->scope = $scope;
 
         $matches = explode($main->separator, $mainMatch);
-        if ($main->localizable) {
+        if ($main->isLocalizable()) {
             $matches[] = $locale;
         }
-        if ($main->scopable) {
+        if ($main->isScopable()) {
             $matches[] = $scope;
         }
         $main->matches = $matches;
 
         return $main;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    public function isLocalizable(): bool
+    {
+        return is_string($this->locale);
+    }
+
+    public function getScope(): ?string
+    {
+        return $this->scope;
+    }
+
+    public function isScopable(): bool
+    {
+        return is_string($this->scope);
     }
 
     public function getPrimaryKey(): string
@@ -50,8 +70,8 @@ class Matcher
     public function duplicateWithNewKey(string $newPrimaryKey): self
     {
         $matcher = new self();
-        $matcher->scopable = $this->scopable;
-        $matcher->localizable = $this->localizable;
+        $matcher->scope = $this->scope;
+        $matcher->locale = $this->locale;
         $matcher->matches = $this->matches;
         $matcher->matches[1] = $newPrimaryKey;
 

@@ -73,11 +73,26 @@ class ApiClient implements ApiClientInterface
         $this->setAuthenticationHeaders();
         $this->setHeaders(['Content-Type' => 'application/json']);
 
-        //dump($endpoint, $this->headers);
         \curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, "POST");
         \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
         \curl_setopt($this->handle, CURLOPT_POST, true);
         \curl_setopt($this->handle, CURLOPT_POSTFIELDS, \json_encode($postData));
+
+        return $this;
+    }
+
+    public function postXForm(string $endpoint, array $postData): self
+    {
+        $this->setAuthenticationHeaders();
+        $this->setHeaders([
+            'Content-Type' => 'application/x-www-form-urlencoded',
+        ]);
+
+        \curl_setopt($this->handle, CURLOPT_CUSTOMREQUEST, "POST");
+        \curl_setopt($this->handle, CURLOPT_URL, $endpoint);
+        \curl_setopt($this->handle, CURLOPT_RETURNTRANSFER, true);
+        \curl_setopt($this->handle, CURLOPT_POST, true);
+        \curl_setopt($this->handle, CURLOPT_POSTFIELDS, http_build_query($postData));
 
         return $this;
     }
@@ -188,6 +203,9 @@ class ApiClient implements ApiClientInterface
             $multi[] = \json_decode($c, true);
         }
 
+        if ($status === 404) {
+            throw new Exception\PageNotFoundException($content['message'] ?? 'Page Not Found 404');
+        }
         if ($status === 401) {
             throw new Exception\UnauthorizedException($content['message'] ?? 'Unauthorized');
         }
