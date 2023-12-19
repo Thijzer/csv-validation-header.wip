@@ -26,6 +26,8 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
 
     private $options = [
         'container' => 'values',
+        'default_currency' => 'EUR',
+        'single_currency' => true,
         'attribute_types:list' => null, # this key value list is optional, improves type matching for options, metrics, prices
         'properties' => [
             'sku' => [
@@ -119,6 +121,10 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
                 # multiselect
                 if ($codes[$masterKey] === 'pim_catalog_multiselect') {
                     $prep['data'] = array_filter(explode(',', $prep['data']));
+                }
+                # pim_catalog_price_collection | single default currency EUR | will work in most cases
+                if ($codes[$masterKey] === 'pim_catalog_price_collection' && true === $this->getOption('single_currency')) {
+                    $prep['data'] = [['amount' => $prep['data'], 'currency' => $this->getOption('default_currency')]];
                 }
             }
 
