@@ -126,6 +126,10 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
                 if ($codes[$masterKey] === 'pim_catalog_price_collection' && true === $this->getOption('single_currency')) {
                     $prep['data'] = [['amount' => $prep['data'], 'currency' => $this->getOption('default_currency')]];
                 }
+                # number
+                if ($codes[$masterKey] === 'pim_catalog_number') {
+                    $prep['data'] = is_numeric($prep['data']) ? (int) $prep['data']: '';
+                }
             }
 
             $matcher = Matcher::create('values|'.$masterKey, $prep['locale'], $prep['scope']);
