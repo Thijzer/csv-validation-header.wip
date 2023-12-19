@@ -40,6 +40,7 @@ class HttpReaderFactory implements RegisteredByNameInterface
                 ApiOptionsEndpoint::NAME => ApiOptionsEndpoint::class,
                 ApiAttributesEndpoint::NAME => ApiAttributesEndpoint::class,
                 ApiProductsEndpoint::NAME => ApiProductsEndpoint::class,
+                ApiProductModelsEndpoint::NAME => ApiProductModelsEndpoint::class,
                 ApiCategoriesEndpoint::NAME => ApiCategoriesEndpoint::class,
                 ApiReferenceEntitiesEndpoint::NAME => ApiReferenceEntitiesEndpoint::class,
             ];

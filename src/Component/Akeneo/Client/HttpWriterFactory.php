@@ -36,6 +36,7 @@ class HttpWriterFactory implements RegisteredByNameInterface
                 ApiAttributesEndpoint::NAME => ApiAttributesEndpoint::class,
                 ApiOptionsEndpoint::NAME => ApiOptionsEndpoint::class,
                 ApiProductsEndpoint::NAME => ApiProductsEndpoint::class,
+                ApiProductModelsEndpoint::NAME => ApiProductModelsEndpoint::class,
                 ApiCategoriesEndpoint::NAME => ApiCategoriesEndpoint::class,
             ];
 
