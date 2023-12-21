@@ -132,7 +132,7 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
                 }
                 # number
                 if ($codes[$masterKey] === 'pim_catalog_number') {
-                    $prep['data'] = is_numeric($prep['data']) ? (int) $prep['data']: '';
+                    $prep['data'] = (is_string($prep['data']) && is_numeric($prep['data'])) ? $this->numberize($prep['data']): $prep['data'];
                 }
             }
 
@@ -195,6 +195,23 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
         }
 
         return $output;
+    }
+
+    /**
+     * COPY/PASTA \Misery\Component\Akeneo\AkeneoTypeBasedDataConverter
+     */
+    private function numberize($value)
+    {
+        if (is_integer($value)) {
+            return $value;
+        }
+        if (is_float($value)) {
+            return $value;
+        }
+        if (is_string($value)) {
+            $posNum = str_replace(',', '.', $value);
+            return is_numeric($posNum) ? $posNum: $value;
+        }
     }
 
     public function getName(): string
