@@ -84,6 +84,7 @@ $modifierRegistry
     ->register(Misery\Component\Modifier\StringToUpperModifier::NAME, new Misery\Component\Modifier\StringToUpperModifier())
     ->register(Misery\Component\Modifier\StringToLowerModifier::NAME, new Misery\Component\Modifier\StringToLowerModifier())
     ->register(Misery\Component\Modifier\UrlEncodeModifier::NAME, new Misery\Component\Modifier\UrlEncodeModifier())
+    ->register(Misery\Component\Modifier\StripTagsModifier::NAME, new Misery\Component\Modifier\StripTagsModifier())
 
     //->register(Misery\Component\Modifier\StructureModifier::NAME, new Misery\Component\Modifier\StructureModifier())
 ;
