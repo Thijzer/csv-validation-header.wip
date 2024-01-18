@@ -82,6 +82,7 @@ class Product implements ConverterInterface, RegisteredByNameInterface, OptionsI
 
     public function convert(array $item): array
     {
+        $this->csvHeaderContext->unsetHeader();
         $codes = $this->getOption('attribute_types:list');
         $keyCodes = is_array($codes) ? array_keys($codes): null;
         $separator = '-';
