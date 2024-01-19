@@ -38,7 +38,10 @@ class ConverterFactory implements RegisteredByNameInterface
         }
 
         /** @var ConverterInterface $converter */
-        $converter = $this->registryCollection['converter']->filterByAlias($configuration['name']);
+        $converter = clone $this->registryCollection['converter']->filterByAlias($configuration['name']);
+        if (null === $converter) {
+            throw new \Exception(sprintf('Converter named %s not found', $configuration['name']));
+        }
 
         if ($converter instanceof OptionsInterface && isset($configuration['options'])) {
             $options = $configuration['options'];

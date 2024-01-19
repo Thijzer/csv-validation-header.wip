@@ -157,7 +157,7 @@ class ConfigurationManager
         }
     }
 
-    public function createShellCommands(array $configuration)
+    public function configureShellCommands(array $configuration)
     {
         /** @var ShellCommandFactory $factory */
         $factory = $this->factory->getFactory('shell');
@@ -166,7 +166,7 @@ class ConfigurationManager
         );
     }
 
-    public function createPipelines(array $configuration): void
+    public function configurePipelines(array $configuration): void
     {
         /** @var PipelineFactory $factory */
         $factory = $this->factory->getFactory('pipeline');
@@ -175,7 +175,7 @@ class ConfigurationManager
         );
     }
 
-    public function createAccounts(array $configuration): void
+    public function configureAccounts(array $configuration): void
     {
         /** @var ApiClientFactory $factory */
         $factory = $this->factory->getFactory('api_client');
@@ -195,22 +195,42 @@ class ConfigurationManager
         return $actions;
     }
 
-    public function createConverter($configuration): ConverterInterface
+    public function configureConverters(array|string $configuration): void
+    {
+        if (isset($configuration[0]['name'])) {
+            foreach ($configuration as $converter) {
+                $this->createConverter($converter);
+            }
+        } else {
+            $this->createConverter($configuration);
+        }
+    }
+
+    public function createConverter(array|string $configuration): ConverterInterface
     {
         $converter = null;
         /** @var ConverterFactory $factory */
         $factory = $this->factory->getFactory('converter');
+
+
+        // stop creation if it was already created
+        if (is_array($configuration) && isset($configuration['name'])) {
+            if ($converter = $this->config->getConverter($configuration['name'])) {
+                return $converter;
+            }
+        }
 
         if (is_string($configuration)) {
             $converter = $factory->getConverterFromRegistry($configuration);
         }
         if (is_array($configuration) && isset($configuration['name'])) {
             $converter = $factory->createFromConfiguration($configuration, $this->config);
-            $this->config->addConverter($converter);
         }
         if ($converter) {
+            $this->config->addConverter($converter);
             return $converter;
         }
+
         // code smell this looks a bad practice
         if (is_array($configuration) && isset($configuration[0])) {
             $factory->createMultipleConfigurations($configuration, $this->config);
@@ -252,7 +272,7 @@ class ConfigurationManager
         return $decoder;
     }
 
-    public function createBlueprints(array $configuration): void
+    public function configureBlueprints(array $configuration): void
     {
         /** @var BluePrintFactory $factory */
         $factory = $this->factory->getFactory('blueprint');
@@ -281,7 +301,7 @@ class ConfigurationManager
         return $blueprint;
     }
 
-    public function createMapping(array $configuration)
+    public function configureMapping(array $configuration): void
     {
         /** @var MappingFactory $factory */
         $factory = $this->factory->getFactory('mapping');
@@ -394,7 +414,7 @@ class ConfigurationManager
         return $factory->createFromName($configuration, $cursor);
     }
 
-    public function createFilters(array $configuration): void
+    public function configureFilters(array $configuration): void
     {
         /** @var SourceFilterFactory $factory */
         $factory = $this->factory->getFactory('filter');

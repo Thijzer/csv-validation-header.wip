@@ -194,16 +194,16 @@ class Configuration
         return $this->filters;
     }
 
-    public function addConverter(ConverterInterface $converter): void
+    public function addConverter(ConverterInterface|RegisteredByNameInterface $converter): void
     {
-        $this->converters->add($converter);
+        $this->converters->set($converter->getName(), $converter);
     }
 
     public function getConverter(string $name): ?ConverterInterface
     {
         return $this->converters->filter(function (RegisteredByNameInterface $converter) use ($name) {
             return $converter->getName() === $name;
-        })->first();
+        })->first() ?: null;
     }
 
     public function addFeed(FeedInterface $feed): void
