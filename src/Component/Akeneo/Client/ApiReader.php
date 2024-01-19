@@ -40,8 +40,13 @@ class ApiReader implements ReaderInterface
         if(isset($this->context['limiters']['query_array'])) {
             $endpoint = $this->client->getUrlGenerator()->generate($endpoint);
 
+            $params = ['search' => json_encode($this->context['limiters']['query_array'])];
+            if ($this->endpoint instanceof ApiProductModelsEndpoint || $this->endpoint instanceof ApiProductsEndpoint) {
+                $params['pagination_type'] = 'search_after';
+            }
+
             $items = $this->client
-                ->search($endpoint, ['search' => json_encode($this->context['limiters']['query_array'])])
+                ->search($endpoint, $params)
                 ->getResponse()
                 ->getContent();
 
