@@ -137,6 +137,7 @@ $actionRegistry
     ->register(\Misery\Component\Action\ConverterAction::NAME, new Misery\Component\Action\ConverterAction())
     ->register(\Misery\Component\Action\ReverterAction::NAME, new Misery\Component\Action\ReverterAction())
     ->register(\Misery\Component\Action\DateTimeAction::NAME, new Misery\Component\Action\DateTimeAction())
+    ->register(Misery\Component\Action\FrameAction::NAME, new Misery\Component\Action\FrameAction())
 ;
 
 #$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');
