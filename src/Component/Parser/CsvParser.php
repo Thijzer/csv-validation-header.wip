@@ -2,13 +2,19 @@
 
 namespace Misery\Component\Parser;
 
+use Assert\Assertion;
 use Misery\Component\Common\Cursor\CursorInterface;
+use Misery\Component\Common\Functions\ArrayFunctions;
+use Misery\Component\Filter\ColumnReducer;
 
 class CsvParser implements CursorInterface
 {
     public const DELIMITER = ';';
     public const ENCLOSURE = '"';
     public const ESCAPE = '\\';
+    public const INVALID_SKIP = 'skip';
+    public const INVALID_STOP = 'stop';
+    public const INVALID_SKIP_ON_LARGER = 'skip_on_larger';
 
     /** @var array|false|mixed|string */
     private $headers;
@@ -16,23 +22,27 @@ class CsvParser implements CursorInterface
     private $file;
     /** @var int|null */
     private $count;
+    private $invalidLines;
 
     public function __construct(
         \SplFileObject $file,
         string $delimiter = self::DELIMITER,
         string $enclosure = self::ENCLOSURE,
-        string $escapeChar = self::ESCAPE
+        string $escapeChar = self::ESCAPE,
+        string $invalidLines = self::INVALID_STOP
     ) {
-        $this->file = $file;
-        ini_set('auto_detect_line_endings', '1');
+        Assertion::file($file->getRealPath());
 
-        $file->setFlags(
+        $this->file = $file;
+        $this->invalidLines = $invalidLines;
+
+        $this->file->setFlags(
             \SplFileObject::READ_CSV |
             \SplFileObject::SKIP_EMPTY |
             \SplFileObject::READ_AHEAD |
             \SplFileObject::DROP_NEW_LINE
         );
-        $file->setCsvControl($delimiter, $enclosure, $escapeChar);
+        $this->file->setCsvControl($delimiter, $enclosure, $escapeChar);
 
         if (null === $this->headers) {
             $this->headers = $this->current();
@@ -44,9 +54,10 @@ class CsvParser implements CursorInterface
         string $filename,
         string $delimiter = self::DELIMITER,
         string $enclosure = self::ENCLOSURE,
-        string $escapeChar = self::ESCAPE
+        string $escapeChar = self::ESCAPE,
+        string $invalidLines = self::INVALID_STOP
     ): self {
-        return new self(new \SplFileObject($filename), $delimiter, $enclosure, $escapeChar);
+        return new self(new \SplFileObject($filename), $delimiter, $enclosure, $escapeChar, $invalidLines);
     }
 
     /**
@@ -77,25 +88,33 @@ class CsvParser implements CursorInterface
      * @throws Exception\InvalidCsvElementSizeException
      * @return false|array
      */
-    public function current()
+    public function current(): mixed
     {
         $current = $this->file->current();
         if (false === $current || null === $this->headers) {
             return $current;
         }
 
-        // here we need to use the filter
-        $row = @array_combine($this->headers, $current);
-        if (false === $row) {
-            throw new Exception\InvalidCsvElementSizeException(
-                $this->file->getFilename(),
-                $this->key(),
-                $current,
-                $this->headers
-            );
+        if (count($current) !== count($this->headers)) {
+            if ($this->invalidLines === self::INVALID_SKIP_ON_LARGER && count($current) < count($this->headers)) {
+                return ArrayFunctions::arrayCombine($this->headers, $current);
+            }
+            if ($this->invalidLines === self::INVALID_SKIP) {
+                $this->next();
+                return $this->current();
+            }
+            if ($this->invalidLines === self::INVALID_STOP) {
+                $distinctHeaderIndex = ArrayFunctions::arrayDiff(array_flip($this->headers), array_keys($current));
+                throw new Exception\InvalidCsvElementSizeException(
+                    $this->file->getFilename(),
+                    $this->key(),
+                    ColumnReducer::reduceItem($this->headers, ...$distinctHeaderIndex),
+                    ColumnReducer::reduceItem($current, ...$distinctHeaderIndex),
+                );
+            }
         }
 
-        return $row;
+        return array_combine($this->headers, $current);
     }
 
     /**
@@ -109,7 +128,7 @@ class CsvParser implements CursorInterface
     /**
      * {@inheritDoc}
      */
-    public function key()
+    public function key(): mixed
     {
         return $this->file->key();
     }
@@ -152,9 +171,14 @@ class CsvParser implements CursorInterface
     public function count(): int
     {
         if (null === $this->count) {
-            $this->loop(function (){});
+            $this->loop(static function (){});
         }
 
         return $this->count;
+    }
+
+    public function clear(): void
+    {
+        // TODO: Implement clear() method.
     }
 }
