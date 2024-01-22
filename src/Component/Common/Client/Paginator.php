@@ -2,6 +2,7 @@
 
 namespace Misery\Component\Common\Client;
 
+use Misery\Component\Common\Client\Exception\UnauthorizedException;
 use Misery\Component\Reader\ItemCollection;
 
 //TODO rename to akeneo Paginator
@@ -47,7 +48,12 @@ class Paginator
      */
     protected function getPage(string $uri): self
     {
-        $data = $this->client->get($uri)->getResponse()->getContent();
+        try {
+            $data = $this->client->get($uri)->getResponse()->getContent();
+        } catch (UnauthorizedException $e) {
+            $this->client->refreshToken();
+            $data = $this->client->get($uri)->getResponse()->getContent();
+        }
 
         return self::create($this->client, $data);
     }
