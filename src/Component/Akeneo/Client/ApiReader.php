@@ -6,7 +6,6 @@ use Assert\Assert;
 use Misery\Component\Common\Client\ApiClient;
 use Misery\Component\Common\Client\ApiClientInterface;
 use Misery\Component\Common\Client\ApiEndpointInterface;
-use Misery\Component\Common\Client\Exception\UnauthorizedException;
 use Misery\Component\Common\Client\Paginator;
 use Misery\Component\Common\Client\InMemoryPaginator;
 use Misery\Component\Common\Utils\ValueFormatter;
@@ -46,20 +45,10 @@ class ApiReader implements ReaderInterface
                 $params['pagination_type'] = 'search_after';
             }
 
-            try {
-                $items = $this->client
-                    ->search($endpoint, $params)
-                    ->getResponse()
-                    ->getContent();
-            } catch (UnauthorizedException $e) {
-                $this->client->refreshToken();
-                $items = $this->client
-                    ->search($endpoint, $params)
-                    ->getResponse()
-                    ->getContent();
-            }
-
-            return $items;
+            return $this->client
+                ->search($endpoint, $params)
+                ->getResponse()
+                ->getContent();
         }
 
         if(isset($this->context['limiters']['querystring'])) {
@@ -76,7 +65,10 @@ class ApiReader implements ReaderInterface
                     $filter = [$attrCode => [['operator' => 'IN', 'value' => $filterChunk]]];
                     $chunkEndpoint = sprintf('%s%s&limit=100', $endpoint, json_encode($filter));
 
-                    $result = $this->processEndpoint($endpoint);
+                    $result = $this->client
+                        ->get($this->client->getUrlGenerator()->generate($endpoint))
+                        ->getResponse()
+                        ->getContent();
 
                     if (empty($items)){
                         $items = $result;
@@ -94,7 +86,10 @@ class ApiReader implements ReaderInterface
             return $items;
         }
 
-        $items = $this->processEndpoint($endpoint);
+        $items = $this->client
+            ->get($this->client->getUrlGenerator()->generate($endpoint))
+            ->getResponse()
+            ->getContent();
 
         // when supplying a container we jump inside that container to find loopable items
         if ($this->context['container']) {
@@ -225,23 +220,5 @@ class ApiReader implements ReaderInterface
     public function clear(): void
     {
         // TODO: Implement clear() method.
-    }
-
-    public function processEndpoint(string $endpoint)
-    {
-        try {
-            $items = $this->client
-                ->get($this->client->getUrlGenerator()->generate($endpoint))
-                ->getResponse()
-                ->getContent();
-        } catch (UnauthorizedException $e) {
-            $this->client->refreshToken();
-            $items = $this->client
-                ->get($this->client->getUrlGenerator()->generate($endpoint))
-                ->getResponse()
-                ->getContent();
-        }
-
-        return $items;
     }
 }
