@@ -219,6 +219,11 @@ class ConfigurationManager
                 return $converter;
             }
         }
+        if (is_string($configuration)) {
+            if ($converter = $this->config->getConverter($configuration)) {
+                return $converter;
+            }
+        }
 
         if (is_string($configuration)) {
             $converter = $factory->getConverterFromRegistry($configuration);
@@ -338,6 +343,14 @@ class ConfigurationManager
         $this->config->setWriter($writer);
 
         return $writer;
+    }
+
+    public function createBufferWriter(string $bufferFilename): ItemWriterInterface
+    {
+        return $this->createWriter([
+            'type' => 'buffer',
+            'filename' => $bufferFilename,
+        ]);
     }
 
     public function createCursableParser(array $configuration): CursorInterface

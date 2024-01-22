@@ -32,6 +32,12 @@ class PipelineFactory implements RegisteredByNameInterface
                         $pipeline->line(new RevertPipe($converter));
                     }
 
+                    if (isset($configuration['output']['http']['buffer_file'])) {
+                        $pipeline->output(new PipeWriter(
+                            $configurationManager->createBufferWriter($configuration['output']['http']['buffer_file'])
+                        ));
+                    }
+
                     $pipeline->output(new PipeWriter($writer));
 
                     $pipeline->invalid(

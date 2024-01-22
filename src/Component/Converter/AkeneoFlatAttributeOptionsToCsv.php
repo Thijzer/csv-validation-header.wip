@@ -8,8 +8,6 @@ use Misery\Component\Common\Options\OptionsInterface;
 use Misery\Component\Common\Options\OptionsTrait;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Reader\ItemCollection;
-use Misery\Component\Reader\ReaderAwareInterface;
-use Misery\Component\Reader\ReaderAwareTrait;
 
 /**
  * This Converter converts flat product to std data
