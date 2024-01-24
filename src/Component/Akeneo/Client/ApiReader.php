@@ -66,7 +66,7 @@ class ApiReader implements ReaderInterface
                     $chunkEndpoint = sprintf('%s%s&limit=100', $endpoint, json_encode($filter));
 
                     $result = $this->client
-                        ->get($this->client->getUrlGenerator()->generate($endpoint))
+                        ->get($this->client->getUrlGenerator()->generate($chunkEndpoint))
                         ->getResponse()
                         ->getContent();
 
