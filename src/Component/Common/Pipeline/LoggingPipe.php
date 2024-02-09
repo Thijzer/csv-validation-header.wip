@@ -9,7 +9,7 @@ class LoggingPipe implements PipeInterface
 
     public function pipe(array $item): array
     {
-        dump('Result', TypeGuesser::guess($item));
+        dump('Result', $item);
         return $item;
     }
 }

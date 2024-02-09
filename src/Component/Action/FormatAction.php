@@ -85,7 +85,8 @@ class FormatAction implements OptionsInterface
                     $value = $this->getOption('prefix'). ltrim($value, $this->getOption('prefix'));
                     break;
                 case 'suffix':
-                    $value = rtrim($value, $this->getOption('suffix')).$this->getOption('suffix');
+                    $suffix = $this->getOption('suffix');
+                    $value = (!str_ends_with($value, $suffix)) ? $value . $suffix : $value;
                     break;
                 case 'substr':
                     $value = substr($value, $this->getOption('offset'), $this->getOption('length'));

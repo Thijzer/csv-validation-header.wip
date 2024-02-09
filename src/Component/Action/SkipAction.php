@@ -46,7 +46,6 @@ class SkipAction implements OptionsInterface, ActionInterface
             throw new SkipPipeLineException($message);
         }
 
-
         return $item;
     }
 }

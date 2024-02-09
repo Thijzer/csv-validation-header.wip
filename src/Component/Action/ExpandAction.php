@@ -13,11 +13,12 @@ class ExpandAction implements OptionsInterface
 
     /** @var array */
     private $options = [
-        'set' => [],
+        'set' => null,
+        'list' => null,
     ];
 
     public function apply(array $item): array
     {
-        return array_replace_recursive($this->getOption('set'), $item);
+        return array_replace_recursive($this->getOption('set', $this->getOption('list', [])), $item);
     }
 }

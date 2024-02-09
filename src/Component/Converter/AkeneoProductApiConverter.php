@@ -11,6 +11,7 @@ class AkeneoProductApiConverter implements ConverterInterface, RegisteredByNameI
     use OptionsTrait;
 
     private $options = [
+        'identifier' => 'sku',
         'structure' => 'matcher', # matcher OR flat
         'container' => 'values',
         'allow_empty_string_values' => true,
@@ -44,11 +45,13 @@ class AkeneoProductApiConverter implements ConverterInterface, RegisteredByNameI
     public function revert(array $item): array
     {
         $container = $this->getOption('container');
+        $identifier = $this->getOption('identifier');
+
         $allowEmptyStringValues = $this->getOption('allow_empty_string_values');
 
-        if (isset($item['sku'])) {
-            $item['identifier'] = $item['sku'];
-            unset($item['sku']);
+        if (isset($item[$identifier])) {
+            $item['identifier'] = $item[$identifier];
+            unset($item[$identifier]);
         }
 
         foreach ($item ?? [] as $key => $itemValue) {

@@ -2,14 +2,6 @@
 
 // formatters are reversable // Modifiers are NOT reversable
 
-use Misery\Component\Action\EmptyAction;
-use Misery\Component\Action\FilterAction;
-use Misery\Component\Action\UnsetAction;
-use Misery\Component\Akeneo\Client\HttpWriterFactory;
-use Misery\Component\Converter\Akeneo\Api\Attribute;
-use Misery\Component\Converter\AkeneoCsvHeaderContext;
-use Misery\Component\Converter\AkeneoCsvToStructuredDataConverter;
-
 // Path to your .env file (assuming it's in the project root)
 $envFilePath = __DIR__ . '/../.env';
 
@@ -47,6 +39,7 @@ $converterRegistry->registerAllByName(
 //        new Misery\Component\Converter\AkeneoCsvHeaderContext()
 //    ),
     new Misery\Component\Converter\AkeneoProductApiConverter(),
+    new Misery\Component\Converter\Akeneo\Api\ProductModel(),
     new Misery\Component\Converter\BCItemsApiConverter(),
     new Misery\Component\Converter\BCCategoriesApiConverter(),
     new Misery\Component\Converter\Akeneo\Api\Attribute(
@@ -61,7 +54,12 @@ $converterRegistry->registerAllByName(
     new Misery\Component\Converter\Akeneo\Csv\Product(
         new Misery\Component\Converter\AkeneoCsvHeaderContext()
     ),
-    new Misery\Component\Converter\Akeneo\Csv\AttributeOption()
+    new Misery\Component\Converter\Akeneo\Csv\ProductModel(
+        new Misery\Component\Converter\AkeneoCsvHeaderContext()
+    ),
+    new Misery\Component\Converter\Akeneo\Csv\AttributeOption(),
+    new \Misery\Component\Converter\Akeneo\Api\FamilyVariant(),
+    new Misery\Component\Converter\Akeneo\Csv\ReferenceEntities()
 );
 
 $feedRegistry = new Misery\Component\Common\Registry\Registry('feed');
@@ -138,6 +136,7 @@ $actionRegistry
     ->register(\Misery\Component\Action\ReverterAction::NAME, new Misery\Component\Action\ReverterAction())
     ->register(\Misery\Component\Action\DateTimeAction::NAME, new Misery\Component\Action\DateTimeAction())
     ->register(Misery\Component\Action\FrameAction::NAME, new Misery\Component\Action\FrameAction())
+    ->register(Misery\Component\Action\GroupAction::NAME, new Misery\Component\Action\GroupAction())
 ;
 
 #$statementRegistry = new Misery\Component\Common\Registry\Registry('statement');

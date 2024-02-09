@@ -44,6 +44,8 @@ class CsvParser implements CursorInterface
         );
         $this->file->setCsvControl($delimiter, $enclosure, $escapeChar);
 
+        $this->seekBom();
+
         if (null === $this->headers) {
             $this->headers = $this->current();
             $this->next();
@@ -58,6 +60,16 @@ class CsvParser implements CursorInterface
         string $invalidLines = self::INVALID_STOP
     ): self {
         return new self(new \SplFileObject($filename), $delimiter, $enclosure, $escapeChar, $invalidLines);
+    }
+
+    private function seekBom(): void
+    {
+        $bom = $this->file->fread(3);
+        if ($bom === "\xEF\xBB\xBF") {
+            $this->file->fseek(3);
+        } else {
+            $this->file->fseek(0);
+        }
     }
 
     /**

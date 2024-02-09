@@ -3,6 +3,7 @@
 namespace Misery\Component\Configurator;
 
 use Misery\Component\Common\FileManager\LocalFileManager;
+use Misery\Component\Common\Pipeline\ActionPipe;
 use Misery\Component\Common\Registry\Registry;
 use Misery\Component\Common\Utils\ContextFormatter;
 use Misery\Component\Common\Utils\ValueFormatter;
@@ -125,8 +126,9 @@ class ConfigurationFactory
                 case $key === 'blueprint';
                     $this->manager->configureBlueprints($configuration['blueprint']);
                     break;
+                case $key === 'action';
                 case $key === 'actions';
-                    $this->manager->createActions($configuration['actions']);
+                    $this->manager->configureAction($valueConfiguration);
                     break;
                 case $key === 'encoder';
                     $this->manager->createEncoder($configuration['encoder']);

@@ -160,4 +160,28 @@ class ExpandActionTest extends TestCase
             'sku' => '1',
         ], $format->apply($item));
     }
+
+    public function test_it_should_expand_on_list_values(): void
+    {
+        $format = new ExpandAction();
+
+        $item = [
+            'brand' => 'louis',
+            'sku' => '1',
+        ];
+
+        $format->setOptions([
+            'list' => [
+                'brand' => 'a',
+                'description' => 'b',
+                'sku' => 'c',
+            ]
+        ]);
+
+        $this->assertEquals([
+            'brand' => 'louis',
+            'description' => 'b',
+            'sku' => '1',
+        ], $format->apply($item));
+    }
 }

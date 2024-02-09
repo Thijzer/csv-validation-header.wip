@@ -89,17 +89,32 @@ class ApiWriter implements ItemWriterInterface
      */
     private function execute(array $data): ApiResponse
     {
+        // HERE we strip-out ex: %family% in $data but leave family as key in the $context
+        // so that the URL generator has a family value to work with
+        // it would be better if we could to this outside of our context
+        $context = $data;
+        $pattern = "/^%.*%$/";
+        foreach ($data as $key => $value) {
+            // Check if the key matches the specified pattern
+            if (preg_match($pattern, $key)) {
+                // Unset the data with the matching pattern
+                unset($data[$key]);
+                unset($context[$key]);
+                $context[str_replace('%','', $key)] = $value;
+            }
+        }
+
         switch ($this->method) {
             case 'DELETE':
             case 'delete':
                 return $this->client
-                    ->delete($this->client->getUrlGenerator()->generate($this->endpoint->getSingleEndPoint(), $data['identifier']))
+                    ->delete($this->client->getUrlGenerator()->generate($this->endpoint->getSingleEndPoint(), $context['identifier']))
                     ->getResponse()
                 ;
             case 'PATCH':
             case 'patch':
                 return $this->client
-                    ->patch($this->client->getUrlGenerator()->format($this->endpoint->getSingleEndPoint(), $data), $data)
+                    ->patch($this->client->getUrlGenerator()->format($this->endpoint->getSingleEndPoint(), $context), $data)
                     ->getResponse()
                 ;
             case 'MULTI_PATCH':

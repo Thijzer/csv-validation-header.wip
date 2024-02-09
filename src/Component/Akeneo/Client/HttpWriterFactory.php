@@ -38,6 +38,9 @@ class HttpWriterFactory implements RegisteredByNameInterface
                 ApiProductsEndpoint::NAME => ApiProductsEndpoint::class,
                 ApiProductModelsEndpoint::NAME => ApiProductModelsEndpoint::class,
                 ApiCategoriesEndpoint::NAME => ApiCategoriesEndpoint::class,
+                ApiReferenceEntitiesEndpoint::NAME => ApiReferenceEntitiesEndpoint::class,
+                ApiFamiliesEndpoint::NAME => ApiFamiliesEndpoint::class,
+                ApiFamilyVariantsEndpoint::NAME => ApiFamilyVariantsEndpoint::class,
             ];
 
             $endpoint = $endpointSet[$endpoint] ?? null;

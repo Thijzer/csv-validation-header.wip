@@ -67,6 +67,10 @@ class SourceFilterCommand implements ExecuteSourceCommandInterface, SourceAwareI
             $items = ColumnReducer::reduce($items, ...$this->getOption('return_values'));
         }
 
+        if ($this->getOption('mode') === 'return_first_item') {
+            return $items->getIterator()->current();
+        }
+
         return $items->getItems();
     }
 

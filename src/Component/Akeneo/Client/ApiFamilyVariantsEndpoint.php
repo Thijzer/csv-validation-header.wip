@@ -4,12 +4,12 @@ namespace Misery\Component\Akeneo\Client;
 
 use Misery\Component\Common\Client\ApiEndpointInterface;
 
-class ApiReferenceEntitiesEndpoint implements ApiEndpointInterface
+class ApiFamilyVariantsEndpoint implements ApiEndpointInterface
 {
-    public const NAME = 'reference-entities';
+    public const NAME = 'family_variants';
 
-    private const ALL = 'reference-entities/%s/records';
-    private const ONE = 'reference-entities/%reference-code%/records/%code%';
+    private const ALL = 'families/%s/variants';
+    private const ONE = 'families/%family%/variants/%code%';
 
     public function getAll(): string
     {
