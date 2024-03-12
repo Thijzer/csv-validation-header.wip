@@ -5,10 +5,12 @@ namespace Misery\Component\Reader;
 use Misery\Component\Common\Cursor\CondensedCursor;
 use Misery\Component\Common\Cursor\CursorInterface;
 use Misery\Component\Common\Cursor\SubFunctionalCollectionCursor;
+use Misery\Component\Common\Cursor\SubItemCursor;
 use Misery\Component\Common\Functions\ArrayFunctions;
 use Misery\Component\Common\Registry\RegisteredByNameInterface;
 use Misery\Component\Configurator\Configuration;
 use Misery\Component\Configurator\ConfigurationManager;
+use Misery\Component\Converter\ExplodeItemCollectionLoader;
 use Misery\Component\Filter\ItemSortFilter;
 use Misery\Component\Filter\ItemTreeSortFilter;
 
@@ -58,6 +60,15 @@ class ItemReaderFactory implements RegisteredByNameInterface
 
             $config = $configuration['x_filter'];
             return new ItemReader(new CondensedCursor($cursor, $config));
+        }
+
+        if (isset($configuration['x_filter']['type']) && $configuration['x_filter']['type'] === 'loader') {
+            if (isset($configuration['x_filter']['explode_list'])) {
+                $configuration['x_filter']['explode_list'] = $configurationObject->getList($configuration['x_filter']['explode_list']);
+            }
+
+            $config = $configuration['x_filter'];
+            return new ItemReader(new SubItemCursor($cursor, new ExplodeItemCollectionLoader($config['load_list'] ?? [], $config['explode_list'])));
         }
 
         $reader = new ItemReader($cursor);
